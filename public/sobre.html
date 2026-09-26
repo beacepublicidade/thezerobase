@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sobre — The Zero Base</title>
+  <meta name="description" content="A infraestrutura do Warzone competitivo brasileiro. Conheça a missão e os valores da The Zero Base.">
+  <link rel="icon" type="image/png" href="assets/images/logo/simbolo.png">
+  <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;600;700;800;900&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { background: #000; color: #fff; font-family: 'Roboto', sans-serif; padding-top: 68px; }
+
+    .header-section { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; background: #000; border-bottom: 1px solid #aa0000; height: 68px; display: flex; align-items: center; }
+    .header-holder { display: flex; align-items: center; justify-content: space-between; width: 100%; height: 100%; }
+    .mobile-menu { display: none; position: fixed; top: 68px; left: 0; right: 0; background: #000; border-bottom: 1px solid #aa0000; padding: 16px 24px; z-index: 999; }
+    .mobile-menu.open { display: block; }
+    .mobile-menu a { display: block; padding: 12px 0; font-family: 'Exo 2', sans-serif; font-weight: 700; font-size: 14px; letter-spacing: .1em; text-transform: uppercase; color: #8892a4; text-decoration: none; border-bottom: 1px solid rgba(255,255,255,.06); }
+    .mobile-menu a:last-child { border-bottom: none; }
+    .mobile-menu a.active-link { color: #fff; }
+
+    /* HERO */
+    .hero { position: relative; padding: 120px 0 100px; background: #000; overflow: hidden; }
+    .hero::before { content: ''; position: absolute; inset: 0; background-image: linear-gradient(rgba(170,0,0,.06) 1px, transparent 1px), linear-gradient(90deg, rgba(170,0,0,.06) 1px, transparent 1px); background-size: 40px 40px; }
+    .hero::after { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 70% 60% at 50% 50%, rgba(170,0,0,.14) 0%, transparent 70%); }
+    .hero-inner { position: relative; z-index: 2; text-align: center; }
+    .eyebrow { font-family: 'Exo 2', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: .3em; text-transform: uppercase; color: #aa0000; margin-bottom: 20px; }
+    .hero-title { font-family: 'Exo 2', sans-serif; font-weight: 900; font-size: clamp(48px, 9vw, 100px); line-height: .95; color: #fff; margin-bottom: 32px; }
+    .hero-title span { color: #aa0000; }
+    .hero-lead { font-family: 'Roboto', sans-serif; font-size: 18px; line-height: 1.7; color: #8892a4; max-width: 620px; margin: 0 auto; }
+
+    /* DIVIDER */
+    .divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(170,0,0,.4), transparent); margin: 0; }
+
+    /* MANIFESTO */
+    .manifesto { padding: 100px 0; }
+    .manifesto-text { font-family: 'Exo 2', sans-serif; font-weight: 800; font-size: clamp(22px, 3.5vw, 40px); line-height: 1.3; color: #fff; max-width: 800px; }
+    .manifesto-text span { color: #aa0000; }
+    .manifesto-sub { font-family: 'Roboto', sans-serif; font-size: 16px; color: #8892a4; line-height: 1.8; max-width: 640px; margin-top: 24px; }
+
+    /* PILLARS */
+    .pillars { padding: 0 0 100px; }
+    .pillar-card { background: #0a0a0f; border: 1px solid #1a2030; border-radius: 16px; padding: 36px; height: 100%; transition: border-color .2s; }
+    .pillar-card:hover { border-color: rgba(170,0,0,.4); }
+    .pillar-num { font-family: 'Exo 2', sans-serif; font-weight: 900; font-size: 56px; color: rgba(170,0,0,.2); line-height: 1; margin-bottom: 16px; }
+    .pillar-title { font-family: 'Exo 2', sans-serif; font-weight: 800; font-size: 20px; color: #fff; margin-bottom: 12px; text-transform: uppercase; letter-spacing: .04em; }
+    .pillar-body { font-family: 'Roboto', sans-serif; font-size: 14px; color: #8892a4; line-height: 1.7; }
+
+    /* NUMBERS */
+    .numbers { background: #0a0a0f; border-top: 1px solid #1a2030; border-bottom: 1px solid #1a2030; padding: 56px 0; }
+    .num-item { text-align: center; }
+    .num-val { font-family: 'Exo 2', sans-serif; font-weight: 900; font-size: 52px; color: #aa0000; line-height: 1; }
+    .num-lbl { font-family: 'Roboto', sans-serif; font-size: 12px; color: #555e6d; text-transform: uppercase; letter-spacing: .12em; margin-top: 8px; }
+
+    /* CTA */
+    .cta-section { padding: 100px 0; text-align: center; }
+    .cta-title { font-family: 'Exo 2', sans-serif; font-weight: 900; font-size: clamp(32px, 5vw, 60px); line-height: 1.1; color: #fff; margin-bottom: 20px; }
+    .cta-title span { color: #aa0000; }
+    .cta-sub { font-family: 'Roboto', sans-serif; font-size: 16px; color: #8892a4; max-width: 480px; margin: 0 auto 36px; line-height: 1.6; }
+    .btn-red { display: inline-flex; align-items: center; gap: 8px; background: #aa0000; color: #fff; font-family: 'Exo 2', sans-serif; font-weight: 700; font-size: 14px; padding: 14px 36px; border-radius: 8px; letter-spacing: .1em; text-transform: uppercase; text-decoration: none; transition: background .15s; }
+    .btn-red:hover { background: #cc0000; color: #fff; }
+    .btn-outline { display: inline-flex; align-items: center; gap: 8px; background: transparent; border: 1px solid rgba(170,0,0,.5); color: #fff; font-family: 'Exo 2', sans-serif; font-weight: 700; font-size: 14px; padding: 14px 36px; border-radius: 8px; letter-spacing: .1em; text-transform: uppercase; text-decoration: none; transition: border-color .15s; }
+    .btn-outline:hover { border-color: #aa0000; color: #fff; }
+
+    @media (max-width: 768px) {
+      .manifesto { padding: 64px 0; }
+      .pillars { padding: 0 0 64px; }
+      .numbers { padding: 40px 0; }
+      .cta-section { padding: 64px 0; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<header class="header-section">
+  <div class="container-fluid px-4 px-lg-5">
+    <div class="header-holder">
+      <a href="/" style="text-decoration:none;">
+        <span style="display:flex;align-items:center;gap:10px;font-family:'Exo 2',sans-serif;font-size:22px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1263.01 1443.68" style="width:28px;height:32px;filter:drop-shadow(0 0 8px rgba(170,0,0,0.55));flex-shrink:0;"><path fill="#AA0000" d="M552.08 1443.68l0.68 -142.2c-444.31,-80.52 -502.61,-489.38 -255.86,-835.86l-104.47 -76.79c-132.74,119.99 -254.44,414.77 -157.43,664.13 72.31,185.89 277.47,358.22 517.09,390.71zm-216.37 -1174.62l258.13 270.41 119.34 -96.68 -73.49 -85.95c490.45,-3.46 723.2,718.98 68.7,935.03l-3.88 145.57c304.55,-15.06 567.68,-327.76 558.24,-640.93 -11.09,-367.53 -266.2,-573.86 -620.82,-609.61l78.24 -86.32 -117.3 -100.59 -267.16 269.06z"/></svg>
+          <span style="color:#fff;">THE</span><span style="color:#aa0000;">ZERO</span><span style="color:#fff;">BASE</span>
+        </span>
+      </a>
+      <nav class="d-none d-lg-flex align-items-center">
+        <ul style="margin:0;padding:0;list-style:none;display:flex;align-items:center;gap:2px;">
+          <li><a href="/" style="font-family:'Exo 2',sans-serif;font-weight:700;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:#8892a4;padding:8px 16px;border-radius:6px;display:block;text-decoration:none;">Home</a></li>
+          <li><a href="/scrims" style="font-family:'Exo 2',sans-serif;font-weight:700;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:#8892a4;padding:8px 16px;border-radius:6px;display:block;text-decoration:none;">Scrims</a></li>
+          <li><a href="/campeonatos" style="font-family:'Exo 2',sans-serif;font-weight:700;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:#8892a4;padding:8px 16px;border-radius:6px;display:block;text-decoration:none;">Campeonatos</a></li>
+          <li><a href="/agentes-livres" style="font-family:'Exo 2',sans-serif;font-weight:700;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:#8892a4;padding:8px 16px;border-radius:6px;display:block;text-decoration:none;">Agentes Livres</a></li>
+          <li><a href="/sobre" style="font-family:'Exo 2',sans-serif;font-weight:700;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:#fff;padding:8px 16px;border-radius:6px;display:block;text-decoration:none;">Sobre</a></li>
+        </ul>
+      </nav>
+      <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
+        <a href="/auth" style="display:inline-flex;align-items:center;gap:8px;background:transparent;border:1px solid rgba(170,0,0,.5);color:#fff;font-family:'Exo 2',sans-serif;font-weight:700;font-size:13px;padding:10px 22px;border-radius:8px;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;" class="d-none d-lg-inline-flex">ENTRAR</a>
+        <a href="/auth" style="display:inline-flex;align-items:center;gap:8px;background:#aa0000;color:#fff;font-family:'Exo 2',sans-serif;font-weight:700;font-size:13px;padding:10px 22px;border-radius:8px;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;">CADASTRAR</a>
+        <div id="menuToggle" class="d-lg-none" style="margin-left:8px;cursor:pointer;display:flex;flex-direction:column;gap:5px;padding:6px;">
+          <span style="display:block;width:22px;height:2px;background:#fff;border-radius:2px;"></span>
+          <span style="display:block;width:22px;height:2px;background:#fff;border-radius:2px;"></span>
+          <span style="display:block;width:22px;height:2px;background:#fff;border-radius:2px;"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="/">Home</a>
+  <a href="/scrims">Scrims</a>
+  <a href="/campeonatos">Campeonatos</a>
+  <a href="/agentes-livres">Agentes Livres</a>
+  <a href="/sobre" class="active-link">Sobre</a>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-inner">
+      <p class="eyebrow">Grupo Begamers · Warzone BR</p>
+      <h1 class="hero-title">A BASE É<br><span>ZERO</span></h1>
+      <p class="hero-lead">Não existe cenário competitivo sem estrutura. A The Zero Base nasceu para ser essa estrutura — o lugar onde o Warzone brasileiro se organiza, evolui e compete de verdade.</p>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<!-- MANIFESTO -->
+<section class="manifesto">
+  <div class="container">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-6">
+        <p class="eyebrow">Manifesto</p>
+        <h2 class="manifesto-text">O talento existe.<br>A estrutura é <span>o que falta.</span></h2>
+        <p class="manifesto-sub">O Warzone brasileiro tem jogadores absurdos. Times que treinam todo dia, orgs que investem, criadores que constroem comunidades. Mas o cenário ainda funciona no improviso — grupos de WhatsApp, planilhas, chamadas de Discord sem registro.<br><br>A The Zero Base foi criada pra mudar isso. Uma plataforma única onde tudo acontece com critério: scrims organizados por tier, campeonatos com modelo de pontuação profissional, ranking com dados reais e um ecossistema que cresce com quem participa.</p>
+      </div>
+      <div class="col-lg-6">
+        <div style="background:#0a0a0f;border:1px solid #1a2030;border-radius:20px;padding:40px;position:relative;overflow:hidden;">
+          <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#aa0000,transparent);"></div>
+          <p style="font-family:'Exo 2',sans-serif;font-size:11px;font-weight:700;letter-spacing:.3em;text-transform:uppercase;color:#aa0000;margin-bottom:24px;">Por que existimos</p>
+          <div style="display:flex;flex-direction:column;gap:20px;">
+            <div style="display:flex;gap:16px;align-items:flex-start;">
+              <div style="width:8px;height:8px;border-radius:50%;background:#aa0000;flex-shrink:0;margin-top:6px;"></div>
+              <p style="font-family:'Roboto',sans-serif;font-size:14px;color:#8892a4;line-height:1.6;">Scrims sem critério de tier desperdiçam o tempo de todo mundo</p>
+            </div>
+            <div style="display:flex;gap:16px;align-items:flex-start;">
+              <div style="width:8px;height:8px;border-radius:50%;background:#aa0000;flex-shrink:0;margin-top:6px;"></div>
+              <p style="font-family:'Roboto',sans-serif;font-size:14px;color:#8892a4;line-height:1.6;">Campeonatos sem histórico de resultados não valem nada para ninguém</p>
+            </div>
+            <div style="display:flex;gap:16px;align-items:flex-start;">
+              <div style="width:8px;height:8px;border-radius:50%;background:#aa0000;flex-shrink:0;margin-top:6px;"></div>
+              <p style="font-family:'Roboto',sans-serif;font-size:14px;color:#8892a4;line-height:1.6;">Talentos invisíveis nunca chegam às organizações certas</p>
+            </div>
+            <div style="display:flex;gap:16px;align-items:flex-start;">
+              <div style="width:8px;height:8px;border-radius:50%;background:#aa0000;flex-shrink:0;margin-top:6px;"></div>
+              <p style="font-family:'Roboto',sans-serif;font-size:14px;color:#8892a4;line-height:1.6;">O crescimento de um só não é crescimento do cenário</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PILLARS -->
+<section class="pillars">
+  <div class="container">
+    <div class="text-center mb-5">
+      <p class="eyebrow">Nossos pilares</p>
+      <h2 style="font-family:'Exo 2',sans-serif;font-weight:900;font-size:clamp(28px,4vw,48px);color:#fff;">Como a Zero Base funciona</h2>
+    </div>
+    <div class="row g-4">
+      <div class="col-lg-3 col-md-6">
+        <div class="pillar-card">
+          <div class="pillar-num">01</div>
+          <div class="pillar-title">Critério de Tier</div>
+          <p class="pillar-body">Cada scrim tem nível definido. Bronze, Prata, Ouro. Você compete com quem é do seu nível — sem surpresas, sem desequilíbrio.</p>
+        </div>
+      </div>
+      <div class="col-lg-3 col-md-6">
+        <div class="pillar-card">
+          <div class="pillar-num">02</div>
+          <div class="pillar-title">Zero Points</div>
+          <p class="pillar-body">Sistema de pontuação próprio que considera placement, kills e consistência. Não é ranking de sorte — é ranking de performance real.</p>
+        </div>
+      </div>
+      <div class="col-lg-3 col-md-6">
+        <div class="pillar-card">
+          <div class="pillar-num">03</div>
+          <div class="pillar-title">Ecossistema</div>
+          <p class="pillar-body">Jogadores, organizações, criadores e organizadores de eventos numa plataforma só. Cada parte do cenário conectada.</p>
+        </div>
+      </div>
+      <div class="col-lg-3 col-md-6">
+        <div class="pillar-card">
+          <div class="pillar-num">04</div>
+          <div class="pillar-title">Transparência</div>
+          <p class="pillar-body">Resultados públicos, histórico de drops, leaderboards ao vivo. O cenário cresce quando os dados são abertos.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- NUMBERS -->
+<div class="numbers">
+  <div class="container">
+    <div class="row g-4 justify-content-center">
+      <div class="col-6 col-md-3"><div class="num-item"><div class="num-val" id="n-times">—</div><div class="num-lbl">Times registrados</div></div></div>
+      <div class="col-6 col-md-3"><div class="num-item"><div class="num-val" id="n-scrims">—</div><div class="num-lbl">Scrims criados</div></div></div>
+      <div class="col-6 col-md-3"><div class="num-item"><div class="num-val" id="n-camps">—</div><div class="num-lbl">Campeonatos</div></div></div>
+      <div class="col-6 col-md-3"><div class="num-item"><div class="num-val">BR</div><div class="num-lbl">Foco: Warzone BR</div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="container">
+    <h2 class="cta-title">Faça parte<br>da <span>estrutura</span>.</h2>
+    <p class="cta-sub">Cadastre seu time, inscreva-se nas scrims e comece a acumular Zero Points. A plataforma é gratuita.</p>
+    <div style="display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;">
+      <a href="/auth" class="btn-red">CRIAR CONTA GRÁTIS</a>
+      <a href="/scrims" class="btn-outline">VER SCRIMS</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer style="background:#000;border-top:1px solid rgba(170,0,0,.2);padding:40px 0 24px;">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-lg-4 col-md-6">
+        <span style="display:flex;align-items:center;gap:10px;font-family:'Exo 2',sans-serif;font-size:20px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;margin-bottom:12px;">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1263.01 1443.68" style="width:22px;height:26px;flex-shrink:0;"><path fill="#AA0000" d="M552.08 1443.68l0.68 -142.2c-444.31,-80.52 -502.61,-489.38 -255.86,-835.86l-104.47 -76.79c-132.74,119.99 -254.44,414.77 -157.43,664.13 72.31,185.89 277.47,358.22 517.09,390.71zm-216.37 -1174.62l258.13 270.41 119.34 -96.68 -73.49 -85.95c490.45,-3.46 723.2,718.98 68.7,935.03l-3.88 145.57c304.55,-15.06 567.68,-327.76 558.24,-640.93 -11.09,-367.53 -266.2,-573.86 -620.82,-609.61l78.24 -86.32 -117.3 -100.59 -267.16 269.06z"/></svg>
+          <span style="color:#fff;">THE </span><span style="color:#aa0000;">ZERO</span><span style="color:#fff;"> BASE</span>
+        </span>
+        <p style="font-family:'Roboto',sans-serif;font-size:13px;color:#8892a4;line-height:1.6;">A infraestrutura do Warzone competitivo brasileiro.</p>
+      </div>
+      <div class="col-lg-4 col-md-6">
+        <h5 style="font-family:'Exo 2',sans-serif;font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.1em;color:#fff;margin-bottom:12px;">Plataforma</h5>
+        <ul style="list-style:none;padding:0;margin:0;">
+          <li style="margin-bottom:8px;"><a href="/scrims" style="font-family:'Roboto',sans-serif;font-size:13px;color:#8892a4;text-decoration:none;">Scrims</a></li>
+          <li style="margin-bottom:8px;"><a href="/campeonatos" style="font-family:'Roboto',sans-serif;font-size:13px;color:#8892a4;text-decoration:none;">Campeonatos</a></li>
+          <li style="margin-bottom:8px;"><a href="/ranking" style="font-family:'Roboto',sans-serif;font-size:13px;color:#8892a4;text-decoration:none;">Ranking</a></li>
+          <li style="margin-bottom:8px;"><a href="/agentes-livres" style="font-family:'Roboto',sans-serif;font-size:13px;color:#8892a4;text-decoration:none;">Agentes Livres</a></li>
+          <li style="margin-bottom:8px;"><a href="/sobre" style="font-family:'Roboto',sans-serif;font-size:13px;color:#aa0000;text-decoration:none;">Sobre</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-4">
+        <h5 style="font-family:'Exo 2',sans-serif;font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.1em;color:#fff;margin-bottom:12px;">Conta</h5>
+        <ul style="list-style:none;padding:0;margin:0;">
+          <li style="margin-bottom:8px;"><a href="/auth" style="font-family:'Roboto',sans-serif;font-size:13px;color:#8892a4;text-decoration:none;">Entrar</a></li>
+          <li style="margin-bottom:8px;"><a href="/auth?tab=register" style="font-family:'Roboto',sans-serif;font-size:13px;color:#8892a4;text-decoration:none;">Cadastrar</a></li>
+          <li style="margin-bottom:8px;"><a href="/dashboard" style="font-family:'Roboto',sans-serif;font-size:13px;color:#8892a4;text-decoration:none;">Dashboard</a></li>
+          <li style="margin-bottom:8px;"><a href="/regras" style="font-family:'Roboto',sans-serif;font-size:13px;color:#8892a4;text-decoration:none;">Regras</a></li>
+        </ul>
+      </div>
+    </div>
+    <div style="border-top:1px solid rgba(170,0,0,.15);margin-top:32px;padding-top:16px;text-align:center;">
+      <p style="font-family:'Roboto',sans-serif;font-size:12px;color:#555e6d;margin:0;">THE ZERO BASE © 2026 — Grupo Begamers · <a href="/regras" style="color:#555e6d;text-decoration:none;">Termos de Uso</a></p>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+  document.getElementById('menuToggle').addEventListener('click', () => {
+    document.getElementById('mobileMenu').classList.toggle('open');
+  });
+  (async function() {
+    var SUPA_URL = 'https://hcpbpnwpdkvlonqoqchs.supabase.co';
+    var SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhjcGJwbndwZGt2bG9ucW9xY2hzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0NTU0NzgsImV4cCI6MjA5MjAzMTQ3OH0.0QtczT9z_ctuHM-V3U44oCAJOdg3qUYcq-wDITnsch4';
+    var cs = supabase.createClient(SUPA_URL, SUPA_KEY);
+    var [t, s, c] = await Promise.all([
+      cs.from('tzb_teams').select('id', {count:'exact',head:true}),
+      cs.from('tzb_scrims').select('id', {count:'exact',head:true}),
+      cs.from('tzb_campeonatos').select('id', {count:'exact',head:true})
+    ]);
+    if (t.count) document.getElementById('n-times').textContent = t.count;
+    if (s.count) document.getElementById('n-scrims').textContent = s.count;
+    if (c.count) document.getElementById('n-camps').textContent = c.count;
+  })();
+</script>
+</body>
+</html>

@@ -1,0 +1,7 @@
+node_modules
+landing-page
+/Assets
+*.md
+globals.css
+tailwind.config.ts
+.vercel

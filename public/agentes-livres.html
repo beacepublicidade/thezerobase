@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agentes Livres — The Zero Base</title>
+  <meta name="description" content="Jogadores sem time procurando organização no Warzone BR. Encontre talentos ou apareça no radar das orgs. The Zero Base.">
+  <link rel="icon" type="image/png" href="assets/images/logo/simbolo.png">
+  <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;600;700;800;900&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { background: #000000; color: #ffffff; font-family: 'Roboto', sans-serif; padding-top: 68px; }
+
+    /* ── NAV ── */
+    .header-section { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; background: #000000; border-bottom: 1px solid #aa0000; height: 68px; display: flex; align-items: center; }
+    .header-holder { display: flex; align-items: center; justify-content: space-between; width: 100%; height: 100%; }
+    .mobile-menu { display: none; position: fixed; top: 68px; left: 0; right: 0; background: #000; border-bottom: 1px solid #aa0000; padding: 16px 24px; z-index: 999; }
+    .mobile-menu.open { display: block; }
+    .mobile-menu a { display: block; padding: 12px 0; font-family: 'Exo 2', sans-serif; font-weight: 700; font-size: 14px; letter-spacing: 0.1em; text-transform: uppercase; color: #8892a4; text-decoration: none; border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .mobile-menu a:last-child { border-bottom: none; }
+    .mobile-menu a.active-link { color: #fff; }
+
+    /* ── HERO ── */
+    .hero-section { position: relative; background: #000; padding: 100px 0 80px; overflow: hidden; }
+    .hero-section::before { content: ''; position: absolute; inset: 0; background-image: linear-gradient(rgba(170,0,0,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(170,0,0,0.06) 1px, transparent 1px); background-size: 40px 40px; }
+    .hero-section::after { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 60% 50% at 50% 50%, rgba(170,0,0,0.12) 0%, transparent 70%); }
+    .hero-content { position: relative; z-index: 2; text-align: center; }
+    .hero-eyebrow { font-family: 'Exo 2', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.3em; text-transform: uppercase; color: #aa0000; margin-bottom: 16px; }
+    .hero-title { font-family: 'Exo 2', sans-serif; font-weight: 900; font-size: clamp(36px, 7vw, 80px); line-height: 1; color: #fff; margin-bottom: 20px; }
+    .hero-sub { font-family: 'Roboto', sans-serif; font-size: 16px; color: #8892a4; max-width: 520px; margin: 0 auto 32px; line-height: 1.6; }
+
+    /* ── STATS BAR ── */
+    .stats-bar { background: #0a0a0f; border-top: 1px solid #1a2030; border-bottom: 1px solid #1a2030; }
+    .stats-bar-inner { display: flex; justify-content: center; flex-wrap: wrap; }
+    .stat-item { padding: 20px 40px; text-align: center; border-right: 1px solid #1a2030; }
+    .stat-item:last-child { border-right: none; }
+    .stat-val { font-family: 'Exo 2', sans-serif; font-weight: 900; font-size: 28px; color: #cc0000; line-height: 1; margin-bottom: 4px; }
+    .stat-lbl { font-family: 'Roboto', sans-serif; font-size: 11px; color: #555e6d; text-transform: uppercase; letter-spacing: .1em; }
+
+    /* ── FILTER BAR ── */
+    .filter-bar { background: #000; border-bottom: 1px solid #1a2030; padding: 16px 0; position: sticky; top: 68px; z-index: 100; }
+    .filter-inner { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .filter-label { font-family: 'Exo 2', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: .15em; text-transform: uppercase; color: #555e6d; flex-shrink: 0; }
+    .filter-select {
+      font-family: 'Exo 2', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: .06em;
+      background: #0a0a0f; color: #fff; border: 1px solid #1a2030; border-radius: 8px;
+      padding: 8px 30px 8px 14px; cursor: pointer; outline: none; appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238892a4' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 10px center;
+      transition: border-color .15s;
+    }
+    .filter-select:focus { border-color: rgba(170,0,0,0.5); }
+    .filter-count { margin-left: auto; font-family: 'Roboto', sans-serif; font-size: 12px; color: #555e6d; }
+    .filter-count span { color: #fff; font-weight: 700; }
+
+    /* ── PLAYER CARDS ── */
+    .players-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+    .player-card {
+      background: #0a0a0f; border: 1px solid #1a2030; border-radius: 14px; padding: 24px;
+      transition: border-color .2s, transform .2s; position: relative; overflow: hidden;
+    }
+    .player-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, #aa0000, transparent); opacity: 0; transition: opacity .2s;
+    }
+    .player-card:hover { border-color: rgba(170,0,0,0.35); transform: translateY(-2px); }
+    .player-card:hover::before { opacity: 1; }
+
+    .pc-header { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
+    .pc-avatar {
+      width: 52px; height: 52px; border-radius: 50%;
+      background: linear-gradient(135deg, #1a0000, #330000);
+      border: 2px solid rgba(170,0,0,0.4);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Exo 2', sans-serif; font-size: 20px; font-weight: 900; color: #fff;
+      flex-shrink: 0; overflow: hidden; position: relative;
+    }
+    .pc-avatar img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .pc-names { flex: 1; min-width: 0; }
+    .pc-nick { font-family: 'Exo 2', sans-serif; font-weight: 800; font-size: 16px; color: #fff; text-transform: uppercase; letter-spacing: .04em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .pc-region { font-family: 'Roboto', sans-serif; font-size: 11px; color: #555e6d; margin-top: 2px; }
+
+    .pc-badges { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+    .badge { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 5px; font-family: 'Exo 2', sans-serif; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; }
+    .badge-role   { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); color: #8892a4; }
+    .badge-bronze { background: rgba(180,120,60,0.12); border: 1px solid rgba(180,120,60,0.3); color: #b4783c; }
+    .badge-prata  { background: rgba(160,174,192,0.1); border: 1px solid rgba(160,174,192,0.3); color: #a0aec0; }
+    .badge-ouro   { background: rgba(232,178,74,0.1); border: 1px solid rgba(232,178,74,0.3); color: #e8b24a; }
+
+    .pc-bio { font-family: 'Roboto', sans-serif; font-size: 12px; color: #8892a4; line-height: 1.55; margin-bottom: 16px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; min-height: 55px; }
+    .pc-kd { display: flex; align-items: center; gap: 6px; padding-top: 14px; border-top: 1px solid rgba(26,32,48,0.8); }
+    .pc-kd-val { font-family: 'Exo 2', sans-serif; font-weight: 900; font-size: 18px; color: #fff; }
+    .pc-kd-lbl { font-family: 'Roboto', sans-serif; font-size: 10px; color: #555e6d; text-transform: uppercase; letter-spacing: .1em; }
+
+    /* ── SKELETON / EMPTY ── */
+    .loading-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+    .skeleton { background: #0a0a0f; border: 1px solid #1a2030; border-radius: 14px; padding: 24px; animation: pulse 1.4s ease-in-out infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+    .skel-line { background: #1a2030; border-radius: 4px; margin-bottom: 10px; }
+    .empty-state { text-align: center; padding: 80px 24px; grid-column: 1 / -1; }
+    .empty-icon { width: 56px; height: 56px; margin: 0 auto 20px; color: #3a4252; }
+    .empty-title { font-family: 'Exo 2', sans-serif; font-size: 18px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; color: #555e6d; margin-bottom: 8px; }
+    .empty-sub { font-family: 'Roboto', sans-serif; font-size: 13px; color: #3a4252; }
+
+    /* ── CTA ── */
+    .cta-block { background: linear-gradient(135deg, #0a0a0f 0%, #0e0e15 100%); border: 1px solid rgba(170,0,0,0.25); border-radius: 16px; padding: 56px 40px; text-align: center; }
+    .cta-title { font-family: 'Exo 2', sans-serif; font-weight: 900; font-size: clamp(26px, 4vw, 40px); color: #fff; margin-bottom: 12px; }
+    .cta-sub { font-family: 'Roboto', sans-serif; font-size: 15px; color: #8892a4; margin-bottom: 32px; max-width: 480px; margin-left: auto; margin-right: auto; line-height: 1.6; }
+    .btn-primary-red { display: inline-flex; align-items: center; gap: 8px; background: #aa0000; color: #fff; font-family: 'Exo 2', sans-serif; font-weight: 700; font-size: 14px; letter-spacing: 0.08em; text-transform: uppercase; padding: 14px 32px; border-radius: 8px; text-decoration: none; transition: background 0.15s; }
+    .btn-primary-red:hover { background: #cc0000; color: #fff; }
+    .btn-outline-red { display: inline-flex; align-items: center; gap: 8px; background: transparent; color: #fff; border: 1px solid rgba(170,0,0,0.5); font-family: 'Exo 2', sans-serif; font-weight: 700; font-size: 14px; letter-spacing: 0.08em; text-transform: uppercase; padding: 14px 32px; border-radius: 8px; text-decoration: none; transition: all 0.15s; }
+    .btn-outline-red:hover { border-color: #aa0000; background: rgba(170,0,0,0.08); color: #fff; }
+    .org-cta-card { background: #0a0a0f; border: 1px solid #1a2030; border-left: 3px solid #e8b24a; border-radius: 0 14px 14px 0; padding: 28px 32px; display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
+    .org-cta-card h3 { font-family: 'Exo 2', sans-serif; font-weight: 800; font-size: 18px; color: #fff; margin-bottom: 6px; }
+    .org-cta-card p { font-family: 'Roboto', sans-serif; font-size: 13px; color: #8892a4; line-height: 1.6; }
+    .btn-gold { display: inline-flex; align-items: center; gap: 8px; background: rgba(232,178,74,0.1); color: #e8b24a; border: 1px solid rgba(232,178,74,0.35); font-family: 'Exo 2', sans-serif; font-weight: 700; font-size: 13px; letter-spacing: .08em; text-transform: uppercase; padding: 12px 24px; border-radius: 8px; text-decoration: none; transition: all .15s; white-space: nowrap; }
+    .btn-gold:hover { background: rgba(232,178,74,0.18); color: #e8b24a; }
+
+    @media (max-width: 600px) {
+      .stat-item { padding: 16px 20px; }
+      .filter-inner { gap: 8px; }
+      .filter-select { font-size: 11px; }
+      .players-grid { grid-template-columns: 1fr; }
+      .cta-block { padding: 40px 24px; }
+      .org-cta-card { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<header class="header-section">
+  <div class="container-fluid px-4 px-lg-5">
+    <div class="header-holder">
+      <a href="/" style="text-decoration:none;">
+        <span style="display:flex;align-items:center;gap:10px;font-family:'Exo 2',sans-serif;font-size:22px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1263.01 1443.68" style="width:28px;height:32px;filter:drop-shadow(0 0 8px rgba(170,0,0,0.55));flex-shrink:0;"><path fill="#AA0000" d="M552.08 1443.68l0.68 -142.2c-444.31,-80.52 -502.61,-489.38 -255.86,-835.86l-104.47 -76.79c-132.74,119.99 -254.44,414.77 -157.43,664.13 72.31,185.89 277.47,358.22 517.09,390.71zm-216.37 -1174.62l258.13 270.41 119.34 -96.68 -73.49 -85.95c490.45,-3.46 723.2,718.98 68.7,935.03l-3.88 145.57c304.55,-15.06 567.68,-327.76 558.24,-640.93 -11.09,-367.53 -266.2,-573.86 -620.82,-609.61l78.24 -86.32 -117.3 -100.59 -267.16 269.06z"/></svg>
+          <span style="color:#ffffff;">THE</span><span style="color:#aa0000;">ZERO</span><span style="color:#ffffff;">BASE</span>
+        </span>
+      </a>
+      <nav class="d-none d-lg-flex align-items-center">
+        <ul style="margin:0;padding:0;list-style:none;display:flex;align-items:center;gap:2px;">
+          <li><a href="/" style="font-family:'Exo 2',sans-serif;font-weight:700;font-size:13px;letter-spacing:0.1em;text-transform:uppercase;color:#8892a4;padding:8px 16px;border-radius:6px;display:block;text-decoration:none;">Home</a></li>
+          <li><a href="/scrims" style="font-family:'Exo 2',sans-serif;font-weight:700;font-size:13px;letter-spacing:0.1em;text-transform:uppercase;color:#8892a4;padding:8px 16px;border-radius:6px;display:block;text-decoration:none;">Scrims</a></li>
+          <li><a href="/campeonatos" style="font-family:'Exo 2',sans-serif;font-weight:700;font-size:13px;letter-spacing:0.1em;text-transform:uppercase;color:#8892a4;padding:8px 16px;border-radius:6px;display:block;text-decoration:none;">Campeonatos</a></li>
+          <li><a href="/agentes-livres" style="font-family:'Exo 2',sans-serif;font-weight:700;font-size:13px;letter-spacing:0.1em;text-transform:uppercase;color:#ffffff;padding:8px 16px;border-radius:6px;display:block;text-decoration:none;">Agentes Livres</a></li>
+        </ul>
+      </nav>
+      <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
+        <a href="/auth" style="display:inline-flex;align-items:center;gap:8px;background:transparent;border:1px solid rgba(170,0,0,0.5);color:#fff;font-family:'Exo 2',sans-serif;font-weight:700;font-size:13px;padding:10px 22px;border-radius:8px;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none;" class="d-none d-lg-inline-flex">ENTRAR</a>
+        <a href="/auth" style="display:inline-flex;align-items:center;gap:8px;background:#aa0000;color:#fff;font-family:'Exo 2',sans-serif;font-weight:700;font-size:13px;padding:10px 22px;border-radius:8px;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none;">CADASTRAR</a>
+        <div id="menuToggle" class="d-lg-none" style="margin-left:8px;cursor:pointer;display:flex;flex-direction:column;gap:5px;padding:6px;">
+          <span style="display:block;width:22px;height:2px;background:#fff;border-radius:2px;"></span>
+          <span style="display:block;width:22px;height:2px;background:#fff;border-radius:2px;"></span>
+          <span style="display:block;width:22px;height:2px;background:#fff;border-radius:2px;"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a href="/">Home</a>
+  <a href="/scrims">Scrims</a>
+  <a href="/campeonatos">Campeonatos</a>
+  <a href="/agentes-livres" class="active-link">Agentes Livres</a>
+</div>
+
+<!-- HERO -->
+<section class="hero-section">
+  <div class="container">
+    <div class="hero-content">
+      <p class="hero-eyebrow">The Zero Base · Banco de Talentos Warzone BR</p>
+      <h1 class="hero-title">AGENTES LIVRES</h1>
+      <p class="hero-sub">Jogadores sem time que querem ser encontrados. Orgs que buscam talentos. A The Zero Base conecta os dois — com dados reais, não feeling.</p>
+      <a href="/auth?tab=register" class="btn-primary-red">APARECER AQUI — É GRÁTIS</a>
+    </div>
+  </div>
+</section>
+
+<!-- STATS BAR -->
+<div class="stats-bar">
+  <div class="container">
+    <div class="stats-bar-inner">
+      <div class="stat-item">
+        <div class="stat-val" id="stat-total">—</div>
+        <div class="stat-lbl">Agentes Disponíveis</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-val">5</div>
+        <div class="stat-lbl">Regiões</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-val" id="stat-ouro">—</div>
+        <div class="stat-lbl">Tier Ouro (KD 3.5+)</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FILTER BAR -->
+<div class="filter-bar">
+  <div class="container">
+    <div class="filter-inner">
+      <span class="filter-label">Filtrar:</span>
+      <select class="filter-select" id="f-region" onchange="applyFilters()">
+        <option value="">Todas as Regiões</option>
+        <option>Sul</option>
+        <option>Sudeste</option>
+        <option>Centro-Oeste</option>
+        <option>Nordeste</option>
+        <option>Norte</option>
+      </select>
+      <select class="filter-select" id="f-tier" onchange="applyFilters()">
+        <option value="">Todos os Tiers</option>
+        <option value="Ouro">Ouro (KD 3.5+)</option>
+        <option value="Prata">Prata (KD 2.0–3.5)</option>
+        <option value="Bronze">Bronze (KD 1.0–2.0)</option>
+      </select>
+      <select class="filter-select" id="f-role" onchange="applyFilters()">
+        <option value="">Todos os Roles</option>
+        <option>IGL</option>
+        <option>Fragger</option>
+        <option>Support</option>
+      </select>
+      <span class="filter-count" id="filter-count"></span>
+    </div>
+  </div>
+</div>
+
+<!-- PLAYERS GRID -->
+<section style="padding:56px 0;">
+  <div class="container">
+    <div id="players-container">
+      <div class="loading-grid" id="loading-state">
+        <div class="skeleton" style="height:200px;"><div class="skel-line" style="width:52px;height:52px;border-radius:50%;margin-bottom:12px;"></div><div class="skel-line" style="width:60%;height:16px;"></div><div class="skel-line" style="width:40%;height:12px;"></div><div class="skel-line" style="width:80%;height:12px;margin-top:16px;"></div></div>
+        <div class="skeleton" style="height:200px;"><div class="skel-line" style="width:52px;height:52px;border-radius:50%;margin-bottom:12px;"></div><div class="skel-line" style="width:60%;height:16px;"></div><div class="skel-line" style="width:40%;height:12px;"></div><div class="skel-line" style="width:80%;height:12px;margin-top:16px;"></div></div>
+        <div class="skeleton" style="height:200px;"><div class="skel-line" style="width:52px;height:52px;border-radius:50%;margin-bottom:12px;"></div><div class="skel-line" style="width:60%;height:16px;"></div><div class="skel-line" style="width:40%;height:12px;"></div><div class="skel-line" style="width:80%;height:12px;margin-top:16px;"></div></div>
+      </div>
+      <div class="players-grid" id="players-grid" style="display:none;"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ORG CTA -->
+<section style="padding:0 0 56px;">
+  <div class="container">
+    <div class="org-cta-card">
+      <div>
+        <h3>Você representa uma organização?</h3>
+        <p>Os agentes livres são atualizados em tempo real. Registre sua org para acessar perfis completos e encontrar o próximo talento da sua base.</p>
+      </div>
+      <a href="/auth?tab=register&type=team" class="btn-gold">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        REGISTRAR MINHA ORGANIZAÇÃO
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- PLAYER CTA -->
+<section style="padding:0 0 80px;">
+  <div class="container">
+    <div class="cta-block">
+      <p style="font-family:'Exo 2',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.3em;text-transform:uppercase;color:#aa0000;margin-bottom:16px;">Para jogadores</p>
+      <h2 class="cta-title">Seu talento não vai<br>se vender sozinho.</h2>
+      <p class="cta-sub">Apareça no radar das organizações com seus dados reais — KD, tier, região e role. Crie seu perfil, ative "Agente Livre" no dashboard e deixa as orgs te encontrarem.</p>
+      <div style="display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;">
+        <a href="/auth?tab=register" class="btn-primary-red">CRIAR MEU PERFIL</a>
+        <a href="/dashboard" class="btn-outline-red">JÁ TENHO CONTA</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer style="background:#000;border-top:1px solid rgba(170,0,0,0.2);padding:40px 0 24px;">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-lg-4 col-md-6">
+        <span style="display:flex;align-items:center;gap:10px;font-family:'Exo 2',sans-serif;font-size:20px;font-weight:800;letter-spacing:0.05em;text-transform:uppercase;margin-bottom:12px;">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1263.01 1443.68" style="width:22px;height:26px;flex-shrink:0;"><path fill="#AA0000" d="M552.08 1443.68l0.68 -142.2c-444.31,-80.52 -502.61,-489.38 -255.86,-835.86l-104.47 -76.79c-132.74,119.99 -254.44,414.77 -157.43,664.13 72.31,185.89 277.47,358.22 517.09,390.71zm-216.37 -1174.62l258.13 270.41 119.34 -96.68 -73.49 -85.95c490.45,-3.46 723.2,718.98 68.7,935.03l-3.88 145.57c304.55,-15.06 567.68,-327.76 558.24,-640.93 -11.09,-367.53 -266.2,-573.86 -620.82,-609.61l78.24 -86.32 -117.3 -100.59 -267.16 269.06z"/></svg>
+          <span style="color:#fff;">THE </span><span style="color:#aa0000;">ZERO</span><span style="color:#fff;"> BASE</span>
+        </span>
+        <p style="font-family:'Roboto',sans-serif;font-size:13px;color:#8892a4;line-height:1.6;">A infraestrutura do Warzone competitivo brasileiro.</p>
+      </div>
+      <div class="col-lg-4 col-md-6">
+        <h5 style="font-family:'Exo 2',sans-serif;font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.1em;color:#fff;margin-bottom:12px;">Plataforma</h5>
+        <ul style="list-style:none;padding:0;margin:0;">
+          <li style="margin-bottom:8px;"><a href="/scrims" style="font-family:'Roboto',sans-serif;font-size:13px;color:#8892a4;text-decoration:none;">Scrims</a></li>
+          <li style="margin-bottom:8px;"><a href="/ranking" style="font-family:'Roboto',sans-serif;font-size:13px;color:#8892a4;text-decoration:none;">Ranking Nacional</a></li>
+          <li style="margin-bottom:8px;"><a href="/campeonatos" style="font-family:'Roboto',sans-serif;font-size:13px;color:#8892a4;text-decoration:none;">Campeonatos</a></li>
+          <li style="margin-bottom:8px;"><a href="/agentes-livres" style="font-family:'Roboto',sans-serif;font-size:13px;color:#aa0000;text-decoration:none;">Agentes Livres</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-4 col-md-6">
+        <h5 style="font-family:'Exo 2',sans-serif;font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.1em;color:#fff;margin-bottom:12px;">Comunidade</h5>
+        <ul style="list-style:none;padding:0;margin:0;">
+          <li style="margin-bottom:8px;"><a href="/regras" style="font-family:'Roboto',sans-serif;font-size:13px;color:#8892a4;text-decoration:none;">Regras da Plataforma</a></li>
+          <li style="margin-bottom:8px;"><a href="/auth?tab=register" style="font-family:'Roboto',sans-serif;font-size:13px;color:#cc0000;font-weight:700;text-decoration:none;">Entrar na Base — É Grátis →</a></li>
+        </ul>
+      </div>
+    </div>
+    <div style="border-top:1px solid rgba(170,0,0,0.15);margin-top:32px;padding-top:16px;text-align:center;">
+      <p style="font-family:'Roboto',sans-serif;font-size:12px;color:#555e6d;margin:0;">THE ZERO BASE © 2026 — Grupo Begamers · <a href="/regras" style="color:#555e6d;text-decoration:none;">Termos de Uso</a> · <a href="/regras" style="color:#555e6d;text-decoration:none;">Política de Privacidade</a></p>
+    </div>
+  </div>
+</footer>
+
+<script>
+var SUPA_URL = 'https://hcpbpnwpdkvlonqoqchs.supabase.co';
+var SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhjcGJwbndwZGt2bG9ucW9xY2hzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0NTU0NzgsImV4cCI6MjA5MjAzMTQ3OH0.0QtczT9z_ctuHM-V3U44oCAJOdg3qUYcq-wDITnsch4';
+var supa = supabase.createClient(SUPA_URL, SUPA_KEY);
+
+var allPlayers = [];
+
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function tierFromKD(kd) {
+  kd = parseFloat(kd);
+  if (!kd || isNaN(kd)) return null;
+  if (kd >= 3.5) return 'Ouro';
+  if (kd >= 2.0) return 'Prata';
+  return 'Bronze';
+}
+
+function tierBadgeClass(tier) {
+  if (tier === 'Ouro')  return 'badge-ouro';
+  if (tier === 'Prata') return 'badge-prata';
+  return 'badge-bronze';
+}
+
+function renderCard(p) {
+  var tier = tierFromKD(p.kd);
+  var initial = esc((p.name || 'A').charAt(0).toUpperCase());
+  var avatarHtml = p.avatar_url
+    ? '<img src="' + esc(p.avatar_url) + '" alt="">'
+    : initial;
+
+  return '<div class="player-card" data-region="' + esc(p.region||'') + '" data-tier="' + esc(tier||'') + '" data-role="' + esc(p.player_role||'') + '">' +
+    '<div class="pc-header">' +
+      '<div class="pc-avatar">' + avatarHtml + '</div>' +
+      '<div class="pc-names">' +
+        '<div class="pc-nick">' + esc(p.name || 'Jogador') + '</div>' +
+        '<div class="pc-region">' + esc(p.region || 'Brasil') + '</div>' +
+      '</div>' +
+    '</div>' +
+    '<div class="pc-badges">' +
+      (p.player_role ? '<span class="badge badge-role">' + esc(p.player_role) + '</span>' : '') +
+      (tier ? '<span class="badge ' + tierBadgeClass(tier) + '">' + esc(tier) + '</span>' : '') +
+    '</div>' +
+    '<div class="pc-bio">' + esc(p.free_agent_bio || 'Procurando time para competir na Temporada 1.') + '</div>' +
+    (p.kd ? '<div class="pc-kd"><div class="pc-kd-val">' + parseFloat(p.kd).toFixed(2) + '</div><div style="flex:1;"></div><div class="pc-kd-lbl">KD Médio</div></div>' : '') +
+  '</div>';
+}
+
+function applyFilters() {
+  var region = document.getElementById('f-region').value;
+  var tier   = document.getElementById('f-tier').value;
+  var role   = document.getElementById('f-role').value;
+  var cards  = document.querySelectorAll('#players-grid .player-card');
+  var visible = 0;
+  cards.forEach(function(card) {
+    var show = true;
+    if (region && card.dataset.region !== region) show = false;
+    if (tier   && card.dataset.tier   !== tier)   show = false;
+    if (role   && card.dataset.role   !== role)   show = false;
+    card.style.display = show ? '' : 'none';
+    if (show) visible++;
+  });
+  var countEl = document.getElementById('filter-count');
+  countEl.innerHTML = (region || tier || role)
+    ? '<span>' + visible + '</span> de ' + allPlayers.length + ' jogadores'
+    : '';
+}
+
+(async function init() {
+  var _res = await supa
+    .from('tzb_profiles')
+    .select('id, name, avatar_url, region, kd, player_role, free_agent_bio')
+    .eq('free_agent', true)
+    .order('created_at', { ascending: false });
+
+  document.getElementById('loading-state').style.display = 'none';
+  document.getElementById('players-grid').style.display = '';
+
+  if (_res.error || !_res.data || _res.data.length === 0) {
+    document.getElementById('players-grid').innerHTML =
+      '<div class="empty-state">' +
+        '<svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>' +
+        '<div class="empty-title">Nenhum agente livre ainda</div>' +
+        '<div class="empty-sub">Seja o primeiro — ative "Agente Livre" no seu dashboard.</div>' +
+      '</div>';
+    document.getElementById('stat-total').textContent = '0';
+    document.getElementById('stat-ouro').textContent  = '0';
+    return;
+  }
+
+  allPlayers = _res.data;
+  document.getElementById('stat-total').textContent = allPlayers.length;
+  document.getElementById('stat-ouro').textContent  = allPlayers.filter(function(p) { return parseFloat(p.kd) >= 3.5; }).length;
+  document.getElementById('players-grid').innerHTML = allPlayers.map(renderCard).join('');
+})();
+
+document.getElementById('menuToggle').addEventListener('click', function() {
+  document.getElementById('mobileMenu').classList.toggle('open');
+});
+</script>
+</body>
+</html>

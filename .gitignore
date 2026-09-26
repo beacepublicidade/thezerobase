@@ -1,0 +1,17 @@
+node_modules/
+.next/
+.env.local
+.env
+.env.production
+.env*.local
+dist/
+build/
+.DS_Store
+*.log
+.vercel/
+Assets/
+*.zip
+*.PSD
+*.psd
+*.mov
+*.mp4

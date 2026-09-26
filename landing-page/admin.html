@@ -1,0 +1,1296 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <title>Admin — THE ZERO BASE</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/png" href="assets/images/logo/simbolo.png">
+  <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;600;700;800;900&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <style>
+    :root {
+      --bg:      #000;
+      --bg-card: #0a0a0f;
+      --bg-card2:#0e0e15;
+      --border:  #1a2030;
+      --accent:  #aa0000;
+      --gold:    #e8b24a;
+      --green:   #4ade80;
+      --red-s:   #f87171;
+      --txt:     #fff;
+      --txt2:    #8892a4;
+      --sidebar: 220px;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{background:var(--bg);color:var(--txt);font-family:'Roboto',sans-serif;min-height:100vh;}
+
+    /* ── PASSWORD GATE ── */
+    #gate{position:fixed;inset:0;background:#000;z-index:9999;display:flex;align-items:center;justify-content:center;}
+    .gate-box{background:var(--bg-card);border:1px solid var(--border);border-top:2px solid var(--accent);border-radius:16px;padding:48px 40px;width:100%;max-width:380px;text-align:center;}
+    .gate-logo{font-family:'Exo 2',sans-serif;font-size:13px;font-weight:700;letter-spacing:.2em;color:var(--accent);margin-bottom:24px;}
+    .gate-title{font-family:'Exo 2',sans-serif;font-size:22px;font-weight:800;color:var(--txt);margin-bottom:8px;}
+    .gate-sub{font-size:13px;color:var(--txt2);margin-bottom:28px;}
+    .gate-input{width:100%;background:#0e0e15;border:1px solid var(--border);border-radius:8px;padding:12px 16px;font-size:15px;color:var(--txt);outline:none;margin-bottom:12px;letter-spacing:.15em;text-align:center;}
+    .gate-input:focus{border-color:var(--accent);}
+    .gate-btn{width:100%;background:var(--accent);color:#fff;font-family:'Exo 2',sans-serif;font-weight:700;font-size:14px;letter-spacing:.08em;text-transform:uppercase;padding:13px;border-radius:8px;border:none;cursor:pointer;transition:background .15s;}
+    .gate-btn:hover{background:#cc0000;}
+    .gate-err{font-size:12px;color:var(--red-s);margin-top:8px;display:none;}
+
+    /* ── LAYOUT ── */
+    #app{display:none;min-height:100vh;}
+    .layout{display:flex;min-height:100vh;}
+
+    /* ── SIDEBAR ── */
+    .sidebar{width:var(--sidebar);background:#05050a;border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100;}
+    .sb-logo{padding:20px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
+    .sb-logo-txt{font-family:'Exo 2',sans-serif;font-size:12px;font-weight:800;letter-spacing:.08em;line-height:1.2;}
+    .sb-logo-txt span{color:var(--accent);}
+    .sb-badge{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;background:rgba(170,0,0,0.15);border:1px solid rgba(170,0,0,0.3);color:var(--accent);padding:2px 8px;border-radius:4px;margin-top:2px;display:inline-block;}
+    .sb-nav{flex:1;overflow-y:auto;padding:8px 0;}
+    .sb-item{display:flex;align-items:center;gap:10px;padding:10px 16px;font-family:'Exo 2',sans-serif;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--txt2);cursor:pointer;border-left:2px solid transparent;transition:all .15s;}
+    .sb-item:hover{color:var(--txt);background:rgba(255,255,255,0.03);}
+    .sb-item.active{color:var(--txt);background:rgba(170,0,0,0.08);border-left-color:var(--accent);}
+    .sb-item svg{flex-shrink:0;opacity:.7;}
+    .sb-item.active svg{opacity:1;}
+    .sb-sep{height:1px;background:var(--border);margin:8px 16px;}
+    .sb-footer{padding:16px;border-top:1px solid var(--border);}
+    .sb-user{font-size:11px;color:var(--txt2);}
+    .sb-user strong{color:var(--txt);display:block;font-family:'Exo 2',sans-serif;font-size:12px;}
+
+    /* ── MAIN ── */
+    .main{margin-left:var(--sidebar);flex:1;padding:32px;min-width:0;}
+    .section{display:none;}
+    .section.active{display:block;}
+    .page-title{font-family:'Exo 2',sans-serif;font-size:22px;font-weight:800;color:var(--txt);margin-bottom:4px;}
+    .page-sub{font-size:13px;color:var(--txt2);margin-bottom:28px;}
+
+    /* ── STATS GRID ── */
+    .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px;}
+    @media(max-width:900px){.stats-grid{grid-template-columns:repeat(2,1fr);}}
+    .stat-card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:20px;}
+    .stat-lbl{font-size:11px;color:var(--txt2);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px;}
+    .stat-val{font-family:'Exo 2',sans-serif;font-size:28px;font-weight:800;color:var(--txt);}
+    .stat-note{font-size:11px;color:var(--txt2);margin-top:4px;}
+
+    /* ── CARD ── */
+    .card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:20px;}
+    .card-head{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+    .card-title{font-family:'Exo 2',sans-serif;font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--txt);}
+    .card-body{padding:20px;}
+
+    /* ── FORM ── */
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+    .form-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+    @media(max-width:700px){.form-grid,.form-grid-3{grid-template-columns:1fr;}}
+    .f-group{display:flex;flex-direction:column;gap:6px;}
+    .f-group.full{grid-column:1/-1;}
+    .f-label{font-size:11px;font-weight:600;color:var(--txt2);text-transform:uppercase;letter-spacing:.08em;}
+    .f-input{background:#0e0e15;border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-size:13px;color:var(--txt);outline:none;width:100%;font-family:'Roboto',sans-serif;transition:border-color .15s;}
+    .f-input:focus{border-color:var(--accent);}
+    select.f-input option{background:#0e0e15;}
+
+    /* ── BUTTONS ── */
+    .btn{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border-radius:8px;font-family:'Exo 2',sans-serif;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border:none;cursor:pointer;transition:all .15s;text-decoration:none;}
+    .btn-red{background:var(--accent);color:#fff;}
+    .btn-red:hover{background:#cc0000;}
+    .btn-ghost{background:transparent;color:var(--txt2);border:1px solid var(--border);}
+    .btn-ghost:hover{color:var(--txt);border-color:rgba(170,0,0,0.4);}
+    .btn-gold{background:rgba(232,178,74,0.1);color:var(--gold);border:1px solid rgba(232,178,74,0.3);}
+    .btn-gold:hover{background:rgba(232,178,74,0.18);}
+    .btn-green{background:rgba(74,222,128,0.1);color:var(--green);border:1px solid rgba(74,222,128,0.25);}
+    .btn-green:hover{background:rgba(74,222,128,0.18);}
+    .btn-sm{padding:6px 12px;font-size:11px;}
+    .btn-danger{background:rgba(248,113,113,0.1);color:var(--red-s);border:1px solid rgba(248,113,113,0.25);}
+    .btn-danger:hover{background:rgba(248,113,113,0.18);}
+
+    /* ── TABLE ── */
+    .tbl{width:100%;border-collapse:collapse;}
+    .tbl th{font-family:'Exo 2',sans-serif;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--txt2);padding:12px 16px;background:#0e0e15;border-bottom:1px solid var(--border);text-align:left;white-space:nowrap;}
+    .tbl td{padding:13px 16px;border-bottom:1px solid rgba(26,32,48,.5);font-size:13px;color:var(--txt);vertical-align:middle;}
+    .tbl tr:last-child td{border-bottom:none;}
+    .tbl tr:hover td{background:rgba(255,255,255,.015);}
+
+    /* ── BADGES ── */
+    .tag{display:inline-flex;align-items:center;gap:4px;padding:2px 9px;border-radius:4px;font-family:'Exo 2',sans-serif;font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;}
+    .tag-bronze{background:rgba(180,120,60,.15);color:#b4783c;border:1px solid rgba(180,120,60,.3);}
+    .tag-prata{background:rgba(160,174,192,.12);color:#a0aec0;border:1px solid rgba(160,174,192,.3);}
+    .tag-ouro{background:rgba(232,178,74,.12);color:var(--gold);border:1px solid rgba(232,178,74,.3);}
+    .tag-green{background:rgba(74,222,128,.1);color:var(--green);border:1px solid rgba(74,222,128,.2);}
+    .tag-red{background:rgba(248,113,113,.1);color:var(--red-s);border:1px solid rgba(248,113,113,.2);}
+    .tag-gray{background:rgba(136,146,164,.1);color:var(--txt2);border:1px solid rgba(136,146,164,.2);}
+    .tag-creator{background:rgba(139,92,246,.12);color:#a78bfa;border:1px solid rgba(139,92,246,.3);}
+    .tag-organizer{background:rgba(59,130,246,.12);color:#60a5fa;border:1px solid rgba(59,130,246,.3);}
+
+    /* ── EMPTY ── */
+    .empty{padding:48px 20px;text-align:center;color:var(--txt2);font-size:13px;}
+
+    /* ── FILE UPLOAD ── */
+    .f-file-wrap{position:relative;border:1px dashed var(--border);border-radius:8px;background:#0e0e15;padding:14px 16px;cursor:pointer;transition:border-color .15s;text-align:center;}
+    .f-file-wrap:hover{border-color:rgba(170,0,0,0.5);}
+    .f-file-wrap input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+    .f-file-label{font-size:12px;color:var(--txt2);}
+    .f-file-label strong{color:var(--accent);}
+    .f-file-preview{width:100%;max-height:80px;object-fit:cover;border-radius:6px;margin-top:8px;display:none;}
+    .flyer-thumb{width:48px;height:28px;object-fit:cover;border-radius:4px;border:1px solid var(--border);}
+
+    /* ── MODAL ── */
+    .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:500;display:none;align-items:center;justify-content:center;padding:20px;}
+    .modal-bg.open{display:flex;}
+    .modal{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:28px;width:100%;max-width:560px;max-height:90vh;overflow-y:auto;}
+    .modal-title{font-family:'Exo 2',sans-serif;font-size:16px;font-weight:800;color:var(--txt);margin-bottom:20px;}
+    .modal-close{float:right;background:none;border:none;color:var(--txt2);font-size:20px;cursor:pointer;line-height:1;}
+
+    /* ── TOAST ── */
+    #toast{position:fixed;bottom:24px;right:24px;z-index:9000;display:flex;flex-direction:column;gap:8px;}
+    .toast-item{background:#0e0e15;border:1px solid var(--border);border-left:3px solid var(--green);border-radius:8px;padding:12px 16px;font-size:13px;color:var(--txt);min-width:240px;animation:fadeIn .2s ease;}
+    .toast-item.err{border-left-color:var(--red-s);}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+
+    /* ── RESULTS TABLE ── */
+    .results-row{display:grid;grid-template-columns:40px 1fr 80px 80px 80px;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);}
+    .results-row:last-child{border-bottom:none;}
+    .results-head{font-family:'Exo 2',sans-serif;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--txt2);padding-bottom:8px;border-bottom:1px solid var(--border);margin-bottom:4px;}
+
+    @media(max-width:768px){
+      .sidebar{transform:translateX(-100%);transition:transform .25s;}
+      .sidebar.open{transform:none;}
+      .main{margin-left:0;}
+    }
+  </style>
+</head>
+<body>
+
+<!-- PASSWORD GATE -->
+<div id="gate">
+  <div class="gate-box">
+    <div class="gate-logo">THE ZERO BASE</div>
+    <h2 class="gate-title">Painel de Controle</h2>
+    <p class="gate-sub">Acesso restrito ao administrador</p>
+    <input type="password" class="gate-input" id="gate-pw" placeholder="••••••••" onkeydown="if(event.key==='Enter')checkPw()">
+    <button class="gate-btn" onclick="checkPw()">ENTRAR</button>
+    <div class="gate-err" id="gate-err">Senha incorreta.</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sb-logo">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1263.01 1443.68" style="width:24px;height:28px;flex-shrink:0;"><path fill="#AA0000" d="M552.08 1443.68l0.68 -142.2c-444.31,-80.52 -502.61,-489.38 -255.86,-835.86l-104.47 -76.79c-132.74,119.99 -254.44,414.77 -157.43,664.13 72.31,185.89 277.47,358.22 517.09,390.71zm-216.37 -1174.62l258.13 270.41 119.34 -96.68 -73.49 -85.95c490.45,-3.46 723.2,718.98 68.7,935.03l-3.88 145.57c304.55,-15.06 567.68,-327.76 558.24,-640.93 -11.09,-367.53 -266.2,-573.86 -620.82,-609.61l78.24 -86.32 -117.3 -100.59 -267.16 269.06z"/></svg>
+        <div>
+          <div class="sb-logo-txt">THE <span>ZERO</span> BASE</div>
+          <div class="sb-badge">ADMIN</div>
+        </div>
+      </div>
+      <nav class="sb-nav">
+        <div class="sb-item active" onclick="nav('dashboard')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          Dashboard
+        </div>
+        <div class="sb-sep"></div>
+        <div class="sb-item" onclick="nav('scrims')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          Scrims
+        </div>
+        <div class="sb-item" onclick="nav('campeonatos')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+          Campeonatos
+        </div>
+        <div class="sb-item" onclick="nav('personalizadas')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          Personalizadas
+        </div>
+        <div class="sb-sep"></div>
+        <div class="sb-item" onclick="nav('usuarios')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          Usuários
+        </div>
+        <div class="sb-item" onclick="nav('times')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+          Times / Orgs
+        </div>
+        <div class="sb-sep"></div>
+        <div class="sb-item" onclick="window.open('/','_blank')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          Ver Site
+        </div>
+      </nav>
+      <div class="sb-footer">
+        <div class="sb-user"><strong>Robson Catatal</strong>Super Admin</div>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+
+      <!-- ══ DASHBOARD ══ -->
+      <div class="section active" id="sec-dashboard">
+        <div class="page-title">Dashboard</div>
+        <div class="page-sub">Visão geral da plataforma — The Zero Base</div>
+        <div class="stats-grid">
+          <div class="stat-card"><div class="stat-lbl">Times cadastrados</div><div class="stat-val" id="d-teams">—</div><div class="stat-note">pub_active ou não</div></div>
+          <div class="stat-card"><div class="stat-lbl">Jogadores</div><div class="stat-val" id="d-players">—</div><div class="stat-note">Perfis tipo player</div></div>
+          <div class="stat-card"><div class="stat-lbl">Scrims criados</div><div class="stat-val" id="d-scrims">—</div><div class="stat-note">Todos os status</div></div>
+          <div class="stat-card"><div class="stat-lbl">Inscrições totais</div><div class="stat-val" id="d-regs">—</div><div class="stat-note">Em scrims</div></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><div class="card-title">Plataforma dos Jogadores</div></div>
+          <div class="card-body">
+            <div id="d-platforms" style="display:flex;gap:16px;flex-wrap:wrap;">
+              <div style="font-size:13px;color:var(--txt2);">Carregando...</div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head"><div class="card-title">Próximos Scrims</div><button class="btn btn-red btn-sm" onclick="nav('scrims')">Gerenciar</button></div>
+          <div class="card-body" id="d-next-scrims"><div class="empty">Carregando...</div></div>
+        </div>
+      </div>
+
+      <!-- ══ SCRIMS ══ -->
+      <div class="section" id="sec-scrims">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:28px;">
+          <div><div class="page-title">Scrims</div><div class="page-sub">Crie, gerencie e lance resultados</div></div>
+          <button class="btn btn-red" onclick="openModal('modal-scrim')">+ Novo Scrim</button>
+        </div>
+        <div class="card">
+          <div class="card-head"><div class="card-title">Todos os Scrims</div></div>
+          <div style="overflow-x:auto;">
+            <table class="tbl">
+              <thead><tr><th>Nome</th><th>Tier</th><th>Data</th><th>Inscritos</th><th>Status</th><th>Ações</th></tr></thead>
+              <tbody id="scrims-body"><tr><td colspan="6"><div class="empty">Carregando...</div></td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ CAMPEONATOS ══ -->
+      <div class="section" id="sec-campeonatos">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:28px;">
+          <div><div class="page-title">Campeonatos</div><div class="page-sub">Eventos oficiais da The Zero Base</div></div>
+          <button class="btn btn-red" onclick="openModal('modal-camp')">+ Novo Campeonato</button>
+        </div>
+        <div class="card">
+          <div class="card-head"><div class="card-title">Campeonatos Criados</div></div>
+          <div style="overflow-x:auto;">
+            <table class="tbl">
+              <thead><tr><th>Flyer</th><th>Nome</th><th>Categoria</th><th>Formato</th><th>Data</th><th>Status</th><th>Ações</th></tr></thead>
+              <tbody id="camp-body"><tr><td colspan="7"><div class="empty">Carregando...</div></td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ PERSONALIZADAS ══ -->
+      <div class="section" id="sec-personalizadas">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:28px;">
+          <div><div class="page-title">Salas Personalizadas</div><div class="page-sub">Lobbies de entretenimento para creators credenciados</div></div>
+          <button class="btn btn-red" onclick="openModal('modal-sala')">+ Nova Sala</button>
+        </div>
+        <div class="card">
+          <div class="card-head"><div class="card-title">Salas Ativas</div></div>
+          <div style="overflow-x:auto;">
+            <table class="tbl">
+              <thead><tr><th>Nome da Sala</th><th>Creator</th><th>Data</th><th>Código</th><th>Status</th><th>Ações</th></tr></thead>
+              <tbody id="salas-body"><tr><td colspan="6"><div class="empty">Nenhuma sala criada ainda.</div></td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ USUÁRIOS ══ -->
+      <div class="section" id="sec-usuarios">
+        <div class="page-title">Usuários</div>
+        <div class="page-sub">Jogadores cadastrados na plataforma</div>
+        <div class="card">
+          <div class="card-head">
+            <div class="card-title">Jogadores</div>
+            <input type="text" class="f-input" placeholder="Buscar por nome..." id="search-users" oninput="filterUsers()" style="max-width:200px;padding:7px 12px;font-size:12px;">
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="tbl">
+              <thead><tr><th>Nome</th><th>Plataforma</th><th>Dispositivo</th><th>Role</th><th>Ações</th></tr></thead>
+              <tbody id="users-body"><tr><td colspan="5"><div class="empty">Carregando...</div></td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ TIMES ══ -->
+      <div class="section" id="sec-times">
+        <div class="page-title">Times / Orgs</div>
+        <div class="page-sub">Times cadastrados, ZERO Points e gestão</div>
+        <div class="card">
+          <div class="card-head">
+            <div class="card-title">Todos os Times</div>
+            <input type="text" class="f-input" placeholder="Buscar..." id="search-times" oninput="filterTimes()" style="max-width:200px;padding:7px 12px;font-size:12px;">
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="tbl">
+              <thead><tr><th>Time</th><th>Categoria</th><th>ZERO Points</th><th>Página Pública</th><th>Ações</th></tr></thead>
+              <tbody id="times-body"><tr><td colspan="5"><div class="empty">Carregando...</div></td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<!-- ══ MODAL: Novo Scrim ══ -->
+<div class="modal-bg" id="modal-scrim">
+  <div class="modal">
+    <div class="modal-title">Novo Scrim <button class="modal-close" onclick="closeModal('modal-scrim')">×</button></div>
+    <div class="form-grid" style="margin-bottom:14px;">
+      <div class="f-group full"><div class="f-label">Nome do Scrim</div><input class="f-input" id="sc-name" placeholder="Ex: Scrim Noturno Bronze T1S2"></div>
+      <div class="f-group"><div class="f-label">Tier</div>
+        <select class="f-input" id="sc-tier">
+          <option value="bronze">Bronze</option>
+          <option value="prata">Prata</option>
+          <option value="ouro">Ouro</option>
+        </select>
+      </div>
+      <div class="f-group"><div class="f-label">Formato</div><input class="f-input" id="sc-format" value="Trios · Resurgência"></div>
+      <div class="f-group"><div class="f-label">Data e Hora</div><input type="datetime-local" class="f-input" id="sc-date"></div>
+      <div class="f-group"><div class="f-label">Máx. Trios</div><input type="number" class="f-input" id="sc-max" value="20" min="4" max="60"></div>
+      <div class="f-group"><div class="f-label">KD Mínimo</div><input type="number" class="f-input" id="sc-kd" placeholder="Ex: 1.0" step="0.1"></div>
+      <div class="f-group full"><div class="f-label">Modelo de Pontuação</div>
+        <select class="f-input" id="sc-model">
+          <option value="corridos">Pontos Corridos (BR) — flat: 15pts 1º + kills</option>
+          <option value="ewc">EWC 2025 — multiplicador: 1.6× no 1º, Match Point 135</option>
+          <option value="wsow">WSOW — multiplicador: 2.0× no 1º, Match Point 150</option>
+        </select>
+      </div>
+      <div class="f-group full"><div class="f-label">Organizador responsável <span style="color:var(--txt2);font-weight:400;">(opcional)</span></div>
+        <select class="f-input" id="sc-organizer">
+          <option value="">— Nenhum (evento da TZB) —</option>
+        </select>
+      </div>
+      <div class="f-group full"><div class="f-label">Link de Transmissão <span style="color:var(--txt2);font-weight:400;">(opcional)</span></div><input class="f-input" id="sc-stream" placeholder="https://youtube.com/live/..."></div>
+      <div class="f-group full">
+        <div class="f-label">Flyer / Banner do Scrim</div>
+        <div class="f-file-wrap" onclick="document.getElementById('sc-flyer').click()">
+          <input type="file" id="sc-flyer" accept="image/*" onchange="previewFlyer('sc-flyer','sc-flyer-preview')" style="display:none;">
+          <div class="f-file-label"><strong>Clique para subir imagem</strong> · JPG, PNG, WebP · Ideal: 1280×720px</div>
+          <img id="sc-flyer-preview" class="f-file-preview" alt="preview">
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;">
+      <button class="btn btn-ghost" onclick="closeModal('modal-scrim')">Cancelar</button>
+      <button class="btn btn-red" onclick="createScrim()">Criar Scrim</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: Lobby Code ══ -->
+<div class="modal-bg" id="modal-lobby">
+  <div class="modal">
+    <div class="modal-title">Publicar Código do Lobby <button class="modal-close" onclick="closeModal('modal-lobby')">×</button></div>
+    <p style="font-size:13px;color:var(--txt2);margin-bottom:16px;">O código ficará visível no dashboard de todos os times inscritos.</p>
+    <div class="f-group" style="margin-bottom:16px;">
+      <div class="f-label">Código do Lobby</div>
+      <input class="f-input" id="lobby-code-input" placeholder="Ex: TZB-ALPHA-7" style="font-size:18px;font-weight:700;letter-spacing:.1em;text-align:center;">
+    </div>
+    <input type="hidden" id="lobby-scrim-id">
+    <div style="display:flex;gap:10px;justify-content:flex-end;">
+      <button class="btn btn-ghost" onclick="closeModal('modal-lobby')">Cancelar</button>
+      <button class="btn btn-green" onclick="saveLobbyCode()">Publicar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: Resultados ══ -->
+<div class="modal-bg" id="modal-results">
+  <div class="modal" style="max-width:680px;">
+    <div class="modal-title">Lançar Resultados <button class="modal-close" onclick="closeModal('modal-results')">×</button></div>
+    <p style="font-size:13px;color:var(--txt2);margin-bottom:4px;">Fórmula ZERO Points: 40% posição · 30% kills · 20% presença · 10% fair play</p>
+    <p style="font-size:11px;color:var(--txt2);margin-bottom:20px;">Os pontos serão somados ao total acumulado de cada time.</p>
+    <div class="results-head results-row">
+      <div>#</div><div>Time</div><div>Posição</div><div>Kills</div><div>ZERO Pts</div>
+    </div>
+    <div id="results-list" style="margin-bottom:20px;max-height:360px;overflow-y:auto;"></div>
+    <input type="hidden" id="results-scrim-id">
+    <div style="display:flex;gap:10px;justify-content:flex-end;">
+      <button class="btn btn-ghost" onclick="closeModal('modal-results')">Cancelar</button>
+      <button class="btn btn-red" onclick="saveResults()">Salvar e Calcular ZERO Points</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: Novo Campeonato ══ -->
+<div class="modal-bg" id="modal-camp">
+  <div class="modal">
+    <div class="modal-title">Novo Campeonato <button class="modal-close" onclick="closeModal('modal-camp')">×</button></div>
+    <div class="form-grid" style="margin-bottom:14px;">
+      <div class="f-group full"><div class="f-label">Nome do Campeonato</div><input class="f-input" id="ca-name" placeholder="Ex: ZERO CUP — Temporada 1"></div>
+      <div class="f-group"><div class="f-label">Categoria</div>
+        <select class="f-input" id="ca-cat">
+          <option value="amador">Amador</option>
+          <option value="profissional">Profissional</option>
+          <option value="aberto">Aberto</option>
+        </select>
+      </div>
+      <div class="f-group"><div class="f-label">Modelo de Pontuação</div>
+        <select class="f-input" id="ca-model">
+          <option value="corridos">Pontos Corridos (BR) — 15pts 1º + kills</option>
+          <option value="ewc">EWC 2025 — 1.6× kills, Match Point 135</option>
+          <option value="wsow">WSOW — 2.0× kills, Match Point 150</option>
+        </select>
+      </div>
+      <div class="f-group"><div class="f-label">Formato</div><input class="f-input" id="ca-format" placeholder="Ex: Battle Royale — 40 Trios"></div>
+      <div class="f-group"><div class="f-label">Data</div><input type="datetime-local" class="f-input" id="ca-date"></div>
+      <div class="f-group"><div class="f-label">Max. Times</div><input type="number" class="f-input" id="ca-max" value="40"></div>
+      <div class="f-group full"><div class="f-label">Descrição</div><textarea class="f-input" id="ca-desc" rows="3" placeholder="Detalhes, regras especiais, broadcast..."></textarea></div>
+      <div class="f-group full"><div class="f-label">Organizador responsável <span style="color:var(--txt2);font-weight:400;">(opcional)</span></div>
+        <select class="f-input" id="ca-organizer">
+          <option value="">— Nenhum (evento da TZB) —</option>
+        </select>
+      </div>
+      <div class="f-group full"><div class="f-label">Link de Transmissão <span style="color:var(--txt2);font-weight:400;">(YouTube, Twitch, Kick...)</span></div><input class="f-input" id="ca-stream" placeholder="https://youtube.com/live/..."></div>
+      <div class="f-group full">
+        <div class="f-label">Flyer / Banner do Evento</div>
+        <div class="f-file-wrap" onclick="document.getElementById('ca-flyer').click()">
+          <input type="file" id="ca-flyer" accept="image/*" onchange="previewFlyer('ca-flyer','ca-flyer-preview')" style="display:none;">
+          <div class="f-file-label"><strong>Clique para subir imagem</strong> · JPG, PNG, WebP · Ideal: 1280×720px</div>
+          <img id="ca-flyer-preview" class="f-file-preview" alt="preview">
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;">
+      <button class="btn btn-ghost" onclick="closeModal('modal-camp')">Cancelar</button>
+      <button class="btn btn-red" onclick="createCampeonato()">Criar Campeonato</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: Nova Sala Personalizada ══ -->
+<div class="modal-bg" id="modal-sala">
+  <div class="modal">
+    <div class="modal-title">Nova Sala Personalizada <button class="modal-close" onclick="closeModal('modal-sala')">×</button></div>
+    <div class="form-grid" style="margin-bottom:14px;">
+      <div class="f-group full"><div class="f-label">Nome da Sala</div><input class="f-input" id="sa-name" placeholder="Ex: Live do Bagueta — Noite do Caos"></div>
+      <div class="f-group"><div class="f-label">Creator / Host</div><input class="f-input" id="sa-creator" placeholder="Nome do creator"></div>
+      <div class="f-group"><div class="f-label">Data e Hora</div><input type="datetime-local" class="f-input" id="sa-date"></div>
+      <div class="f-group"><div class="f-label">Código do Lobby</div><input class="f-input" id="sa-code" placeholder="Ex: LIVE-BAGUTA-42"></div>
+      <div class="f-group full"><div class="f-label">Descrição / Regras da Sala</div><textarea class="f-input" id="sa-desc" rows="3" placeholder="Como participar, regras especiais, tema da sala..."></textarea></div>
+      <div class="f-group full"><div class="f-label">Link de Transmissão <span style="color:var(--txt2);font-weight:400;">(YouTube, Twitch, Kick...)</span></div><input class="f-input" id="sa-stream" placeholder="https://youtube.com/live/..."></div>
+      <div class="f-group full">
+        <div class="f-label">Flyer / Banner da Sala</div>
+        <div class="f-file-wrap" onclick="document.getElementById('sa-flyer').click()">
+          <input type="file" id="sa-flyer" accept="image/*" onchange="previewFlyer('sa-flyer','sa-flyer-preview')" style="display:none;">
+          <div class="f-file-label"><strong>Clique para subir imagem</strong> · JPG, PNG, WebP · Ideal: 1280×720px</div>
+          <img id="sa-flyer-preview" class="f-file-preview" alt="preview">
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;">
+      <button class="btn btn-ghost" onclick="closeModal('modal-sala')">Cancelar</button>
+      <button class="btn btn-red" onclick="createSala()">Criar Sala</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: Editar Campeonato ══ -->
+<div class="modal-bg" id="modal-edit-camp">
+  <div class="modal">
+    <div class="modal-title">Editar Campeonato <button class="modal-close" onclick="closeModal('modal-edit-camp')">×</button></div>
+    <div class="form-grid" style="margin-bottom:14px;">
+      <div class="f-group full"><div class="f-label">Nome do Campeonato</div><input class="f-input" id="eca-name"></div>
+      <div class="f-group"><div class="f-label">Categoria</div>
+        <select class="f-input" id="eca-cat">
+          <option value="amador">Amador</option>
+          <option value="profissional">Profissional</option>
+          <option value="aberto">Aberto</option>
+        </select>
+      </div>
+      <div class="f-group"><div class="f-label">Modelo de Pontuação</div>
+        <select class="f-input" id="eca-model">
+          <option value="corridos">Pontos Corridos (BR)</option>
+          <option value="ewc">EWC 2025</option>
+          <option value="wsow">WSOW</option>
+        </select>
+      </div>
+      <div class="f-group"><div class="f-label">Formato</div><input class="f-input" id="eca-format"></div>
+      <div class="f-group"><div class="f-label">Data</div><input type="datetime-local" class="f-input" id="eca-date"></div>
+      <div class="f-group"><div class="f-label">Max. Times</div><input type="number" class="f-input" id="eca-max"></div>
+      <div class="f-group full"><div class="f-label">Descrição</div><textarea class="f-input" id="eca-desc" rows="3"></textarea></div>
+      <div class="f-group full">
+        <div class="f-label">Flyer / Banner do Evento</div>
+        <div id="eca-current-flyer" style="margin-bottom:8px;display:none;">
+          <img id="eca-flyer-current-img" style="max-height:60px;border-radius:6px;border:1px solid var(--border);" alt="flyer atual">
+          <span style="font-size:11px;color:var(--txt2);margin-left:8px;">Flyer atual — suba outro para substituir</span>
+        </div>
+        <div class="f-file-wrap" onclick="document.getElementById('eca-flyer').click()">
+          <input type="file" id="eca-flyer" accept="image/*" onchange="previewFlyer('eca-flyer','eca-flyer-preview')" style="display:none;">
+          <div class="f-file-label"><strong>Clique para subir nova imagem</strong> · JPG, PNG, WebP</div>
+          <img id="eca-flyer-preview" class="f-file-preview" alt="preview">
+        </div>
+      </div>
+    </div>
+    <div class="f-group full" style="margin-top:4px;"><div class="f-label">Link de Transmissão <span style="color:var(--txt2);font-weight:400;">(opcional)</span></div><input class="f-input" id="eca-stream" placeholder="https://youtube.com/live/..."></div>
+    <input type="hidden" id="eca-id">
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:14px;">
+      <button class="btn btn-ghost" onclick="closeModal('modal-edit-camp')">Cancelar</button>
+      <button class="btn btn-red" onclick="saveEditCamp()">Salvar Alterações</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: Editar Scrim ══ -->
+<div class="modal-bg" id="modal-edit-scrim">
+  <div class="modal">
+    <div class="modal-title">Editar Scrim <button class="modal-close" onclick="closeModal('modal-edit-scrim')">×</button></div>
+    <div class="form-grid" style="margin-bottom:14px;">
+      <div class="f-group full"><div class="f-label">Nome do Scrim</div><input class="f-input" id="esc-name"></div>
+      <div class="f-group"><div class="f-label">Tier</div>
+        <select class="f-input" id="esc-tier">
+          <option value="bronze">Bronze</option>
+          <option value="prata">Prata</option>
+          <option value="ouro">Ouro</option>
+        </select>
+      </div>
+      <div class="f-group"><div class="f-label">Formato</div><input class="f-input" id="esc-format"></div>
+      <div class="f-group"><div class="f-label">Data e Hora</div><input type="datetime-local" class="f-input" id="esc-date"></div>
+      <div class="f-group"><div class="f-label">Máx. Trios</div><input type="number" class="f-input" id="esc-max" min="4" max="60"></div>
+      <div class="f-group"><div class="f-label">KD Mínimo</div><input type="number" class="f-input" id="esc-kd" step="0.1" placeholder="Ex: 1.0"></div>
+      <div class="f-group full"><div class="f-label">Modelo de Pontuação</div>
+        <select class="f-input" id="esc-model">
+          <option value="corridos">Pontos Corridos (BR) — flat: 15pts 1º + kills</option>
+          <option value="ewc">EWC 2025 — multiplicador: 1.6× no 1º, Match Point 135</option>
+          <option value="wsow">WSOW — multiplicador: 2.0× no 1º, Match Point 150</option>
+        </select>
+      </div>
+      <div class="f-group full"><div class="f-label">Link de Transmissão <span style="color:var(--txt2);font-weight:400;">(opcional)</span></div><input class="f-input" id="esc-stream" placeholder="https://youtube.com/live/..."></div>
+      <div class="f-group full">
+        <div class="f-label">Flyer / Banner</div>
+        <div id="esc-current-flyer" style="margin-bottom:8px;display:none;">
+          <img id="esc-flyer-current-img" style="max-height:60px;border-radius:6px;border:1px solid var(--border);" alt="flyer atual">
+          <span style="font-size:11px;color:var(--txt2);margin-left:8px;">Flyer atual — suba outro para substituir</span>
+        </div>
+        <div class="f-file-wrap" onclick="document.getElementById('esc-flyer').click()">
+          <input type="file" id="esc-flyer" accept="image/*" onchange="previewFlyer('esc-flyer','esc-flyer-preview')" style="display:none;">
+          <div class="f-file-label"><strong>Clique para subir nova imagem</strong></div>
+          <img id="esc-flyer-preview" class="f-file-preview" alt="preview">
+        </div>
+      </div>
+    </div>
+    <input type="hidden" id="esc-id">
+    <div style="display:flex;gap:10px;justify-content:flex-end;">
+      <button class="btn btn-ghost" onclick="closeModal('modal-edit-scrim')">Cancelar</button>
+      <button class="btn btn-red" onclick="saveEditScrim()">Salvar Alterações</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: Editar ZERO Points ══ -->
+<div class="modal-bg" id="modal-zp">
+  <div class="modal" style="max-width:380px;">
+    <div class="modal-title">Editar ZERO Points <button class="modal-close" onclick="closeModal('modal-zp')">×</button></div>
+    <div class="f-group" style="margin-bottom:16px;">
+      <div class="f-label">Time</div>
+      <div id="zp-team-name" style="font-family:'Exo 2',sans-serif;font-size:14px;font-weight:700;color:var(--txt);padding:10px 0;"></div>
+    </div>
+    <div class="f-group" style="margin-bottom:20px;">
+      <div class="f-label">ZERO Points (total acumulado)</div>
+      <input type="number" class="f-input" id="zp-value" min="0">
+    </div>
+    <input type="hidden" id="zp-team-id">
+    <div style="display:flex;gap:10px;justify-content:flex-end;">
+      <button class="btn btn-ghost" onclick="closeModal('modal-zp')">Cancelar</button>
+      <button class="btn btn-red" onclick="saveZeroPoints()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════
+// CONFIG
+// ══════════════════════════════════════
+var ADMIN_PW = 'tzb@admin2026';
+var SUPA_URL = 'https://hcpbpnwpdkvlonqoqchs.supabase.co';
+var SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhjcGJwbndwZGt2bG9ucW9xY2hzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0NTU0NzgsImV4cCI6MjA5MjAzMTQ3OH0.0QtczT9z_ctuHM-V3U44oCAJOdg3qUYcq-wDITnsch4';
+var supa = supabase.createClient(SUPA_URL, SUPA_KEY);
+
+var allUsers = [];
+var allTimes = [];
+var allScrims = [];
+
+// ══════════════════════════════════════
+// GATE
+// ══════════════════════════════════════
+function checkPw() {
+  var pw = document.getElementById('gate-pw').value;
+  if (pw === ADMIN_PW) {
+    document.getElementById('gate').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    initAdmin();
+  } else {
+    document.getElementById('gate-err').style.display = 'block';
+    document.getElementById('gate-pw').value = '';
+  }
+}
+
+// ══════════════════════════════════════
+// NAV
+// ══════════════════════════════════════
+function nav(id) {
+  document.querySelectorAll('.section').forEach(function(s){ s.classList.remove('active'); });
+  document.querySelectorAll('.sb-item').forEach(function(i){ i.classList.remove('active'); });
+  document.getElementById('sec-' + id).classList.add('active');
+  event.currentTarget.classList.add('active');
+  if (id === 'scrims') loadScrims();
+  if (id === 'campeonatos') loadCampeonatos();
+  if (id === 'usuarios') loadUsers();
+  if (id === 'times') loadTimes();
+  if (id === 'personalizadas') loadSalas();
+}
+
+// ══════════════════════════════════════
+// MODAL
+// ══════════════════════════════════════
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-bg').forEach(function(m){
+  m.addEventListener('click', function(e){ if(e.target === m) m.classList.remove('open'); });
+});
+
+// ══════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════
+function toast(msg, err) {
+  var el = document.createElement('div');
+  el.className = 'toast-item' + (err ? ' err' : '');
+  el.textContent = msg;
+  document.getElementById('toast').appendChild(el);
+  setTimeout(function(){ el.remove(); }, 3500);
+}
+
+// ══════════════════════════════════════
+// INIT / DASHBOARD
+// ══════════════════════════════════════
+async function loadOrganizers() {
+  var _o = await supa.from('tzb_profiles').select('id, name').eq('type', 'organizer').order('name');
+  var opts = '<option value="">— Nenhum (evento da TZB) —</option>';
+  if (_o.data && _o.data.length) {
+    opts += _o.data.map(function(o){
+      return '<option value="' + o.id + '">' + (o.name || o.id) + '</option>';
+    }).join('');
+  }
+  ['sc-organizer', 'ca-organizer'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.innerHTML = opts;
+  });
+}
+
+async function initAdmin() {
+  loadOrganizers();
+  var _teams   = await supa.from('tzb_teams').select('id', { count: 'exact', head: true });
+  var _players = await supa.from('tzb_profiles').select('id', { count: 'exact', head: true }).eq('type', 'player');
+  var _scrims  = await supa.from('tzb_scrims').select('id', { count: 'exact', head: true });
+  var _regs    = await supa.from('tzb_scrim_registrations').select('id', { count: 'exact', head: true });
+
+  document.getElementById('d-teams').textContent   = _teams.count   || 0;
+  document.getElementById('d-players').textContent = _players.count || 0;
+  document.getElementById('d-scrims').textContent  = _scrims.count  || 0;
+  document.getElementById('d-regs').textContent    = _regs.count    || 0;
+
+  // Plataformas
+  var _plat = await supa.from('tzb_profiles').select('platform, device').eq('type', 'player').not('platform', 'is', null);
+  if (_plat.data && _plat.data.length > 0) {
+    var counts = {};
+    _plat.data.forEach(function(p){ counts[p.platform] = (counts[p.platform] || 0) + 1; });
+    var html = Object.entries(counts).map(function(e){
+      return '<div style="background:var(--bg-card2);border:1px solid var(--border);border-radius:8px;padding:12px 16px;min-width:120px;">' +
+        '<div style="font-size:11px;color:var(--txt2);margin-bottom:4px;">' + e[0] + '</div>' +
+        '<div style="font-family:\'Exo 2\',sans-serif;font-size:20px;font-weight:800;color:var(--txt);">' + e[1] + '</div>' +
+        '</div>';
+    }).join('');
+    document.getElementById('d-platforms').innerHTML = html;
+  } else {
+    document.getElementById('d-platforms').innerHTML = '<div style="font-size:13px;color:var(--txt2);">Nenhum jogador cadastrou plataforma ainda.</div>';
+  }
+
+  // Próximos scrims
+  var _ns = await supa.from('tzb_scrims').select('name,tier,scheduled_at,registered_trios,max_trios,status').gte('scheduled_at', new Date().toISOString()).order('scheduled_at').limit(4);
+  if (_ns.data && _ns.data.length > 0) {
+    document.getElementById('d-next-scrims').innerHTML = _ns.data.map(function(s){
+      return '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);">' +
+        '<div><div style="font-family:\'Exo 2\',sans-serif;font-size:13px;font-weight:700;color:var(--txt);">' + s.name + '</div>' +
+        '<div style="font-size:11px;color:var(--txt2);margin-top:2px;">' + new Date(s.scheduled_at).toLocaleString('pt-BR') + '</div></div>' +
+        '<div style="display:flex;align-items:center;gap:8px;">' +
+        '<span style="font-size:12px;color:var(--txt2);">' + (s.registered_trios||0) + '/' + s.max_trios + ' trios</span>' +
+        tierTag(s.tier) + '</div></div>';
+    }).join('') + '<div style="padding-top:12px;"><button class="btn btn-ghost btn-sm" onclick="nav(\'scrims\')">Ver todos →</button></div>';
+  } else {
+    document.getElementById('d-next-scrims').innerHTML = '<div class="empty">Nenhum scrim agendado.</div>';
+  }
+}
+
+// ══════════════════════════════════════
+// HELPERS
+// ══════════════════════════════════════
+function tierTag(t) {
+  var cls = t === 'ouro' ? 'tag-ouro' : t === 'prata' ? 'tag-prata' : 'tag-bronze';
+  return '<span class="tag ' + cls + '">' + (t||'—').toUpperCase() + '</span>';
+}
+function statusTag(s) {
+  if (s === 'aberto')    return '<span class="tag tag-green">ABERTO</span>';
+  if (s === 'encerrado') return '<span class="tag tag-red">ENCERRADO</span>';
+  return '<span class="tag tag-gray">' + (s||'—').toUpperCase() + '</span>';
+}
+function fmtDate(d) { return new Date(d).toLocaleString('pt-BR', {day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}); }
+
+// ══════════════════════════════════════
+// SCRIMS
+// ══════════════════════════════════════
+async function loadScrims() {
+  var _s = await supa.from('tzb_scrims').select('*').order('scheduled_at', {ascending: false});
+  allScrims = _s.data || [];
+  renderScrims(allScrims);
+}
+
+function renderScrims(list) {
+  var body = document.getElementById('scrims-body');
+  if (!list.length) { body.innerHTML = '<tr><td colspan="6"><div class="empty">Nenhum scrim criado.</div></td></tr>'; return; }
+  body.innerHTML = list.map(function(s){
+    return '<tr>' +
+      '<td><div style="font-family:\'Exo 2\',sans-serif;font-weight:700;font-size:13px;">' + s.name + '</div><div style="font-size:11px;color:var(--txt2);">' + s.format + '</div></td>' +
+      '<td>' + tierTag(s.tier) + '</td>' +
+      '<td style="font-size:12px;color:var(--txt2);">' + fmtDate(s.scheduled_at) + '</td>' +
+      '<td style="font-family:\'Exo 2\',sans-serif;font-weight:700;">' + (s.registered_trios||0) + '<span style="color:var(--txt2);font-weight:400;">/' + s.max_trios + '</span></td>' +
+      '<td>' + statusTag(s.status) + (s.lobby_code ? '<div style="font-size:10px;color:var(--gold);margin-top:3px;">🔑 ' + s.lobby_code + '</div>' : '') + '</td>' +
+      '<td>' +
+        '<div style="display:flex;gap:6px;flex-wrap:wrap;">' +
+        '<button class="btn btn-ghost btn-sm" onclick="openEditScrimModal(\'' + s.id + '\')">Editar</button>' +
+        '<button class="btn btn-ghost btn-sm" onclick="openLobbyModal(\'' + s.id + '\')">Lobby</button>' +
+        '<button class="btn btn-gold btn-sm" onclick="openResultsModal(\'' + s.id + '\',\'' + s.name.replace(/'/g,"\\'") + '\')">Resultados</button>' +
+        (s.status === 'em_breve' || s.status === 'embreve' ? '<button class="btn btn-sm" style="background:rgba(0,200,80,0.15);color:#4ade80;border:1px solid rgba(0,200,80,0.3);" onclick="abrirScrim(\'' + s.id + '\')">Abrir</button>' : '') +
+        (s.status === 'aberto' ? '<button class="btn btn-sm" style="background:rgba(170,0,0,0.15);color:#ff6666;border:1px solid rgba(170,0,0,0.4);" onclick="ativarAoVivo(\'scrim\',\'' + s.id + '\')">Ao Vivo</button>' : '') +
+        (s.status === 'ao_vivo' ? '<button class="btn btn-sm" style="background:rgba(170,0,0,0.2);color:#ff4444;border:1px solid rgba(170,0,0,0.5);" onclick="ativarAoVivo(\'scrim\',\'' + s.id + '\')">⬤ LIVE</button>' : '') +
+        (s.status !== 'encerrado' ? '<button class="btn btn-danger btn-sm" onclick="encerrarScrim(\'' + s.id + '\')">Encerrar</button>' : '') +
+        '</div>' +
+      '</td>' +
+    '</tr>';
+  }).join('');
+}
+
+async function createScrim() {
+  var name   = document.getElementById('sc-name').value.trim();
+  var tier   = document.getElementById('sc-tier').value;
+  var format = document.getElementById('sc-format').value.trim();
+  var date   = document.getElementById('sc-date').value;
+  var max    = parseInt(document.getElementById('sc-max').value) || 20;
+  var kd     = parseFloat(document.getElementById('sc-kd').value) || null;
+  var model  = document.getElementById('sc-model').value;
+  var orgId  = document.getElementById('sc-organizer').value || null;
+  var stream = document.getElementById('sc-stream').value.trim() || null;
+  if (!name || !date) { toast('Preencha nome e data.', true); return; }
+  var _r = await supa.from('tzb_scrims').insert({ name, tier, format, scheduled_at: date, max_trios: max, kd_min: kd, status: 'aberto', scoring_model: model, organizer_id: orgId, stream_url: stream }).select('id').maybeSingle();
+  if (_r.error) { toast('Erro: ' + _r.error.message, true); return; }
+  if (_r.data && document.getElementById('sc-flyer').files[0]) {
+    var flyerUrl = await uploadFlyer(_r.data.id, 'sc-flyer');
+    if (flyerUrl) await supa.from('tzb_scrims').update({ flyer_url: flyerUrl }).eq('id', _r.data.id);
+  }
+  toast('Scrim criado!');
+  closeModal('modal-scrim');
+  document.getElementById('sc-name').value = '';
+  document.getElementById('sc-date').value = '';
+  document.getElementById('sc-stream').value = '';
+  document.getElementById('sc-flyer').value = '';
+  document.getElementById('sc-flyer-preview').style.display = 'none';
+  loadScrims();
+}
+
+async function openEditScrimModal(id) {
+  var _sc = await supa.from('tzb_scrims').select('*').eq('id', id).maybeSingle();
+  if (!_sc.data) { toast('Scrim não encontrado.', true); return; }
+  var s = _sc.data;
+  document.getElementById('esc-id').value = s.id;
+  document.getElementById('esc-name').value = s.name || '';
+  document.getElementById('esc-tier').value = s.tier || 'bronze';
+  document.getElementById('esc-format').value = s.format || '';
+  if (s.scheduled_at) {
+    var d = new Date(s.scheduled_at);
+    var pad = function(n){ return String(n).padStart(2,'0'); };
+    document.getElementById('esc-date').value = d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()) + 'T' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+  } else {
+    document.getElementById('esc-date').value = '';
+  }
+  document.getElementById('esc-max').value = s.max_trios || 20;
+  document.getElementById('esc-kd').value = s.kd_min || '';
+  document.getElementById('esc-model').value = s.scoring_model || 'corridos';
+  openModal('modal-edit-scrim');
+}
+
+async function saveEditScrim() {
+  var id     = document.getElementById('esc-id').value;
+  var name   = document.getElementById('esc-name').value.trim();
+  var tier   = document.getElementById('esc-tier').value;
+  var format = document.getElementById('esc-format').value.trim();
+  var date   = document.getElementById('esc-date').value;
+  var max    = parseInt(document.getElementById('esc-max').value) || 20;
+  var kd     = parseFloat(document.getElementById('esc-kd').value) || null;
+  var model  = document.getElementById('esc-model').value;
+  if (!name || !date) { toast('Preencha nome e data.', true); return; }
+  var stream = document.getElementById('esc-stream').value.trim() || null;
+  var flyerUrl = await uploadFlyer(id, 'esc-flyer');
+  var payload = { name: name, tier: tier, format: format, scheduled_at: date, max_trios: max, kd_min: kd, scoring_model: model, stream_url: stream };
+  if (flyerUrl) payload.flyer_url = flyerUrl;
+  var _r = await supa.from('tzb_scrims').update(payload).eq('id', id);
+  if (_r.error) { toast('Erro: ' + _r.error.message, true); return; }
+  toast('Scrim atualizado!');
+  closeModal('modal-edit-scrim');
+  loadScrims();
+}
+
+async function encerrarScrim(id) {
+  if (!confirm('Encerrar este scrim?')) return;
+  await supa.from('tzb_scrims').update({ status: 'encerrado' }).eq('id', id);
+  toast('Scrim encerrado.');
+  loadScrims();
+}
+
+async function abrirScrim(id) {
+  await supa.from('tzb_scrims').update({ status: 'aberto' }).eq('id', id);
+  toast('Scrim aberto para inscrições!');
+  loadScrims();
+}
+
+async function ativarAoVivo(tipo, id) {
+  var tabela = tipo === 'scrim' ? 'tzb_scrims' : 'tzb_campeonatos';
+  var _s = await supa.from(tabela).select('status').eq('id', id).maybeSingle();
+  var novoStatus = (_s.data && _s.data.status === 'ao_vivo') ? 'aberto' : 'ao_vivo';
+  await supa.from(tabela).update({ status: novoStatus }).eq('id', id);
+  toast(novoStatus === 'ao_vivo' ? '🔴 AO VIVO ativado!' : 'Evento saiu do ar vivo.');
+  if (tipo === 'scrim') loadScrims(); else loadCampeonatos();
+}
+
+async function abrirCamp(id) {
+  await supa.from('tzb_campeonatos').update({ status: 'aberto' }).eq('id', id);
+  toast('Campeonato aberto para inscrições!');
+  loadCampeonatos();
+}
+
+async function encerrarCamp(id) {
+  if (!confirm('Encerrar este campeonato?')) return;
+  await supa.from('tzb_campeonatos').update({ status: 'encerrado' }).eq('id', id);
+  toast('Campeonato encerrado.');
+  loadCampeonatos();
+}
+
+function openLobbyModal(scrimId) {
+  document.getElementById('lobby-scrim-id').value = scrimId;
+  document.getElementById('lobby-code-input').value = '';
+  openModal('modal-lobby');
+}
+
+async function saveLobbyCode() {
+  var id   = document.getElementById('lobby-scrim-id').value;
+  var code = document.getElementById('lobby-code-input').value.trim().toUpperCase();
+  if (!code) { toast('Digite o código.', true); return; }
+  await supa.from('tzb_scrims').update({ lobby_code: code }).eq('id', id);
+  toast('Código publicado! Times inscritos já podem ver.');
+  closeModal('modal-lobby');
+  loadScrims();
+}
+
+async function openResultsModal(scrimId, scrimName) {
+  document.getElementById('results-scrim-id').value = scrimId;
+  document.getElementById('modal-results').querySelector('.modal-title').childNodes[0].textContent = 'Resultados — ' + scrimName + ' ';
+  // carrega o modelo do scrim
+  var _sc = await supa.from('tzb_scrims').select('scoring_model').eq('id', scrimId).maybeSingle();
+  var scoringModel = (_sc.data && _sc.data.scoring_model) || 'corridos';
+  document.getElementById('results-list').dataset.scoringModel = scoringModel;
+  // label do modelo
+  var modelLabel = scoringModel === 'ewc' ? 'EWC 2025' : scoringModel === 'wsow' ? 'WSOW' : 'Pontos Corridos';
+  document.getElementById('modal-results').querySelector('p').textContent = 'Modelo: ' + modelLabel + ' · Os pontos serão somados ao total de cada time.';
+  var _r = await supa.from('tzb_scrim_registrations')
+    .select('team_id, tzb_teams(id, display_name)')
+    .eq('scrim_id', scrimId);
+  var teams = (_r.data || []).map(function(r){ return r.tzb_teams; }).filter(Boolean);
+  if (!teams.length) { toast('Nenhum time inscrito neste scrim.', true); return; }
+  var html = teams.map(function(t, i){
+    return '<div class="results-row">' +
+      '<div style="font-family:\'Exo 2\',sans-serif;font-weight:700;color:var(--txt2);">' + (i+1) + '</div>' +
+      '<div style="font-size:13px;font-weight:500;">' + (t.display_name||'—') + '</div>' +
+      '<div><input type="number" class="f-input" id="pos-' + t.id + '" min="1" max="' + teams.length + '" placeholder="1-' + teams.length + '" style="padding:6px 8px;font-size:12px;text-align:center;"></div>' +
+      '<div><input type="number" class="f-input" id="kills-' + t.id + '" min="0" max="99" placeholder="0" style="padding:6px 8px;font-size:12px;text-align:center;"></div>' +
+      '<div style="font-family:\'Exo 2\',sans-serif;font-size:13px;font-weight:700;color:var(--accent);" id="pts-' + t.id + '">—</div>' +
+    '</div>';
+  }).join('');
+  document.getElementById('results-list').innerHTML = html;
+  // live preview
+  teams.forEach(function(t){
+    ['pos-' + t.id, 'kills-' + t.id].forEach(function(fid){
+      document.getElementById(fid).addEventListener('input', function(){
+        previewPoints(t.id, teams.length);
+      });
+    });
+  });
+  openModal('modal-results');
+  // store teams for save
+  document.getElementById('results-list').dataset.teamCount = teams.length;
+  document.getElementById('results-list').dataset.teamIds = teams.map(function(t){ return t.id; }).join(',');
+}
+
+function calcZeroPoints(position, kills, totalTeams, model) {
+  model = model || 'corridos';
+
+  if (model === 'corridos') {
+    var placePts = [0,15,12,10,8,7,5,5,5,5,5,3,3,3,3,3,3,3,3,3,3,1];
+    var pts = (position <= 20 ? (placePts[position] || 1) : 1);
+    return pts + kills;
+  }
+
+  if (model === 'ewc') {
+    var mult = position === 1 ? 1.6 : position <= 5 ? 1.4 : position <= 10 ? 1.2 : 1.0;
+    return Math.round(kills * mult * 10) / 10;
+  }
+
+  if (model === 'wsow') {
+    var mult = position === 1 ? 2.0 : position <= 5 ? 1.8 : position <= 10 ? 1.6
+      : position <= 20 ? 1.4 : position <= 30 ? 1.2 : 1.0;
+    return Math.round(kills * mult * 10) / 10;
+  }
+
+  // fallback: fórmula ZERO Points original
+  var posScore   = ((totalTeams - position) / Math.max(totalTeams - 1, 1)) * 40;
+  var killsScore = Math.min(kills / 20, 1) * 30;
+  return Math.round(posScore + killsScore + 30);
+}
+
+function previewPoints(teamId, total) {
+  var pos   = parseInt(document.getElementById('pos-' + teamId).value) || 0;
+  var kills = parseInt(document.getElementById('kills-' + teamId).value) || 0;
+  var model = document.getElementById('results-list').dataset.scoringModel || 'corridos';
+  if (pos > 0) {
+    document.getElementById('pts-' + teamId).textContent = calcZeroPoints(pos, kills, total, model);
+  }
+}
+
+async function saveResults() {
+  var scrimId   = document.getElementById('results-scrim-id').value;
+  var teamIds   = document.getElementById('results-list').dataset.teamIds.split(',');
+  var total     = parseInt(document.getElementById('results-list').dataset.teamCount);
+  var model     = document.getElementById('results-list').dataset.scoringModel || 'corridos';
+  var errors    = [];
+  for (var i = 0; i < teamIds.length; i++) {
+    var tid   = teamIds[i];
+    var pos   = parseInt(document.getElementById('pos-' + tid).value);
+    var kills = parseInt(document.getElementById('kills-' + tid).value) || 0;
+    if (!pos || pos < 1) { errors.push(tid); continue; }
+    var pts = calcZeroPoints(pos, kills, total, model);
+    // Soma ao zero_points atual
+    var _cur = await supa.from('tzb_teams').select('zero_points').eq('id', tid).maybeSingle();
+    var current = (_cur.data && _cur.data.zero_points) || 0;
+    await supa.from('tzb_teams').update({ zero_points: current + pts }).eq('id', tid);
+  }
+  await supa.from('tzb_scrims').update({ status: 'encerrado' }).eq('id', scrimId);
+  if (errors.length) {
+    toast(errors.length + ' time(s) sem posição — ignorados. Restantes salvos.', true);
+  } else {
+    toast('Resultados salvos! ZERO Points atualizados.');
+  }
+  closeModal('modal-results');
+  loadScrims();
+}
+
+// ══════════════════════════════════════
+// CAMPEONATOS
+// ══════════════════════════════════════
+async function loadCampeonatos() {
+  var _c = await supa.from('tzb_campeonatos').select('*').order('created_at', {ascending: false});
+  var body = document.getElementById('camp-body');
+  if (_c.error || !_c.data || !_c.data.length) {
+    body.innerHTML = '<tr><td colspan="7"><div class="empty">Nenhum campeonato criado ainda.</div></td></tr>';
+    return;
+  }
+  body.innerHTML = _c.data.map(function(c){
+    var flyerCell = c.flyer_url
+      ? '<img src="' + c.flyer_url + '" class="flyer-thumb" alt="flyer">'
+      : '<span style="font-size:11px;color:var(--txt2);">—</span>';
+    return '<tr>' +
+      '<td>' + flyerCell + '</td>' +
+      '<td><div style="font-family:\'Exo 2\',sans-serif;font-weight:700;">' + c.name + '</div></td>' +
+      '<td><span class="tag ' + (c.category === 'profissional' ? 'tag-gold' : 'tag-gray') + '">' + (c.category||'—').toUpperCase() + '</span></td>' +
+      '<td style="font-size:12px;color:var(--txt2);">' + (c.format||'—') + '</td>' +
+      '<td style="font-size:12px;color:var(--txt2);">' + (c.scheduled_at ? fmtDate(c.scheduled_at) : '—') + '</td>' +
+      '<td>' + statusTag(c.status) + '</td>' +
+      '<td>' +
+        '<div style="display:flex;gap:6px;flex-wrap:wrap;">' +
+        '<button class="btn btn-ghost btn-sm" onclick="openEditCampModal(\'' + c.id + '\')">Editar</button>' +
+        (c.status === 'em_breve' || c.status === 'embreve' ? '<button class="btn btn-sm" style="background:rgba(0,200,80,0.15);color:#4ade80;border:1px solid rgba(0,200,80,0.3);" onclick="abrirCamp(\'' + c.id + '\')">Abrir</button>' : '') +
+        (c.status === 'aberto' ? '<button class="btn btn-sm" style="background:rgba(170,0,0,0.15);color:#ff6666;border:1px solid rgba(170,0,0,0.4);" onclick="ativarAoVivo(\'camp\',\'' + c.id + '\')">Ao Vivo</button>' : '') +
+        (c.status === 'ao_vivo' ? '<button class="btn btn-sm" style="background:rgba(170,0,0,0.2);color:#ff4444;border:1px solid rgba(170,0,0,0.5);" onclick="ativarAoVivo(\'camp\',\'' + c.id + '\')">⬤ LIVE</button>' : '') +
+        (c.status !== 'encerrado' ? '<button class="btn btn-sm" style="background:rgba(248,113,113,0.12);color:#f87171;border:1px solid rgba(248,113,113,0.3);" onclick="encerrarCamp(\'' + c.id + '\')">Encerrar</button>' : '') +
+        '<button class="btn btn-danger btn-sm" onclick="deleteCampeonato(\'' + c.id + '\')">Excluir</button>' +
+        '</div>' +
+      '</td>' +
+    '</tr>';
+  }).join('');
+}
+
+// ── FLYER HELPERS ──
+function previewFlyer(inputId, previewId) {
+  var file = document.getElementById(inputId).files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var img = document.getElementById(previewId);
+    img.src = e.target.result;
+    img.style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+}
+
+async function uploadFlyer(campId, inputId) {
+  var file = document.getElementById(inputId).files[0];
+  if (!file) return null;
+  var ext = file.name.split('.').pop();
+  var path = 'flyers/' + campId + '/flyer.' + ext;
+  var _up = await supa.storage.from('tzb-media').upload(path, file, { upsert: true, contentType: file.type });
+  if (_up.error) { toast('Erro upload flyer: ' + _up.error.message, true); return null; }
+  return SUPA_URL + '/storage/v1/object/public/tzb-media/' + path;
+}
+
+async function openEditCampModal(id) {
+  var _c = await supa.from('tzb_campeonatos').select('*').eq('id', id).maybeSingle();
+  if (!_c.data) { toast('Campeonato não encontrado.', true); return; }
+  var c = _c.data;
+  document.getElementById('eca-id').value = c.id;
+  document.getElementById('eca-name').value = c.name || '';
+  document.getElementById('eca-cat').value = c.category || 'amador';
+  document.getElementById('eca-model').value = c.scoring_model || 'corridos';
+  document.getElementById('eca-format').value = c.format || '';
+  document.getElementById('eca-max').value = c.max_teams || 40;
+  document.getElementById('eca-desc').value = c.description || '';
+  if (c.scheduled_at) {
+    var d = new Date(c.scheduled_at);
+    var pad = function(n){ return String(n).padStart(2,'0'); };
+    document.getElementById('eca-date').value = d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()) + 'T' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+  } else { document.getElementById('eca-date').value = ''; }
+  // flyer atual
+  var curWrap = document.getElementById('eca-current-flyer');
+  if (c.flyer_url) {
+    document.getElementById('eca-flyer-current-img').src = c.flyer_url;
+    curWrap.style.display = 'block';
+  } else { curWrap.style.display = 'none'; }
+  document.getElementById('eca-flyer').value = '';
+  document.getElementById('eca-flyer-preview').style.display = 'none';
+  openModal('modal-edit-camp');
+}
+
+async function saveEditCamp() {
+  var id     = document.getElementById('eca-id').value;
+  var name   = document.getElementById('eca-name').value.trim();
+  var cat    = document.getElementById('eca-cat').value;
+  var model  = document.getElementById('eca-model').value;
+  var format = document.getElementById('eca-format').value.trim();
+  var date   = document.getElementById('eca-date').value;
+  var max    = parseInt(document.getElementById('eca-max').value) || 40;
+  var desc   = document.getElementById('eca-desc').value.trim();
+  if (!name) { toast('Preencha o nome.', true); return; }
+  var stream = document.getElementById('eca-stream').value.trim() || null;
+  var flyerUrl = await uploadFlyer(id, 'eca-flyer');
+  var payload = { name: name, category: cat, scoring_model: model, format: format, scheduled_at: date || null, max_teams: max, description: desc, stream_url: stream };
+  if (flyerUrl) payload.flyer_url = flyerUrl;
+  var _r = await supa.from('tzb_campeonatos').update(payload).eq('id', id);
+  if (_r.error) { toast('Erro: ' + _r.error.message, true); return; }
+  toast('Campeonato atualizado!');
+  closeModal('modal-edit-camp');
+  loadCampeonatos();
+}
+
+async function createCampeonato() {
+  var name   = document.getElementById('ca-name').value.trim();
+  var cat    = document.getElementById('ca-cat').value;
+  var model  = document.getElementById('ca-model').value;
+  var format = document.getElementById('ca-format').value.trim();
+  var date   = document.getElementById('ca-date').value;
+  var max    = parseInt(document.getElementById('ca-max').value) || 40;
+  var desc   = document.getElementById('ca-desc').value.trim();
+  var orgId  = document.getElementById('ca-organizer').value || null;
+  var stream = document.getElementById('ca-stream').value.trim() || null;
+  if (!name) { toast('Preencha o nome.', true); return; }
+  var _r = await supa.from('tzb_campeonatos').insert({ name: name, category: cat, scoring_model: model, format: format, scheduled_at: date || null, max_teams: max, description: desc, status: 'embreve', organizer_id: orgId, stream_url: stream }).select('id').maybeSingle();
+  if (_r.error) { toast('Erro: ' + _r.error.message, true); return; }
+  // Upload flyer se selecionado
+  if (_r.data && document.getElementById('ca-flyer').files[0]) {
+    var flyerUrl = await uploadFlyer(_r.data.id, 'ca-flyer');
+    if (flyerUrl) await supa.from('tzb_campeonatos').update({ flyer_url: flyerUrl }).eq('id', _r.data.id);
+  }
+  toast('Campeonato criado!');
+  closeModal('modal-camp');
+  document.getElementById('ca-name').value = '';
+  document.getElementById('ca-flyer').value = '';
+  document.getElementById('ca-flyer-preview').style.display = 'none';
+  loadCampeonatos();
+}
+
+async function deleteCampeonato(id) {
+  if (!confirm('Excluir este campeonato?')) return;
+  await supa.from('tzb_campeonatos').delete().eq('id', id);
+  toast('Campeonato excluído.');
+  loadCampeonatos();
+}
+
+// ══════════════════════════════════════
+// SALAS PERSONALIZADAS
+// ══════════════════════════════════════
+async function loadSalas() {
+  var _s = await supa.from('tzb_salas').select('*').order('created_at', {ascending: false});
+  var body = document.getElementById('salas-body');
+  if (_s.error || !_s.data || !_s.data.length) {
+    body.innerHTML = '<tr><td colspan="6"><div class="empty">Nenhuma sala criada ainda.</div></td></tr>';
+    return;
+  }
+  body.innerHTML = _s.data.map(function(s){
+    return '<tr>' +
+      '<td><div style="font-family:\'Exo 2\',sans-serif;font-weight:700;">' + s.name + '</div><div style="font-size:11px;color:var(--txt2);">' + (s.description||'') + '</div></td>' +
+      '<td style="font-size:13px;">' + (s.creator||'—') + '</td>' +
+      '<td style="font-size:12px;color:var(--txt2);">' + (s.scheduled_at ? fmtDate(s.scheduled_at) : '—') + '</td>' +
+      '<td><span style="font-family:\'Exo 2\',sans-serif;font-size:12px;font-weight:700;color:var(--gold);">' + (s.lobby_code||'—') + '</span></td>' +
+      '<td>' + statusTag(s.status||'aberto') + '</td>' +
+      '<td><button class="btn btn-danger btn-sm" onclick="deleteSala(\'' + s.id + '\')">Excluir</button></td>' +
+    '</tr>';
+  }).join('');
+}
+
+async function createSala() {
+  var name    = document.getElementById('sa-name').value.trim();
+  var creator = document.getElementById('sa-creator').value.trim();
+  var date    = document.getElementById('sa-date').value;
+  var code    = document.getElementById('sa-code').value.trim().toUpperCase();
+  var desc    = document.getElementById('sa-desc').value.trim();
+  var stream  = document.getElementById('sa-stream').value.trim() || null;
+  if (!name || !creator) { toast('Preencha nome e creator.', true); return; }
+  var _r = await supa.from('tzb_salas').insert({ name, creator, scheduled_at: date || null, lobby_code: code || null, description: desc, status: 'aberto', stream_url: stream }).select('id').maybeSingle();
+  if (_r.error) { toast('Erro: ' + _r.error.message, true); return; }
+  if (_r.data && document.getElementById('sa-flyer').files[0]) {
+    var flyerUrl = await uploadFlyer(_r.data.id, 'sa-flyer');
+    if (flyerUrl) await supa.from('tzb_salas').update({ flyer_url: flyerUrl }).eq('id', _r.data.id);
+  }
+  toast('Sala criada!');
+  closeModal('modal-sala');
+  document.getElementById('sa-stream').value = '';
+  document.getElementById('sa-flyer').value = '';
+  document.getElementById('sa-flyer-preview').style.display = 'none';
+  loadSalas();
+}
+
+async function deleteSala(id) {
+  if (!confirm('Excluir esta sala?')) return;
+  await supa.from('tzb_salas').delete().eq('id', id);
+  toast('Sala excluída.');
+  loadSalas();
+}
+
+// ══════════════════════════════════════
+// USUÁRIOS
+// ══════════════════════════════════════
+async function loadUsers() {
+  var _u = await supa.from('tzb_profiles').select('*').eq('type','player').order('created_at', {ascending: false});
+  allUsers = _u.data || [];
+  renderUsers(allUsers);
+}
+
+function renderUsers(list) {
+  var body = document.getElementById('users-body');
+  if (!list.length) { body.innerHTML = '<tr><td colspan="5"><div class="empty">Nenhum jogador.</div></td></tr>'; return; }
+  body.innerHTML = list.map(function(u){
+    var roleTag = u.role === 'creator' ? '<span class="tag tag-creator">CREATOR</span>'
+      : u.role === 'organizer' ? '<span class="tag tag-organizer">ORGANIZER</span>'
+      : '<span class="tag tag-gray">PLAYER</span>';
+    return '<tr>' +
+      '<td><div style="font-family:\'Exo 2\',sans-serif;font-weight:700;font-size:13px;">' + (u.name||'—') + '</div></td>' +
+      '<td style="font-size:12px;color:var(--txt2);">' + (u.platform||'—') + '</td>' +
+      '<td style="font-size:12px;color:var(--txt2);">' + (u.device||'—') + '</td>' +
+      '<td>' + roleTag + '</td>' +
+      '<td>' +
+        '<div style="display:flex;gap:6px;flex-wrap:wrap;">' +
+        '<button class="btn btn-ghost btn-sm" onclick="setRole(\'' + u.id + '\',\'creator\')">→ Creator</button>' +
+        '<button class="btn btn-ghost btn-sm" onclick="setRole(\'' + u.id + '\',\'organizer\')">→ Organizer</button>' +
+        '<button class="btn btn-ghost btn-sm" onclick="setRole(\'' + u.id + '\',\'player\')">→ Player</button>' +
+        '</div>' +
+      '</td>' +
+    '</tr>';
+  }).join('');
+}
+
+function filterUsers() {
+  var q = document.getElementById('search-users').value.toLowerCase();
+  renderUsers(allUsers.filter(function(u){ return (u.name||'').toLowerCase().includes(q); }));
+}
+
+async function setRole(userId, role) {
+  await supa.from('tzb_profiles').update({ role: role }).eq('id', userId);
+  toast('Role atualizado para ' + role + '.');
+  loadUsers();
+}
+
+// ══════════════════════════════════════
+// TIMES
+// ══════════════════════════════════════
+async function loadTimes() {
+  var _t = await supa.from('tzb_teams').select('id, display_name, category, zero_points, pub_active').order('zero_points', {ascending: false});
+  allTimes = _t.data || [];
+  renderTimes(allTimes);
+}
+
+function renderTimes(list) {
+  var body = document.getElementById('times-body');
+  if (!list.length) { body.innerHTML = '<tr><td colspan="5"><div class="empty">Nenhum time.</div></td></tr>'; return; }
+  body.innerHTML = list.map(function(t){
+    return '<tr>' +
+      '<td><div style="font-family:\'Exo 2\',sans-serif;font-weight:700;font-size:13px;">' + (t.display_name||'—') + '</div></td>' +
+      '<td style="font-size:12px;color:var(--txt2);">' + (t.category||'—') + '</td>' +
+      '<td><span style="font-family:\'Exo 2\',sans-serif;font-size:16px;font-weight:800;color:var(--accent);">' + (t.zero_points||0) + '</span></td>' +
+      '<td>' + (t.pub_active ? '<span class="tag tag-green">ATIVA</span>' : '<span class="tag tag-gray">INATIVA</span>') + '</td>' +
+      '<td>' +
+        '<div style="display:flex;gap:6px;flex-wrap:wrap;">' +
+        '<button class="btn btn-ghost btn-sm" onclick="openZPModal(\'' + t.id + '\',\'' + (t.display_name||'').replace(/'/g,"\\'") + '\',' + (t.zero_points||0) + ')">Editar ZP</button>' +
+        '<button class="btn btn-' + (t.pub_active ? 'danger' : 'green') + ' btn-sm" onclick="togglePub(\'' + t.id + '\',' + t.pub_active + ')">' + (t.pub_active ? 'Desativar' : 'Ativar') + '</button>' +
+        '<a href="/time.html?id=' + t.id + '" target="_blank" class="btn btn-ghost btn-sm">Ver →</a>' +
+        '</div>' +
+      '</td>' +
+    '</tr>';
+  }).join('');
+}
+
+function filterTimes() {
+  var q = document.getElementById('search-times').value.toLowerCase();
+  renderTimes(allTimes.filter(function(t){ return (t.display_name||'').toLowerCase().includes(q); }));
+}
+
+function openZPModal(id, name, pts) {
+  document.getElementById('zp-team-id').value = id;
+  document.getElementById('zp-team-name').textContent = name;
+  document.getElementById('zp-value').value = pts;
+  openModal('modal-zp');
+}
+
+async function saveZeroPoints() {
+  var id  = document.getElementById('zp-team-id').value;
+  var pts = parseInt(document.getElementById('zp-value').value) || 0;
+  await supa.from('tzb_teams').update({ zero_points: pts }).eq('id', id);
+  toast('ZERO Points atualizados.');
+  closeModal('modal-zp');
+  loadTimes();
+}
+
+async function togglePub(id, current) {
+  await supa.from('tzb_teams').update({ pub_active: !current }).eq('id', id);
+  toast(!current ? 'Página pública ativada.' : 'Página pública desativada.');
+  loadTimes();
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,546 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <title>Perfil do Time — THE ZERO BASE</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/png" href="assets/images/logo/simbolo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;600;700;800;900&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/icofont.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+
+  <style>
+    :root {
+      --accent:     #aa0000;
+      --accent-b:   #cc0000;
+      --gold:       #e8b24a;
+      --silver:     #a0aec0;
+      --bronze:     #b4783c;
+      --green:      #4ade80;
+      --bg:         #000000;
+      --bg-card:    #0a0a0f;
+      --bg-card2:   #0e0e15;
+      --border:     #1a2030;
+      --txt:        #ffffff;
+      --txt2:       #8892a4;
+      --txt3:       #3a4252;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { background: var(--bg); color: var(--txt); font-family: 'Roboto', sans-serif; min-height: 100vh; }
+
+    /* ── TOPBAR ── */
+    .topbar {
+      position: sticky; top: 0; z-index: 100;
+      height: 56px; background: rgba(0,0,0,0.88);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 32px;
+    }
+    .topbar-logo {
+      display: flex; align-items: center; gap: 10px;
+      text-decoration: none; color: var(--txt);
+      font-family: 'Exo 2', sans-serif; font-size: 14px; font-weight: 800;
+      text-transform: uppercase; letter-spacing: .08em;
+    }
+    .topbar-back {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-family: 'Exo 2', sans-serif; font-size: 11px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .08em;
+      color: var(--txt2); text-decoration: none;
+      padding: 6px 14px; border-radius: 8px;
+      border: 1px solid var(--border);
+      transition: all 200ms;
+    }
+    .topbar-back:hover { color: var(--txt); border-color: rgba(170,0,0,0.4); }
+
+    /* ── HERO BANNER ── */
+    .hero {
+      position: relative; height: 300px; overflow: hidden;
+      background: linear-gradient(135deg, #0a0000 0%, #1a0000 40%, #0a0010 100%);
+    }
+    .hero-bg {
+      position: absolute; inset: 0;
+      background-size: cover; background-position: center;
+      filter: brightness(0.45);
+    }
+    .hero-grid {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(170,0,0,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(170,0,0,0.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+    .hero-gradient {
+      position: absolute; inset: 0;
+      background: linear-gradient(0deg, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.3) 60%, rgba(0,0,0,0.1) 100%);
+    }
+    .hero-content {
+      position: absolute; bottom: 32px; left: 40px; right: 40px;
+      display: flex; align-items: flex-end; gap: 24px;
+    }
+    .hero-logo {
+      width: 96px; height: 96px; border-radius: 18px;
+      background: linear-gradient(135deg, #1a0000, #330000);
+      border: 3px solid rgba(170,0,0,0.5);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.7), 0 0 0 1px rgba(170,0,0,0.15);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Exo 2', sans-serif; font-size: 36px; font-weight: 900;
+      color: var(--txt); overflow: hidden; position: relative; flex-shrink: 0;
+    }
+    .hero-logo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .hero-meta { flex: 1; }
+    .hero-category {
+      display: inline-block; margin-bottom: 6px;
+      padding: 2px 10px; border-radius: 4px;
+      font-family: 'Roboto', sans-serif; font-size: 10px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .12em;
+      background: rgba(170,0,0,0.2); border: 1px solid rgba(170,0,0,0.4); color: #cc0000;
+    }
+    .hero-name {
+      font-family: 'Exo 2', sans-serif; font-size: 36px; font-weight: 900;
+      text-transform: uppercase; letter-spacing: .06em; line-height: 1;
+      color: var(--txt); text-shadow: 0 2px 16px rgba(0,0,0,0.9);
+      margin-bottom: 6px;
+    }
+    .hero-social { display: flex; gap: 10px; flex-wrap: wrap; }
+    .social-link {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 4px 12px; border-radius: 6px;
+      font-family: 'Roboto', sans-serif; font-size: 11px; font-weight: 500;
+      color: var(--txt2); text-decoration: none;
+      background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+      transition: all 200ms;
+    }
+    .social-link:hover { color: var(--txt); border-color: rgba(255,255,255,0.2); background: rgba(255,255,255,0.09); }
+
+    /* ── STATS BAR ── */
+    .stats-bar {
+      background: var(--bg-card); border-bottom: 1px solid var(--border);
+      padding: 0 40px;
+      display: flex; gap: 0; overflow-x: auto;
+    }
+    .stats-bar-item {
+      flex: 1; min-width: 120px; padding: 18px 20px;
+      border-right: 1px solid var(--border); text-align: center;
+    }
+    .stats-bar-item:last-child { border-right: none; }
+    .stats-bar-val {
+      font-family: 'Exo 2', sans-serif; font-size: 24px; font-weight: 900;
+      color: var(--txt); line-height: 1; margin-bottom: 4px;
+    }
+    .stats-bar-val.red { color: var(--accent-b); }
+    .stats-bar-lbl {
+      font-family: 'Roboto', sans-serif; font-size: 10px; font-weight: 500;
+      color: var(--txt3); text-transform: uppercase; letter-spacing: .1em;
+    }
+
+    /* ── MAIN LAYOUT ── */
+    .page-body {
+      max-width: 1100px; margin: 0 auto;
+      padding: 40px 24px 80px;
+      display: grid; grid-template-columns: 1fr 340px; gap: 28px;
+    }
+    @media (max-width: 860px) { .page-body { grid-template-columns: 1fr; } }
+
+    /* ── CARDS ── */
+    .card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 14px; padding: 24px; margin-bottom: 22px;
+    }
+    .card:last-child { margin-bottom: 0; }
+    .card-title {
+      font-family: 'Exo 2', sans-serif; font-size: 13px; font-weight: 800;
+      text-transform: uppercase; letter-spacing: .08em; color: var(--txt);
+      display: flex; align-items: center; gap: 8px; margin-bottom: 18px;
+      padding-bottom: 14px; border-bottom: 1px solid var(--border);
+    }
+    .card-title svg { color: var(--accent-b); }
+
+    /* ── DESCRIPTION ── */
+    .desc-text {
+      font-family: 'Roboto', sans-serif; font-size: 14px; line-height: 1.7;
+      color: var(--txt2);
+    }
+
+    /* ── ACHIEVEMENTS ── */
+    .achievements {
+      display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px;
+    }
+    .achievement-badge {
+      padding: 4px 12px; border-radius: 6px;
+      font-family: 'Exo 2', sans-serif; font-size: 11px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .06em;
+      background: rgba(232,178,74,0.1); border: 1px solid rgba(232,178,74,0.3);
+      color: var(--gold);
+    }
+
+    /* ── ROSTER GRID ── */
+    .roster-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 24px 16px;
+      align-items: start;
+    }
+
+    /* ── DOG TAG (read-only) ── */
+    .player-card {
+      position: relative; overflow: hidden;
+      aspect-ratio: 10/16; border-radius: 0; background: transparent;
+      border: none; box-shadow: none;
+      filter: drop-shadow(0 14px 40px rgba(0,0,0,0.8));
+      transition: filter 300ms, transform 300ms;
+      display: flex; flex-direction: column;
+    }
+    .player-card:hover {
+      transform: translateY(-6px) rotate(1deg);
+      filter: drop-shadow(0 22px 52px rgba(0,0,0,0.9));
+    }
+    .pc-dogtag-bg {
+      position: absolute; top:50%; left:50%;
+      width:160%; height:100%;
+      transform: translate(-50%,-50%) rotate(90deg);
+      object-fit: cover;
+      filter: brightness(0.68) contrast(1.06) saturate(0.78);
+      z-index: 0; pointer-events: none;
+    }
+    .pc-overlay {
+      position: absolute; inset: 0; z-index: 1;
+      background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 38%, rgba(0,0,0,0.62) 65%, rgba(0,0,0,0.88) 100%);
+    }
+    .pc-serial {
+      position: absolute; top:20px; left:0; right:0; z-index:4;
+      text-align:center; font-family:'Exo 2',sans-serif; font-size:7px; font-weight:700;
+      letter-spacing:.2em; color:rgba(255,255,255,0.22); text-transform:uppercase;
+    }
+    .pc-captain-badge {
+      position: absolute; top:30px; left:0; right:0; z-index:4;
+      text-align:center;
+    }
+    .pc-captain-badge span {
+      display:inline-block;
+      background:rgba(232,178,74,0.2); border:1px solid rgba(232,178,74,0.55);
+      border-radius:4px; padding:2px 9px;
+      font-family:'Exo 2',sans-serif; font-size:8px; font-weight:700;
+      color:var(--gold); text-transform:uppercase; letter-spacing:.1em;
+    }
+    .pc-photo-area {
+      position:relative; z-index:2;
+      display:flex; justify-content:center;
+      padding:44px 0 8px; flex-shrink:0;
+    }
+    .pc-photo-ring {
+      width:74px; height:74px; border-radius:50%;
+      border:2px solid rgba(255,255,255,0.22);
+      box-shadow:0 0 18px rgba(0,0,0,0.6);
+      background:rgba(30,30,30,0.8);
+      display:flex; align-items:center; justify-content:center;
+      overflow:hidden; position:relative;
+    }
+    .pc-photo-initial { font-family:'Exo 2',sans-serif; font-size:24px; font-weight:900; color:#fff; }
+    .pc-photo-img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+    .pc-info { position:relative; z-index:2; padding:6px 12px 14px; text-align:center; flex-shrink:0; }
+    .pc-role-tag {
+      display:inline-block; margin-bottom:5px; padding:2px 9px; border-radius:3px;
+      font-family:'Roboto',sans-serif; font-size:8px; font-weight:700;
+      text-transform:uppercase; letter-spacing:.12em;
+      background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.18); color:rgba(255,255,255,0.75);
+    }
+    .pc-nick {
+      font-family:'Exo 2',sans-serif; font-size:15px; font-weight:900;
+      color:#fff; text-transform:uppercase; letter-spacing:.07em; line-height:1.1; margin-bottom:3px;
+      text-shadow:0 2px 12px rgba(0,0,0,1);
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    }
+    .pc-fullname { font-family:'Roboto',sans-serif; font-size:9px; color:rgba(255,255,255,0.35); }
+    .pc-tier-row { display:flex; justify-content:center; margin-top:5px; }
+    .pc-tier { padding:2px 8px; border-radius:3px; font-family:'Exo 2',sans-serif; font-size:8px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; }
+    .pc-spacer { flex:1; }
+
+    /* ── SIDEBAR CARDS ── */
+    .info-row { display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--border); }
+    .info-row:last-child { border-bottom:none; }
+    .info-label { font-family:'Roboto',sans-serif; font-size:12px; color:var(--txt2); }
+    .info-val { font-family:'Exo 2',sans-serif; font-size:12px; font-weight:700; color:var(--txt); text-transform:uppercase; }
+
+    /* ── ZERO POINTS CARD ── */
+    .zp-number {
+      font-family:'Exo 2',sans-serif; font-size:48px; font-weight:900;
+      color:var(--accent-b); line-height:1; margin-bottom:4px;
+    }
+    .zp-label { font-family:'Roboto',sans-serif; font-size:11px; color:var(--txt3); text-transform:uppercase; letter-spacing:.1em; margin-bottom:16px; }
+    .zp-breakdown { display:flex; flex-direction:column; gap:8px; }
+    .zp-row { display:flex; align-items:center; gap:10px; }
+    .zp-bar-bg { flex:1; height:4px; background:rgba(255,255,255,0.06); border-radius:4px; overflow:hidden; }
+    .zp-bar-fill { height:100%; border-radius:4px; background:var(--accent); }
+    .zp-row-lbl { font-family:'Roboto',sans-serif; font-size:11px; color:var(--txt2); width:80px; }
+    .zp-row-val { font-family:'Exo 2',sans-serif; font-size:11px; font-weight:700; color:var(--txt); width:30px; text-align:right; }
+
+    /* ── CTA ── */
+    .cta-join {
+      display:block; width:100%; padding:14px; border-radius:10px;
+      background:linear-gradient(135deg, var(--accent) 0%, var(--accent-b) 100%);
+      font-family:'Exo 2',sans-serif; font-size:13px; font-weight:800;
+      text-transform:uppercase; letter-spacing:.08em; color:#fff;
+      text-align:center; text-decoration:none; border:none; cursor:pointer;
+      box-shadow:0 8px 24px rgba(170,0,0,0.35);
+      transition:all 200ms;
+    }
+    .cta-join:hover { box-shadow:0 12px 32px rgba(170,0,0,0.5); transform:translateY(-1px); }
+
+    /* ── FOOTER ── */
+    .page-footer {
+      background: #000; border-top:1px solid var(--border);
+      padding:24px 32px; text-align:center;
+    }
+    .page-footer a { color:var(--accent-b); text-decoration:none; font-family:'Exo 2',sans-serif; font-size:13px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; }
+    .page-footer p { font-family:'Roboto',sans-serif; font-size:11px; color:var(--txt3); margin-top:6px; }
+
+    /* ── NOT FOUND ── */
+    .not-found {
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      min-height:60vh; text-align:center; gap:16px;
+    }
+    .not-found h2 { font-family:'Exo 2',sans-serif; font-size:28px; font-weight:900; text-transform:uppercase; letter-spacing:.06em; color:var(--txt); }
+    .not-found p { font-family:'Roboto',sans-serif; font-size:14px; color:var(--txt2); }
+
+    @media (max-width:600px) {
+      .hero { height:240px; }
+      .hero-content { left:20px; right:20px; bottom:20px; }
+      .hero-name { font-size:24px; }
+      .hero-logo { width:72px; height:72px; font-size:26px; }
+      .stats-bar { padding:0 16px; }
+      .topbar { padding:0 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOPBAR -->
+  <nav class="topbar">
+    <a href="/" class="topbar-logo">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1263.01 1443.68" style="width:18px;height:22px;flex-shrink:0;">
+        <path fill="#AA0000" d="M552.08 1443.68l0.68 -142.2c-444.31,-80.52 -502.61,-489.38 -255.86,-835.86l-104.47 -76.79c-132.74,119.99 -254.44,414.77 -157.43,664.13 72.31,185.89 277.47,358.22 517.09,390.71zm-216.37 -1174.62l258.13 270.41 119.34 -96.68 -73.49 -85.95c490.45,-3.46 723.2,718.98 68.7,935.03l-3.88 145.57c304.55,-15.06 567.68,-327.76 558.24,-640.93 -11.09,-367.53 -266.2,-573.86 -620.82,-609.61l78.24 -86.32 -117.3 -100.59 -267.16 269.06z"/>
+      </svg>
+      THE ZERO BASE
+    </a>
+    <a href="javascript:history.back()" class="topbar-back">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+      Voltar
+    </a>
+  </nav>
+
+  <!-- CONTEÚDO (renderizado via JS) -->
+  <div id="page-root"></div>
+
+  <!-- FOOTER -->
+  <footer class="page-footer">
+    <a href="/">The Zero Base</a>
+    <p>Plataforma de esports competitivo · Warzone BR</p>
+  </footer>
+
+<script>
+var SUPA_URL = 'https://hcpbpnwpdkvlonqoqchs.supabase.co';
+var SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhjcGJwbndwZGt2bG9ucW9xY2hzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0NTU0NzgsImV4cCI6MjA5MjAzMTQ3OH0.0QtczT9z_ctuHM-V3U44oCAJOdg3qUYcq-wDITnsch4';
+var supa = supabase.createClient(SUPA_URL, SUPA_KEY);
+
+(async function() {
+
+  var root = document.getElementById('page-root');
+
+  function showNotFound() {
+    root.innerHTML = '<div class="not-found">' +
+      '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#3a4252" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>' +
+      '<h2>Página não encontrada</h2>' +
+      '<p>Este time ainda não publicou sua página pública.</p>' +
+      '<a href="/" style="color:#cc0000;font-family:\'Exo 2\',sans-serif;font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.06em;text-decoration:none;margin-top:8px;">Ir para o site →</a>' +
+    '</div>';
+  }
+
+  // ── Lê parâmetro ?t= da URL ──
+  var params = new URLSearchParams(window.location.search);
+  var teamSlug = params.get('t') || '';
+
+  if (!teamSlug) { showNotFound(); return; }
+
+  // ── Busca time no Supabase ──
+  var _t = await supa.from('tzb_teams').select('*').eq('teamname', teamSlug).eq('pub_active', true).maybeSingle();
+  if (!_t.data) { showNotFound(); return; }
+
+  var teamRow = _t.data;
+
+  // ── Busca roster ──
+  var _r = await supa.from('tzb_roster').select('*').eq('team_id', teamRow.id).order('sort_order');
+  var rosterRows = _r.data || [];
+
+  // ── Monta objetos compatíveis com o render ──
+  var u = {
+    teamname:        teamRow.display_name || teamRow.teamname,
+    category:        teamRow.category,
+    avatarUrl:       teamRow.logo_url || '',
+    pubBannerUrl:    teamRow.banner_url || '',
+    pubDescription:  teamRow.description || '',
+    pubAchievements: teamRow.achievements || '',
+    pubDiscord:      teamRow.discord || '',
+    pubYoutube:      teamRow.youtube || '',
+    instagram:       teamRow.instagram || '',
+    twitter:         teamRow.twitter || ''
+  };
+  var roster = rosterRows.map(function(p) { return {
+    nick: p.nick, name: p.fullname, role: p.role, kd: p.kd,
+    captain: p.captain, avatarUrl: p.photo_url
+  }; });
+
+  // ── Atualiza título da página ──
+  document.title = (u.teamname || 'Time') + ' — THE ZERO BASE';
+
+  // ── Tier info ──
+  function tierInfo(kd) {
+    kd = parseFloat(kd);
+    if (!kd) return null;
+    if (kd >= 3.5) return { name:'Ouro',   style:'background:rgba(232,178,74,0.14);border:1px solid rgba(232,178,74,0.3);color:#e8b24a;' };
+    if (kd >= 2.0) return { name:'Prata',  style:'background:rgba(160,174,192,0.12);border:1px solid rgba(160,174,192,0.3);color:#a0aec0;' };
+    return              { name:'Bronze', style:'background:rgba(180,120,60,0.14);border:1px solid rgba(180,120,60,0.3);color:#b4783c;' };
+  }
+
+  function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+  // ── HERO ──
+  var bannerStyle = u.pubBannerUrl
+    ? 'background-image:url(' + u.pubBannerUrl + ');'
+    : '';
+
+  var logoHtml = u.avatarUrl
+    ? '<img src="' + u.avatarUrl + '" alt="">'
+    : esc((u.teamname||'T').charAt(0).toUpperCase());
+
+  var socialHtml = '';
+  if (u.instagram) socialHtml += '<a class="social-link" href="https://instagram.com/' + esc(u.instagram.replace('@','')) + '" target="_blank"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>' + esc(u.instagram) + '</a>';
+  if (u.twitter) socialHtml += '<a class="social-link" href="https://twitter.com/' + esc(u.twitter.replace('@','')) + '" target="_blank"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53A4.48 4.48 0 0 0 22.43 1s-2 .88-3.12 1.1A4.52 4.52 0 0 0 11.5 6c0 .36.04.7.1 1A12.94 12.94 0 0 1 1.64 2s-4 9 5 13a13 13 0 0 1-7.5 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/></svg>' + esc(u.twitter) + '</a>';
+  if (u.pubDiscord) socialHtml += '<a class="social-link" href="https://' + esc(u.pubDiscord.replace(/^https?:\/\//,'')) + '" target="_blank"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>Discord</a>';
+  if (u.pubYoutube) socialHtml += '<a class="social-link" href="https://' + esc(u.pubYoutube.replace(/^https?:\/\//,'')) + '" target="_blank"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 0 0 1.46 6.42 29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58A2.78 2.78 0 0 0 3.41 19.6C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.95A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg>YouTube</a>';
+
+  // ── ROSTER CARDS ──
+  var rosterHtml = '';
+  roster.forEach(function(p, i) {
+    var ti = tierInfo(p.kd);
+    var num = String(i+1).padStart(2,'0');
+    var photoHtml = p.avatarUrl
+      ? '<img class="pc-photo-img" src="' + p.avatarUrl + '" alt="">'
+      : '<span class="pc-photo-initial">' + esc(p.nick.charAt(0).toUpperCase()) + '</span>';
+    var tierHtml = ti ? '<div class="pc-tier" style="' + ti.style + '">' + ti.name + '</div>' : '';
+
+    rosterHtml +=
+      '<div class="player-card">' +
+        '<img class="pc-dogtag-bg" src="assets/images/referencias/dog-tag.png" alt="">' +
+        '<div class="pc-overlay"></div>' +
+        '<div class="pc-serial">TZB · S01 · #' + num + '</div>' +
+        (p.captain ? '<div class="pc-captain-badge"><span>Capitão</span></div>' : '') +
+        '<div class="pc-photo-area"><div class="pc-photo-ring">' + photoHtml + '</div></div>' +
+        '<div class="pc-info">' +
+          (p.role ? '<div class="pc-role-tag">' + esc(p.role) + '</div>' : '') +
+          '<div class="pc-nick">' + esc(p.nick) + '</div>' +
+          '<div class="pc-fullname">' + esc(p.name||'') + '</div>' +
+          '<div class="pc-tier-row">' + tierHtml + '</div>' +
+        '</div>' +
+        '<div class="pc-spacer"></div>' +
+      '</div>';
+  });
+
+  // ── ACHIEVEMENTS ──
+  var achievementsHtml = '';
+  if (u.pubAchievements) {
+    u.pubAchievements.split('·').forEach(function(a) {
+      a = a.trim();
+      if (a) achievementsHtml += '<span class="achievement-badge">' + esc(a) + '</span>';
+    });
+  }
+
+  // ── RENDER ──
+  root.innerHTML =
+    // Hero
+    '<div class="hero">' +
+      '<div class="hero-bg" id="hero-bg" style="' + bannerStyle + '"></div>' +
+      '<div class="hero-grid"></div>' +
+      '<div class="hero-gradient"></div>' +
+      '<div class="hero-content">' +
+        '<div class="hero-logo">' + logoHtml + '</div>' +
+        '<div class="hero-meta">' +
+          (u.category ? '<span class="hero-category">' + esc(u.category) + '</span>' : '') +
+          '<div class="hero-name">' + esc(u.teamname || 'Meu Time') + '</div>' +
+          (socialHtml ? '<div class="hero-social">' + socialHtml + '</div>' : '') +
+        '</div>' +
+      '</div>' +
+    '</div>' +
+
+    // Stats bar
+    '<div class="stats-bar">' +
+      '<div class="stats-bar-item"><div class="stats-bar-val">' + roster.length + '</div><div class="stats-bar-lbl">Jogadores</div></div>' +
+      '<div class="stats-bar-item"><div class="stats-bar-val red">0</div><div class="stats-bar-lbl">Scrims</div></div>' +
+      '<div class="stats-bar-item"><div class="stats-bar-val">—</div><div class="stats-bar-lbl">ZERO Points</div></div>' +
+      '<div class="stats-bar-item"><div class="stats-bar-val">—</div><div class="stats-bar-lbl">Ranking</div></div>' +
+      '<div class="stats-bar-item"><div class="stats-bar-val">T1</div><div class="stats-bar-lbl">Temporada</div></div>' +
+    '</div>' +
+
+    // Body
+    '<div class="page-body">' +
+
+      // Main column
+      '<div>' +
+
+        // Descrição
+        (u.pubDescription ?
+          '<div class="card">' +
+            '<div class="card-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Sobre o Time</div>' +
+            '<p class="desc-text">' + esc(u.pubDescription).replace(/\n/g,'<br>') + '</p>' +
+          '</div>'
+        : '') +
+
+        // Conquistas
+        (achievementsHtml ?
+          '<div class="card">' +
+            '<div class="card-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>Conquistas</div>' +
+            '<div class="achievements">' + achievementsHtml + '</div>' +
+          '</div>'
+        : '') +
+
+        // Roster
+        (roster.length > 0 ?
+          '<div class="card">' +
+            '<div class="card-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>Elenco · Temporada 1</div>' +
+            '<div class="roster-grid">' + rosterHtml + '</div>' +
+          '</div>'
+        : '') +
+
+      '</div>' +
+
+      // Sidebar
+      '<div>' +
+
+        // Info card
+        '<div class="card">' +
+          '<div class="card-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>Informações</div>' +
+          '<div class="info-row"><span class="info-label">Categoria</span><span class="info-val">' + esc(u.category||'—') + '</span></div>' +
+          '<div class="info-row"><span class="info-label">Jogadores</span><span class="info-val">' + roster.length + ' / 6</span></div>' +
+          '<div class="info-row"><span class="info-label">Temporada</span><span class="info-val">T1 — 2026</span></div>' +
+          '<div class="info-row"><span class="info-label">Status</span><span class="info-val" style="color:var(--green);">● Ativo</span></div>' +
+        '</div>' +
+
+        // CTA
+        '<div class="card">' +
+          '<div class="card-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Quer competir?</div>' +
+          '<p style="font-family:\'Roboto\',sans-serif;font-size:13px;color:var(--txt2);line-height:1.6;margin-bottom:16px;">Crie seu perfil ou registre seu time e entre na disputa da temporada.</p>' +
+          '<a href="/auth?tab=register" class="cta-join">Criar minha conta</a>' +
+        '</div>' +
+
+      '</div>' +
+
+    '</div>';
+
+})();
+</script>
+
+</body>
+</html>

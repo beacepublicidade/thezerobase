@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ranking Nacional — The Zero Base</title>
+  <meta name="description" content="Ranking nacional de times e jogadores Warzone BR. Temporada 1 · 2026.">
+  <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;600;700;800;900&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { background: #000000; color: #ffffff; font-family: 'Roboto', sans-serif; padding-top: 68px; }
+
+    .header-section { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; background: #000000; border-bottom: 1px solid #aa0000; height: 68px; display: flex; align-items: center; }
+    .header-holder { display: flex; align-items: center; justify-content: space-between; width: 100%; height: 100%; }
+    .mobile-menu { display: none; position: fixed; top: 68px; left: 0; right: 0; background: #000; border-bottom: 1px solid #aa0000; padding: 16px 24px; z-index: 999; }
+    .mobile-menu.open { display: block; }
+    .mobile-menu a { display: block; padding: 12px 0; font-family: 'Exo 2', sans-serif; font-weight: 700; font-size: 14px; letter-spacing: 0.1em; text-transform: uppercase; color: #8892a4; text-decoration: none; border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .mobile-menu a:last-child { border-bottom: none; }
+    .mobile-menu a:hover, .mobile-menu a.active-link { color: #fff; }
+
+    .hero-ranking { position: relative; background: #000; padding: 100px 0 80px; overflow: hidden; }
+    .hero-ranking::before { content: ''; position: absolute; inset: 0; background-image: linear-gradient(rgba(170,0,0,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(170,0,0,0.06) 1px, transparent 1px); background-size: 40px 40px; }
+    .hero-ranking::after { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 60% 50% at 50% 50%, rgba(170,0,0,0.12) 0%, transparent 70%); }
+    .hero-content { position: relative; z-index: 2; text-align: center; }
+    .hero-eyebrow { font-family: 'Exo 2', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.3em; text-transform: uppercase; color: #aa0000; margin-bottom: 16px; }
+    .hero-title { font-family: 'Exo 2', sans-serif; font-weight: 900; font-size: clamp(36px, 7vw, 80px); line-height: 1; color: #fff; margin-bottom: 20px; }
+    .hero-sub { font-family: 'Roboto', sans-serif; font-size: 16px; color: #8892a4; max-width: 480px; margin: 0 auto; }
+
+    .section-label { font-family: 'Exo 2', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.3em; text-transform: uppercase; color: #aa0000; margin-bottom: 10px; }
+    .section-title { font-family: 'Exo 2', sans-serif; font-weight: 800; font-size: clamp(22px, 4vw, 32px); color: #fff; margin-bottom: 0; }
+
+    .tab-bar { display: flex; gap: 4px; background: #0a0a0f; border: 1px solid #1a2030; border-radius: 10px; padding: 4px; width: fit-content; }
+    .tab-btn { font-family: 'Exo 2', sans-serif; font-weight: 700; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; padding: 8px 18px; border-radius: 7px; border: none; background: transparent; color: #8892a4; cursor: pointer; transition: all 0.15s; }
+    .tab-btn:hover { color: #fff; }
+    .tab-btn.active { background: #aa0000; color: #fff; }
+
+    .tier-filter { display: flex; gap: 6px; flex-wrap: wrap; }
+    .tier-btn { font-family: 'Exo 2', sans-serif; font-weight: 700; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; padding: 6px 14px; border-radius: 6px; border: 1px solid #1a2030; background: transparent; color: #8892a4; cursor: pointer; transition: all 0.15s; }
+    .tier-btn:hover { border-color: #aa0000; color: #fff; }
+    .tier-btn.active { border-color: #aa0000; color: #fff; background: rgba(170,0,0,0.1); }
+    .tier-btn[data-filter="bronze"].active { border-color: #b4783c; color: #b4783c; background: rgba(180,120,60,0.1); }
+    .tier-btn[data-filter="prata"].active  { border-color: #a0aec0; color: #a0aec0; background: rgba(160,174,192,0.1); }
+    .tier-btn[data-filter="ouro"].active   { border-color: #e8b24a; color: #e8b24a; background: rgba(232,178,74,0.1); }
+
+    .ranking-table-wrap { background: #0a0a0f; border: 1px solid #1a2030; border-radius: 12px; overflow: hidden; }
+    .ranking-table { width: 100%; border-collapse: collapse; }
+    .ranking-table thead th { font-family: 'Exo 2', sans-serif; font-weight: 700; font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: #555e6d; padding: 14px 20px; background: #0e0e15; border-bottom: 1px solid #1a2030; white-space: nowrap; }
+    .ranking-table tbody tr { border-bottom: 1px solid rgba(26,32,48,0.6); transition: background 0.15s; }
+    .ranking-table tbody tr:last-child { border-bottom: none; }
+    .ranking-table tbody tr:hover { background: rgba(255,255,255,0.02); }
+    .ranking-table tbody td { padding: 16px 20px; font-family: 'Roboto', sans-serif; font-size: 14px; color: #fff; vertical-align: middle; }
+    .rank-num { font-family: 'Exo 2', sans-serif; font-weight: 800; font-size: 18px; min-width: 40px; display: inline-block; text-align: center; }
+    .rank-1 { color: #e8b24a; }
+    .rank-2 { color: #a0aec0; }
+    .rank-3 { color: #b4783c; }
+    .rank-other { color: #555e6d; }
+    .team-logo-cell { width: 40px; height: 40px; border-radius: 8px; background: #1a2030; border: 1px solid #1a2030; display: inline-flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; }
+    .team-logo-cell img { width: 100%; height: 100%; object-fit: cover; }
+    .team-name-cell { font-family: 'Exo 2', sans-serif; font-weight: 700; font-size: 15px; color: #fff; }
+    .team-display-name { font-family: 'Roboto', sans-serif; font-size: 12px; color: #8892a4; }
+    .tier-badge { display: inline-flex; align-items: center; gap: 5px; font-family: 'Exo 2', sans-serif; font-weight: 700; font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; padding: 3px 10px; border-radius: 4px; }
+    .tier-bronze { background: rgba(180,120,60,0.15); color: #b4783c; border: 1px solid rgba(180,120,60,0.3); }
+    .tier-prata  { background: rgba(160,174,192,0.12); color: #a0aec0; border: 1px solid rgba(160,174,192,0.3); }
+    .tier-ouro   { background: rgba(232,178,74,0.12); color: #e8b24a; border: 1px solid rgba(232,178,74,0.3); }
+    .zero-points { font-family: 'Exo 2', sans-serif; font-weight: 800; font-size: 18px; color: #aa0000; }
+    .btn-ver { font-family: 'Exo 2', sans-serif; font-weight: 700; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: #8892a4; padding: 6px 14px; border: 1px solid #1a2030; border-radius: 6px; background: transparent; text-decoration: none; transition: all 0.15s; white-space: nowrap; display: inline-block; }
+    .btn-ver:hover { border-color: rgba(170,0,0,0.4); color: #fff; }
+
+    @keyframes shimmer { 0%{background-position:-400px 0;} 100%{background-position:400px 0;} }
+    .skeleton { background: linear-gradient(90deg, #0e0e15 25%, #1a2030 50%, #0e0e15 75%); background-size: 800px 100%; animation: shimmer 1.4s infinite linear; border-radius: 4px; height: 16px; display: inline-block; }
+
+    .empty-state { padding: 64px 24px; text-align: center; }
+    .empty-icon { width: 64px; height: 64px; border-radius: 50%; background: rgba(170,0,0,0.08); border: 1px solid rgba(170,0,0,0.2); display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; }
+    .empty-title { font-family: 'Exo 2', sans-serif; font-weight: 700; font-size: 20px; color: #fff; margin-bottom: 8px; }
+    .empty-sub { font-family: 'Roboto', sans-serif; font-size: 14px; color: #8892a4; margin-bottom: 24px; }
+
+    .formula-card { background: #0a0a0f; border: 1px solid #1a2030; border-radius: 12px; padding: 32px; }
+    .formula-card h3 { font-family: 'Exo 2', sans-serif; font-weight: 800; font-size: 20px; color: #fff; margin-bottom: 20px; }
+    .formula-item { display: flex; align-items: center; gap: 16px; padding: 14px 0; border-bottom: 1px solid rgba(26,32,48,0.8); }
+    .formula-item:last-child { border-bottom: none; }
+    .formula-pct { font-family: 'Exo 2', sans-serif; font-weight: 800; font-size: 22px; color: #aa0000; min-width: 64px; }
+    .formula-label { font-family: 'Exo 2', sans-serif; font-weight: 700; font-size: 14px; color: #fff; }
+    .formula-desc { font-family: 'Roboto', sans-serif; font-size: 12px; color: #8892a4; margin-top: 2px; }
+    .formula-bar-bg { flex: 1; height: 4px; background: #1a2030; border-radius: 4px; overflow: hidden; }
+    .formula-bar-fill { height: 100%; background: #aa0000; border-radius: 4px; }
+
+    .btn-primary-red { display: inline-flex; align-items: center; gap: 8px; background: #aa0000; color: #fff; font-family: 'Exo 2', sans-serif; font-weight: 700; font-size: 14px; letter-spacing: 0.08em; text-transform: uppercase; padding: 14px 32px; border-radius: 8px; text-decoration: none; transition: background 0.15s; }
+    .btn-primary-red:hover { background: #cc0000; color: #fff; }
+  </style>
+</head>
+<body>
+
+<header class="header-section">
+  <div class="container-fluid px-4 px-lg-5">
+    <div class="header-holder">
+      <div class="brand-logo">
+        <a href="/" style="text-decoration:none;">
+          <span style="display:flex;align-items:center;gap:10px;font-family:'Exo 2',sans-serif;font-size:22px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1263.01 1443.68" style="width:28px;height:32px;filter:drop-shadow(0 0 8px rgba(170,0,0,0.55));flex-shrink:0;"><path fill="#AA0000" d="M552.08 1443.68l0.68 -142.2c-444.31,-80.52 -502.61,-489.38 -255.86,-835.86l-104.47 -76.79c-132.74,119.99 -254.44,414.77 -157.43,664.13 72.31,185.89 277.47,358.22 517.09,390.71zm-216.37 -1174.62l258.13 270.41 119.34 -96.68 -73.49 -85.95c490.45,-3.46 723.2,718.98 68.7,935.03l-3.88 145.57c304.55,-15.06 567.68,-327.76 558.24,-640.93 -11.09,-367.53 -266.2,-573.86 -620.82,-609.61l78.24 -86.32 -117.3 -100.59 -267.16 269.06z"/></svg>
+            <span style="color:#ffffff;">THE</span><span style="color:#aa0000;">ZERO</span><span style="color:#ffffff;">BASE</span>
+          </span>
+        </a>
+      </div>
+      <nav class="d-none d-lg-flex align-items-center">
+        <ul style="margin:0;padding:0;list-style:none;display:flex;align-items:center;gap:2px;">
+          <li><a href="/" style="font-family:'Exo 2',sans-serif;font-weight:700;font-size:13px;letter-spacing:0.1em;text-transform:uppercase;color:#8892a4;padding:8px 16px;border-radius:6px;display:block;text-decoration:none;">Home</a></li>
+          <li><a href="/scrims" style="font-family:'Exo 2',sans-serif;font-weight:700;font-size:13px;letter-spacing:0.1em;text-transform:uppercase;color:#8892a4;padding:8px 16px;border-radius:6px;display:block;text-decoration:none;">Scrims</a></li>
+          <li><a href="/ranking" style="font-family:'Exo 2',sans-serif;font-weight:700;font-size:13px;letter-spacing:0.1em;text-transform:uppercase;color:#ffffff;padding:8px 16px;border-radius:6px;display:block;text-decoration:none;">Ranking</a></li>
+          <li><a href="/campeonatos" style="font-family:'Exo 2',sans-serif;font-weight:700;font-size:13px;letter-spacing:0.1em;text-transform:uppercase;color:#8892a4;padding:8px 16px;border-radius:6px;display:block;text-decoration:none;">Campeonatos</a></li>
+        </ul>
+      </nav>
+      <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
+        <a href="/auth" style="display:inline-flex;align-items:center;gap:8px;background:transparent;border:1px solid rgba(170,0,0,0.5);color:#fff;font-family:'Exo 2',sans-serif;font-weight:700;font-size:13px;padding:10px 22px;border-radius:8px;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none;" class="d-none d-lg-inline-flex">ENTRAR</a>
+        <a href="/auth" style="display:inline-flex;align-items:center;gap:8px;background:#aa0000;color:#fff;font-family:'Exo 2',sans-serif;font-weight:700;font-size:13px;padding:10px 22px;border-radius:8px;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none;">CADASTRAR</a>
+        <div id="menuToggle" class="d-lg-none" style="margin-left:8px;cursor:pointer;display:flex;flex-direction:column;gap:5px;padding:6px;"><span style="display:block;width:22px;height:2px;background:#fff;border-radius:2px;"></span><span style="display:block;width:22px;height:2px;background:#fff;border-radius:2px;"></span><span style="display:block;width:22px;height:2px;background:#fff;border-radius:2px;"></span></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a href="/">Home</a>
+  <a href="/scrims">Scrims</a>
+  <a href="/ranking" class="active-link">Ranking</a>
+  <a href="/campeonatos">Campeonatos</a>
+  <a href="/agentes-livres">Agentes Livres</a>
+</div>
+
+<section class="hero-ranking">
+  <div class="container">
+    <div class="hero-content">
+      <p class="hero-eyebrow">The Zero Base · Warzone BR</p>
+      <h1 class="hero-title">RANKING NACIONAL</h1>
+      <p class="hero-sub">Temporada 1 · 2026 · Warzone BR — os melhores times e jogadores do Brasil.</p>
+    </div>
+  </div>
+</section>
+
+<section style="padding:72px 0;">
+  <div class="container">
+    <div class="d-flex flex-column flex-lg-row align-items-lg-start justify-content-between gap-4 mb-5">
+      <div>
+        <p class="section-label">Temporada 1</p>
+        <h2 class="section-title">Tabela de Ranking</h2>
+      </div>
+      <div class="d-flex flex-column flex-sm-row gap-3 align-items-start">
+        <div class="tab-bar" id="rankTypeTabs">
+          <button class="tab-btn active" data-type="times">TIMES</button>
+          <button class="tab-btn" data-type="jogadores">JOGADORES</button>
+        </div>
+        <div class="tier-filter" id="tierFilter">
+          <button class="tier-btn active" data-filter="todos">TODOS</button>
+          <button class="tier-btn" data-filter="bronze">BRONZE</button>
+          <button class="tier-btn" data-filter="prata">PRATA</button>
+          <button class="tier-btn" data-filter="ouro">OURO</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="ranking-table-wrap">
+      <div style="overflow-x:auto;">
+        <table class="ranking-table" id="rankingTable">
+          <thead>
+            <tr>
+              <th style="width:60px;">#</th>
+              <th>Time</th>
+              <th class="d-none d-md-table-cell">Categoria</th>
+              <th>Tier</th>
+              <th>ZERO Points</th>
+              <th class="d-none d-sm-table-cell">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="rankingBody">
+            <tr><td><span class="skeleton" style="width:24px;height:20px;"></span></td><td><div style="display:flex;align-items:center;gap:12px;"><span class="skeleton" style="width:40px;height:40px;border-radius:8px;"></span><div style="margin-left:4px;"><span class="skeleton" style="width:120px;display:block;margin-bottom:6px;"></span><span class="skeleton" style="width:80px;height:12px;display:block;"></span></div></div></td><td class="d-none d-md-table-cell"><span class="skeleton" style="width:60px;"></span></td><td><span class="skeleton" style="width:64px;"></span></td><td><span class="skeleton" style="width:40px;"></span></td><td class="d-none d-sm-table-cell"><span class="skeleton" style="width:80px;"></span></td></tr>
+            <tr><td><span class="skeleton" style="width:24px;height:20px;"></span></td><td><div style="display:flex;align-items:center;gap:12px;"><span class="skeleton" style="width:40px;height:40px;border-radius:8px;"></span><div style="margin-left:4px;"><span class="skeleton" style="width:140px;display:block;margin-bottom:6px;"></span><span class="skeleton" style="width:90px;height:12px;display:block;"></span></div></div></td><td class="d-none d-md-table-cell"><span class="skeleton" style="width:60px;"></span></td><td><span class="skeleton" style="width:64px;"></span></td><td><span class="skeleton" style="width:40px;"></span></td><td class="d-none d-sm-table-cell"><span class="skeleton" style="width:80px;"></span></td></tr>
+            <tr><td><span class="skeleton" style="width:24px;height:20px;"></span></td><td><div style="display:flex;align-items:center;gap:12px;"><span class="skeleton" style="width:40px;height:40px;border-radius:8px;"></span><div style="margin-left:4px;"><span class="skeleton" style="width:100px;display:block;margin-bottom:6px;"></span><span class="skeleton" style="width:70px;height:12px;display:block;"></span></div></div></td><td class="d-none d-md-table-cell"><span class="skeleton" style="width:60px;"></span></td><td><span class="skeleton" style="width:64px;"></span></td><td><span class="skeleton" style="width:40px;"></span></td><td class="d-none d-sm-table-cell"><span class="skeleton" style="width:80px;"></span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div id="emptyState" style="display:none;" class="empty-state">
+        <div class="empty-icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#aa0000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        </div>
+        <p class="empty-title">Temporada 1 começando</p>
+        <p class="empty-sub">Seja o primeiro time a aparecer aqui. Registre seu time e complete o perfil.</p>
+        <a href="/auth" class="btn-primary-red">REGISTRAR TIME AGORA</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FORMULA -->
+<section style="padding:0 0 80px;">
+  <div class="container">
+    <div class="row align-items-start g-4">
+      <div class="col-lg-5">
+        <p class="section-label">Como funciona</p>
+        <h2 class="section-title" style="margin-bottom:16px;">ZERO Points</h2>
+        <p style="font-family:'Roboto',sans-serif;font-size:14px;color:#8892a4;line-height:1.7;margin-bottom:12px;">Os ZERO Points são calculados automaticamente após cada scrim e campeonato. A fórmula leva em conta consistência, capacidade de kill e presença ativa na plataforma.</p>
+        <p style="font-family:'Roboto',sans-serif;font-size:14px;color:#8892a4;line-height:1.7;">O fair play é obrigatório — cheating ou comportamento antidesportivo zera seus pontos e pode resultar em banimento permanente.</p>
+      </div>
+      <div class="col-lg-7">
+        <div class="formula-card">
+          <h3>Fórmula ZERO Points</h3>
+          <div class="formula-item">
+            <div><div class="formula-pct">40%</div></div>
+            <div style="flex:1;">
+              <div class="formula-label">Posição final</div>
+              <div class="formula-desc">Colocação média nas partidas da temporada</div>
+              <div class="formula-bar-bg" style="margin-top:8px;"><div class="formula-bar-fill" style="width:40%;"></div></div>
+            </div>
+          </div>
+          <div class="formula-item">
+            <div><div class="formula-pct">30%</div></div>
+            <div style="flex:1;">
+              <div class="formula-label">Kills totais</div>
+              <div class="formula-desc">Volume de eliminações por partida do trio</div>
+              <div class="formula-bar-bg" style="margin-top:8px;"><div class="formula-bar-fill" style="width:30%;"></div></div>
+            </div>
+          </div>
+          <div class="formula-item">
+            <div><div class="formula-pct">20%</div></div>
+            <div style="flex:1;">
+              <div class="formula-label">Presença</div>
+              <div class="formula-desc">Frequência de participação nas scrims e eventos</div>
+              <div class="formula-bar-bg" style="margin-top:8px;"><div class="formula-bar-fill" style="width:20%;"></div></div>
+            </div>
+          </div>
+          <div class="formula-item">
+            <div><div class="formula-pct" style="color:#e8b24a;">10%</div></div>
+            <div style="flex:1;">
+              <div class="formula-label">Fair Play</div>
+              <div class="formula-desc">Avaliação de conduta e fair play reportado pela comunidade</div>
+              <div class="formula-bar-bg" style="margin-top:8px;"><div class="formula-bar-fill" style="width:10%;background:#e8b24a;"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer style="background:#000;border-top:1px solid rgba(170,0,0,0.2);padding:40px 0 24px;">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-lg-4 col-md-6">
+        <span style="display:flex;align-items:center;gap:10px;font-family:'Exo 2',sans-serif;font-size:20px;font-weight:800;letter-spacing:0.05em;text-transform:uppercase;margin-bottom:12px;">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1263.01 1443.68" style="width:22px;height:26px;flex-shrink:0;"><path fill="#AA0000" d="M552.08 1443.68l0.68 -142.2c-444.31,-80.52 -502.61,-489.38 -255.86,-835.86l-104.47 -76.79c-132.74,119.99 -254.44,414.77 -157.43,664.13 72.31,185.89 277.47,358.22 517.09,390.71zm-216.37 -1174.62l258.13 270.41 119.34 -96.68 -73.49 -85.95c490.45,-3.46 723.2,718.98 68.7,935.03l-3.88 145.57c304.55,-15.06 567.68,-327.76 558.24,-640.93 -11.09,-367.53 -266.2,-573.86 -620.82,-609.61l78.24 -86.32 -117.3 -100.59 -267.16 269.06z"/></svg>
+          <span style="color:#fff;">THE </span><span style="color:#aa0000;">ZERO</span><span style="color:#fff;"> BASE</span>
+        </span>
+        <p style="font-family:'Roboto',sans-serif;font-size:13px;color:#8892a4;line-height:1.6;">A primeira plataforma 100% BR de Warzone competitivo.</p>
+      </div>
+      <div class="col-lg-4 col-md-6">
+        <h5 style="font-family:'Exo 2',sans-serif;font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.1em;color:#fff;margin-bottom:12px;">Plataforma</h5>
+        <ul style="list-style:none;padding:0;margin:0;">
+          <li style="margin-bottom:8px;"><a href="/scrims" style="font-family:'Roboto',sans-serif;font-size:13px;color:#8892a4;text-decoration:none;">Scrims</a></li>
+          <li style="margin-bottom:8px;"><a href="/ranking" style="font-family:'Roboto',sans-serif;font-size:13px;color:#8892a4;text-decoration:none;">Ranking Nacional</a></li>
+          <li style="margin-bottom:8px;"><a href="/campeonatos" style="font-family:'Roboto',sans-serif;font-size:13px;color:#8892a4;text-decoration:none;">Campeonatos</a></li>
+          <li style="margin-bottom:8px;"><a href="/agentes-livres" style="font-family:'Roboto',sans-serif;font-size:13px;color:#8892a4;text-decoration:none;">Agentes Livres</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-4 col-md-6">
+        <h5 style="font-family:'Exo 2',sans-serif;font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.1em;color:#fff;margin-bottom:12px;">Comunidade</h5>
+        <ul style="list-style:none;padding:0;margin:0;">
+          <li style="margin-bottom:8px;"><a href="/regras" style="font-family:'Roboto',sans-serif;font-size:13px;color:#8892a4;text-decoration:none;">Regras da Plataforma</a></li>
+          <li style="margin-bottom:8px;"><a href="/auth?tab=register" style="font-family:'Roboto',sans-serif;font-size:13px;color:#cc0000;font-weight:700;text-decoration:none;">Entrar na Base — É Grátis →</a></li>
+        </ul>
+      </div>
+    </div>
+    <div style="border-top:1px solid rgba(170,0,0,0.15);margin-top:32px;padding-top:16px;text-align:center;">
+      <p style="font-family:'Roboto',sans-serif;font-size:12px;color:#555e6d;margin:0;">THE ZERO BASE © 2026 — Grupo Begamers · <a href="/regras" style="color:#555e6d;text-decoration:none;">Termos de Uso</a> · <a href="/regras" style="color:#555e6d;text-decoration:none;">Política de Privacidade</a></p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const SUPA_URL = 'https://hcpbpnwpdkvlonqoqchs.supabase.co';
+  const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhjcGJwbndwZGt2bG9ucW9xY2hzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0NTU0NzgsImV4cCI6MjA5MjAzMTQ3OH0.0QtczT9z_ctuHM-V3U44oCAJOdg3qUYcq-wDITnsch4';
+  const supa = supabase.createClient(SUPA_URL, SUPA_KEY);
+
+  let allTeams = [];
+  let currentType = 'times';
+  let currentTier = 'todos';
+
+  function tierBadge(cat) {
+    const c = (cat || '').toLowerCase();
+    if (c.includes('ouro') || c.includes('gold')) return '<span class="tier-badge tier-ouro">OURO</span>';
+    if (c.includes('prata') || c.includes('silver')) return '<span class="tier-badge tier-prata">PRATA</span>';
+    return '<span class="tier-badge tier-bronze">BRONZE</span>';
+  }
+
+  function tierMatch(team, filter) {
+    if (filter === 'todos') return true;
+    const c = (team.category || '').toLowerCase();
+    if (filter === 'ouro') return c.includes('ouro') || c.includes('gold');
+    if (filter === 'prata') return c.includes('prata') || c.includes('silver');
+    if (filter === 'bronze') return !c.includes('ouro') && !c.includes('gold') && !c.includes('prata') && !c.includes('silver');
+    return true;
+  }
+
+  function rankClass(i) {
+    if (i === 0) return 'rank-1';
+    if (i === 1) return 'rank-2';
+    if (i === 2) return 'rank-3';
+    return 'rank-other';
+  }
+
+  function renderTable(teams) {
+    const body = document.getElementById('rankingBody');
+    const empty = document.getElementById('emptyState');
+    const filtered = teams.filter(t => tierMatch(t, currentTier));
+    if (filtered.length === 0) {
+      body.innerHTML = '';
+      empty.style.display = 'block';
+      return;
+    }
+    empty.style.display = 'none';
+    body.innerHTML = filtered.map((t, i) => {
+      const logoUrl  = t.tzb_profiles ? t.tzb_profiles.avatar_url : null;
+      const name     = t.display_name || '—';
+      const pts      = (t.zero_points != null) ? t.zero_points : 0;
+      const ptsHtml  = pts > 0
+        ? `<span class="zero-points">${pts.toLocaleString('pt-BR')}</span>`
+        : `<span class="zero-points" style="color:#3a4252;font-size:14px;">0</span>`;
+      return `
+      <tr>
+        <td><span class="rank-num ${rankClass(i)}">${i + 1}</span></td>
+        <td>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <div class="team-logo-cell">
+              ${logoUrl
+                ? `<img src="${logoUrl}" alt="${name}" loading="lazy">`
+                : `<span style="font-family:'Exo 2',sans-serif;font-weight:800;font-size:16px;color:#cc0000;">${name.charAt(0).toUpperCase()}</span>`}
+            </div>
+            <div>
+              <div class="team-name-cell">${name}</div>
+              <div class="team-display-name">${t.category || 'Amador'}</div>
+            </div>
+          </div>
+        </td>
+        <td class="d-none d-md-table-cell" style="color:#8892a4;font-size:13px;">${t.category || '—'}</td>
+        <td>${tierBadge(t.category)}</td>
+        <td>${ptsHtml}</td>
+        <td class="d-none d-sm-table-cell"><a href="/time.html?id=${t.id}" class="btn-ver">VER PERFIL</a></td>
+      </tr>`;
+    }).join('');
+  }
+
+  async function loadRanking() {
+    const { data, error } = await supa
+      .from('tzb_teams')
+      .select('id, display_name, category, zero_points, tzb_profiles(avatar_url)')
+      .eq('pub_active', true)
+      .order('zero_points', { ascending: false })
+      .order('created_at', { ascending: true });
+    const body = document.getElementById('rankingBody');
+    const empty = document.getElementById('emptyState');
+    if (error || !data || data.length === 0) {
+      body.innerHTML = '';
+      empty.style.display = 'block';
+      return;
+    }
+    allTeams = data;
+    renderTable(allTeams);
+  }
+
+  document.getElementById('rankTypeTabs').addEventListener('click', e => {
+    const btn = e.target.closest('.tab-btn');
+    if (!btn) return;
+    document.querySelectorAll('#rankTypeTabs .tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentType = btn.dataset.type;
+    if (currentType === 'jogadores') {
+      document.getElementById('rankingBody').innerHTML = `<tr><td colspan="6"><div class="empty-state"><p class="empty-title" style="font-size:16px;">Ranking de jogadores em breve</p><p class="empty-sub">Disponível na Fase 5 da plataforma.</p></div></td></tr>`;
+      document.getElementById('emptyState').style.display = 'none';
+    } else {
+      renderTable(allTeams);
+    }
+  });
+
+  document.getElementById('tierFilter').addEventListener('click', e => {
+    const btn = e.target.closest('.tier-btn');
+    if (!btn) return;
+    document.querySelectorAll('.tier-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentTier = btn.dataset.filter;
+    renderTable(allTeams);
+  });
+
+  document.getElementById('menuToggle').addEventListener('click', () => {
+    document.getElementById('mobileMenu').classList.toggle('open');
+  });
+
+  loadRanking();
+</script>
+</body>
+</html>

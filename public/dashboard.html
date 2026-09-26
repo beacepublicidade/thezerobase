@@ -1,0 +1,2627 @@
+<!doctype html>
+<html class="no-js" lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <title>Dashboard — THE ZERO BASE</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <link rel="icon" type="image/png" href="assets/images/logo/simbolo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;600;700;800;900&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/icofont.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+
+  <style>
+    :root {
+      --bg-base:      #000000;
+      --bg-card:      #0a0a0f;
+      --bg-card2:     #0e0e15;
+      --bg-sidebar:   #05050a;
+      --bg-border:    #1a2030;
+      --accent:       #aa0000;
+      --accent-b:     #cc0000;
+      --accent-glow:  rgba(170,0,0,0.22);
+      --gold:         #e8b24a;
+      --silver:       #a0aec0;
+      --bronze:       #b4783c;
+      --green:        #4ade80;
+      --red-soft:     #f87171;
+      --txt:          #ffffff;
+      --txt2:         #8892a4;
+      --txt3:         #3a4252;
+      --sidebar-w:    250px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    html, body { height: 100%; background: var(--bg-base); color: var(--txt); font-family: 'Roboto', sans-serif; overflow-x: hidden; }
+
+    /* ═══════════════════════════════════════
+       LAYOUT
+    ═══════════════════════════════════════ */
+    .layout { display: flex; min-height: 100vh; }
+
+    /* ═══════════════════════════════════════
+       SIDEBAR
+    ═══════════════════════════════════════ */
+    .sidebar {
+      width: var(--sidebar-w);
+      background: var(--bg-sidebar);
+      border-right: 1px solid var(--bg-border);
+      display: flex; flex-direction: column;
+      position: fixed; inset: 0 auto 0 0;
+      z-index: 200; transition: transform 300ms cubic-bezier(.4,0,.2,1);
+      overflow-y: auto;
+    }
+
+    /* Logo */
+    .sb-logo {
+      padding: 22px 20px 18px;
+      border-bottom: 1px solid var(--bg-border);
+      display: flex; align-items: center; gap: 10px;
+      text-decoration: none; color: var(--txt);
+      font-family: 'Exo 2', sans-serif; font-size: 15px; font-weight: 800;
+      letter-spacing: .07em; text-transform: uppercase; flex-shrink: 0;
+    }
+
+    /* Profile */
+    .sb-profile {
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--bg-border);
+      flex-shrink: 0;
+    }
+    .sb-avatar-wrap { position: relative; width: 52px; margin-bottom: 12px; }
+    .sb-avatar {
+      width: 52px; height: 52px; border-radius: 14px;
+      background: linear-gradient(135deg, #1a0000 0%, #330000 100%);
+      border: 2px solid rgba(170,0,0,0.5);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Exo 2', sans-serif; font-size: 20px; font-weight: 800;
+      color: var(--txt); overflow: hidden; position: relative;
+      box-shadow: 0 0 16px rgba(170,0,0,0.2);
+    }
+    .sb-avatar img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .sb-online {
+      position: absolute; bottom: -2px; right: -2px;
+      width: 12px; height: 12px; border-radius: 50%;
+      background: var(--green); border: 2px solid var(--bg-sidebar);
+      animation: pulse-online 2s infinite;
+    }
+    @keyframes pulse-online { 0%,100% { box-shadow: 0 0 0 0 rgba(74,222,128,.4); } 50% { box-shadow: 0 0 0 5px rgba(74,222,128,0); } }
+
+    .sb-name {
+      font-family: 'Exo 2', sans-serif; font-size: 13px; font-weight: 700;
+      color: var(--txt); text-transform: uppercase; letter-spacing: .04em;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      margin-bottom: 6px;
+    }
+    .sb-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+    .sb-tag {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 3px 8px; border-radius: 20px;
+      font-family: 'Roboto', sans-serif; font-size: 10px; font-weight: 500;
+      text-transform: uppercase; letter-spacing: .07em;
+    }
+    .tag-type { background: rgba(170,0,0,0.14); border: 1px solid rgba(170,0,0,0.28); color: var(--accent-b); }
+    .tag-admin { background: rgba(232,178,74,0.12); border: 1px solid rgba(232,178,74,0.3); color: var(--gold); }
+    .tag-tier { background: rgba(255,255,255,0.05); border: 1px solid var(--bg-border); color: var(--txt2); }
+    .tag-ouro { background: rgba(232,178,74,0.14); border: 1px solid rgba(232,178,74,0.3); color: var(--gold); }
+    .tag-prata { background: rgba(160,174,192,0.12); border: 1px solid rgba(160,174,192,0.3); color: var(--silver); }
+    .tag-bronze { background: rgba(180,120,60,0.14); border: 1px solid rgba(180,120,60,0.3); color: var(--bronze); }
+
+    /* Nav */
+    .sb-nav { flex: 1; padding: 10px 0 8px; }
+    .sb-section {
+      padding: 12px 20px 4px;
+      font-family: 'Roboto', sans-serif; font-size: 9px; font-weight: 500;
+      color: var(--txt3); text-transform: uppercase; letter-spacing: .14em;
+    }
+    .sb-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 20px; cursor: pointer;
+      font-family: 'Roboto', sans-serif; font-size: 13px; color: var(--txt2);
+      border-left: 2px solid transparent;
+      transition: all 180ms; text-decoration: none;
+      user-select: none;
+    }
+    .sb-item:hover { color: var(--txt); background: rgba(255,255,255,0.035); }
+    .sb-item.active { color: var(--txt); background: rgba(170,0,0,0.1); border-left-color: var(--accent); }
+    .sb-item svg { flex-shrink: 0; opacity: .7; }
+    .sb-item.active svg { opacity: 1; }
+    .sb-badge {
+      margin-left: auto; background: var(--accent); color: var(--txt);
+      font-size: 9px; font-weight: 700; padding: 1px 6px;
+      border-radius: 10px; font-family: 'Exo 2', sans-serif;
+    }
+
+    /* Bottom */
+    .sb-bottom { padding: 10px 12px 16px; border-top: 1px solid var(--bg-border); flex-shrink: 0; }
+    .sb-btn-small {
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 10px; border-radius: 8px;
+      font-family: 'Roboto', sans-serif; font-size: 12px; color: var(--txt2);
+      cursor: pointer; text-decoration: none; transition: all 180ms;
+      background: none; border: none; width: 100%; text-align: left;
+    }
+    .sb-btn-small:hover { color: var(--txt); background: rgba(255,255,255,0.04); }
+    .sb-btn-small.danger:hover { color: var(--red-soft); }
+
+    /* ═══════════════════════════════════════
+       MAIN
+    ═══════════════════════════════════════ */
+    .main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
+
+    /* Topbar */
+    .topbar {
+      height: 60px; background: rgba(0,0,0,0.85);
+      border-bottom: 1px solid var(--bg-border);
+      backdrop-filter: blur(16px);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 28px;
+      position: sticky; top: 0; z-index: 50;
+    }
+    .topbar-left { display: flex; align-items: center; gap: 12px; }
+    .topbar-crumb {
+      font-family: 'Exo 2', sans-serif; font-size: 13px; font-weight: 700;
+      color: var(--txt2); text-transform: uppercase; letter-spacing: .06em;
+    }
+    .topbar-crumb span { color: var(--txt); }
+    .topbar-right { display: flex; align-items: center; gap: 8px; }
+    .tb-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 7px 14px; border-radius: 8px;
+      font-family: 'Exo 2', sans-serif; font-weight: 700; font-size: 11px;
+      letter-spacing: .07em; text-transform: uppercase;
+      cursor: pointer; border: none; transition: all 180ms; text-decoration: none;
+    }
+    .tb-primary { background: var(--accent); color: var(--txt); }
+    .tb-primary:hover { background: var(--accent-b); box-shadow: 0 0 20px var(--accent-glow); }
+    .tb-ghost { background: transparent; color: var(--txt2); border: 1px solid var(--bg-border); }
+    .tb-ghost:hover { color: var(--txt); border-color: rgba(255,255,255,0.18); }
+
+    /* Content */
+    .content { padding: 28px; flex: 1; }
+
+    /* ═══════════════════════════════════════
+       SECTIONS
+    ═══════════════════════════════════════ */
+    .section { display: none; animation: fadeIn 200ms ease; }
+    .section.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+    .sec-head { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
+    .sec-title { font-family: 'Exo 2', sans-serif; font-size: 20px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; color: var(--txt); }
+    .sec-sub { font-family: 'Roboto', sans-serif; font-size: 13px; color: var(--txt2); margin-top: 3px; }
+
+    /* ═══════════════════════════════════════
+       OVERVIEW — TEAM IDENTITY BANNER
+    ═══════════════════════════════════════ */
+    .team-banner {
+      position: relative; border-radius: 16px; overflow: hidden;
+      margin-bottom: 24px;
+      background: linear-gradient(135deg, #0a0010 0%, #080008 50%, #0a0000 100%);
+      border: 1px solid rgba(170,0,0,0.2);
+      min-height: 140px;
+    }
+    .team-banner-bg {
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 60% 80% at 80% 50%, rgba(170,0,0,0.12) 0%, transparent 70%),
+        linear-gradient(rgba(170,0,0,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(170,0,0,0.03) 1px, transparent 1px);
+      background-size: auto, 48px 48px, 48px 48px;
+    }
+    .team-banner-content {
+      position: relative; padding: 28px 32px;
+      display: flex; align-items: center; gap: 24px; flex-wrap: wrap;
+    }
+    .team-logo-big {
+      width: 80px; height: 80px; border-radius: 18px;
+      background: linear-gradient(135deg, #1a0000, #330000);
+      border: 2px solid rgba(170,0,0,0.5);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Exo 2', sans-serif; font-size: 32px; font-weight: 900;
+      color: var(--txt); flex-shrink: 0; overflow: hidden; position: relative;
+      box-shadow: 0 0 32px rgba(170,0,0,0.25);
+    }
+    .team-logo-big img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .team-info { flex: 1; min-width: 200px; }
+    .team-info h2 {
+      font-family: 'Exo 2', sans-serif; font-size: 26px; font-weight: 900;
+      text-transform: uppercase; letter-spacing: .06em; color: var(--txt);
+      margin-bottom: 6px;
+    }
+    .team-info p { font-family: 'Roboto', sans-serif; font-size: 13px; color: var(--txt2); margin-bottom: 12px; }
+    .team-meta { display: flex; gap: 8px; flex-wrap: wrap; }
+    .team-stat-mini {
+      padding: 5px 14px; border-radius: 8px;
+      background: rgba(255,255,255,0.04); border: 1px solid var(--bg-border);
+      font-family: 'Exo 2', sans-serif; font-size: 12px; font-weight: 700;
+      color: var(--txt2); display: flex; align-items: center; gap: 6px;
+    }
+    .team-stat-mini strong { color: var(--txt); }
+    .team-actions { display: flex; flex-direction: column; gap: 8px; align-items: flex-end; }
+    .btn-view-public {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 16px; border-radius: 8px;
+      font-family: 'Exo 2', sans-serif; font-weight: 700; font-size: 11px;
+      letter-spacing: .07em; text-transform: uppercase; cursor: pointer;
+      background: rgba(255,255,255,0.05); border: 1px solid var(--bg-border);
+      color: var(--txt2); text-decoration: none; transition: all 180ms;
+    }
+    .btn-view-public:hover { color: var(--txt); border-color: rgba(255,255,255,0.2); }
+
+    /* ═══════════════════════════════════════
+       STATS GRID
+    ═══════════════════════════════════════ */
+    .stats-grid { display: grid; gap: 14px; grid-template-columns: repeat(4,1fr); margin-bottom: 24px; }
+    .stat-card {
+      background: var(--bg-card); border: 1px solid var(--bg-border);
+      border-radius: 12px; padding: 18px 20px;
+      position: relative; overflow: hidden; transition: all 220ms;
+      cursor: default;
+    }
+    .stat-card::after {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--accent) 0%, transparent 100%);
+      opacity: 0; transition: opacity 220ms;
+    }
+    .stat-card:hover { border-color: rgba(170,0,0,0.3); }
+    .stat-card:hover::after { opacity: 1; }
+    .stat-icon {
+      width: 36px; height: 36px; border-radius: 10px;
+      background: rgba(170,0,0,0.1); border: 1px solid rgba(170,0,0,0.18);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 12px; color: var(--accent-b);
+    }
+    .stat-label { font-family: 'Roboto', sans-serif; font-size: 11px; color: var(--txt2); text-transform: uppercase; letter-spacing: .1em; margin-bottom: 6px; }
+    .stat-val { font-family: 'Exo 2', sans-serif; font-size: 30px; font-weight: 900; color: var(--txt); line-height: 1; }
+    .stat-val.gold { color: var(--gold); }
+    .stat-val.red { color: var(--accent-b); }
+    .stat-note { font-size: 12px; color: var(--txt3); margin-top: 6px; font-family: 'Roboto', sans-serif; }
+
+    /* ═══════════════════════════════════════
+       GENERIC CARD
+    ═══════════════════════════════════════ */
+    .card {
+      background: var(--bg-card); border: 1px solid var(--bg-border);
+      border-radius: 12px; padding: 22px;
+      margin-bottom: 18px;
+    }
+    .card-head {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 18px; flex-wrap: wrap; gap: 10px;
+    }
+    .card-title {
+      font-family: 'Exo 2', sans-serif; font-size: 13px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .08em; color: var(--txt);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .card-title svg { color: var(--accent); }
+
+    /* ═══════════════════════════════════════
+       EMPTY STATE
+    ═══════════════════════════════════════ */
+    .empty {
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; padding: 36px 20px; text-align: center;
+    }
+    .empty-icon {
+      width: 64px; height: 64px; border-radius: 16px;
+      background: rgba(255,255,255,0.03); border: 1px solid var(--bg-border);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 16px; color: var(--txt3);
+    }
+    .empty h3 { font-family: 'Exo 2', sans-serif; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--txt); margin-bottom: 6px; }
+    .empty p { font-family: 'Roboto', sans-serif; font-size: 13px; color: var(--txt2); margin-bottom: 18px; max-width: 280px; line-height: 1.5; }
+
+    /* ═══════════════════════════════════════
+       BUTTONS
+    ═══════════════════════════════════════ */
+    .btn {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 9px 18px; border-radius: 8px;
+      font-family: 'Exo 2', sans-serif; font-weight: 700; font-size: 12px;
+      letter-spacing: .07em; text-transform: uppercase;
+      cursor: pointer; border: none; transition: all 180ms; text-decoration: none;
+    }
+    .btn-red { background: var(--accent); color: var(--txt); }
+    .btn-red:hover { background: var(--accent-b); box-shadow: 0 4px 18px var(--accent-glow); }
+    .btn-ghost { background: transparent; color: var(--txt2); border: 1px solid var(--bg-border); }
+    .btn-ghost:hover { color: var(--txt); border-color: rgba(255,255,255,0.2); }
+    .btn-danger { background: transparent; color: var(--red-soft); border: 1px solid rgba(248,113,113,0.3); }
+    .btn-danger:hover { background: rgba(248,113,113,0.08); }
+
+    /* ═══════════════════════════════════════
+       ZERO POINTS BREAKDOWN
+    ═══════════════════════════════════════ */
+    .zp-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; }
+    .zp-item {
+      background: rgba(255,255,255,0.025); border: 1px solid var(--bg-border);
+      border-radius: 10px; padding: 14px; text-align: center;
+    }
+    .zp-pct { font-family: 'Exo 2', sans-serif; font-size: 24px; font-weight: 900; line-height: 1; margin-bottom: 4px; }
+    .zp-label { font-family: 'Roboto', sans-serif; font-size: 11px; color: var(--txt2); }
+
+    /* ═══════════════════════════════════════
+       PLAYER CARDS (ROSTER)
+    ═══════════════════════════════════════ */
+    .roster-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 28px 20px;
+      align-items: start;
+    }
+
+    /* ═══════════════════════════════════════
+       PLAYER CARD — DOG TAG PENDURADA
+    ═══════════════════════════════════════ */
+
+    /* O card É a dog tag — sem fundo, sem borda, shadow segue o contorno do PNG */
+    .player-card {
+      position: relative;
+      background: transparent;
+      border: none;
+      box-shadow: none;
+      overflow: hidden;           /* clip do conteúdo dentro do retângulo do PNG */
+      aspect-ratio: 10 / 16;
+      border-radius: 0;
+      /* drop-shadow segue os pixels não-transparentes do PNG (oval da dog tag) */
+      filter: drop-shadow(0 18px 48px rgba(0,0,0,0.82));
+      transition: filter 300ms, transform 300ms;
+      cursor: default;
+      display: flex;
+      flex-direction: column;
+    }
+    .player-card:hover {
+      transform: translateY(-8px) rotate(1.2deg);
+      filter: drop-shadow(0 28px 60px rgba(0,0,0,0.92)) drop-shadow(0 0 20px rgba(170,0,0,0.15));
+    }
+
+    /* Dog tag PNG real — rotacionada 90° para ficar vertical */
+    .pc-dogtag-bg {
+      position: absolute;
+      top: 50%; left: 50%;
+      width: 160%;   /* largo o suficiente para preencher o card após rotação */
+      height: 100%;
+      transform: translate(-50%, -50%) rotate(90deg);
+      object-fit: cover;
+      /* Escurece levemente para o texto ficar legível */
+      filter: brightness(0.68) contrast(1.06) saturate(0.78);
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* Overlay apenas na metade inferior para deixar o texto legível */
+    .pc-overlay {
+      position: absolute; inset: 0; z-index: 1;
+      background: linear-gradient(
+        180deg,
+        rgba(0,0,0,0.0)  0%,
+        rgba(0,0,0,0.0)  38%,
+        rgba(0,0,0,0.62) 65%,
+        rgba(0,0,0,0.88) 100%
+      );
+    }
+
+    /* Serial militar no topo (como dog tag real) */
+    .pc-serial {
+      position: absolute; top: 20px; left: 0; right: 0; z-index: 4;
+      text-align: center;
+      font-family: 'Exo 2', sans-serif; font-size: 7px; font-weight: 700;
+      letter-spacing: .2em; color: rgba(255,255,255,0.22);
+      text-transform: uppercase;
+      pointer-events: none;
+    }
+
+    /* Captain badge */
+    .pc-captain-badge {
+      position: absolute; top: 30px; left: 0; right: 0; z-index: 4;
+      text-align: center; display: none;
+    }
+    .pc-captain-badge span {
+      display: inline-block;
+      background: rgba(232,178,74,0.2); border: 1px solid rgba(232,178,74,0.55);
+      border-radius: 4px; padding: 2px 9px;
+      font-family: 'Exo 2', sans-serif; font-size: 8px; font-weight: 700;
+      color: var(--gold); text-transform: uppercase; letter-spacing: .1em;
+    }
+
+    /* Foto circular */
+    .pc-photo-area {
+      position: relative; z-index: 2;
+      display: flex; justify-content: center;
+      padding: 44px 0 8px;
+      flex-shrink: 0;
+    }
+    .pc-photo-ring {
+      width: 78px; height: 78px; border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.25);
+      box-shadow: 0 0 18px rgba(0,0,0,0.6), 0 0 0 4px rgba(255,255,255,0.04);
+      background: rgba(30,30,30,0.8);
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden; cursor: pointer; position: relative;
+      transition: border-color 200ms, box-shadow 200ms;
+    }
+    .pc-photo-ring:hover {
+      border-color: rgba(255,255,255,0.55);
+      box-shadow: 0 0 24px rgba(0,0,0,0.7), 0 0 0 4px rgba(255,255,255,0.08);
+    }
+    .pc-photo-initial { font-family:'Exo 2',sans-serif; font-size:26px; font-weight:900; color:#fff; line-height:1; }
+    .pc-photo-img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+    .pc-photo-hint {
+      position:absolute; inset:0; border-radius:50%;
+      background:rgba(0,0,0,0.55);
+      display:flex; align-items:center; justify-content:center;
+      opacity:0; transition:opacity 180ms;
+    }
+    .pc-photo-ring:hover .pc-photo-hint { opacity:1; }
+    .pc-avatar-input { display:none; }
+
+    /* Info */
+    .pc-info {
+      position:relative; z-index:2;
+      padding: 6px 14px 14px; text-align:center; flex-shrink:0;
+    }
+    .pc-role-tag {
+      display:inline-block; margin-bottom:5px;
+      padding:2px 9px; border-radius:3px;
+      font-family:'Roboto',sans-serif; font-size:8px; font-weight:700;
+      text-transform:uppercase; letter-spacing:.12em;
+      background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.18);
+      color:rgba(255,255,255,0.75);
+    }
+    .pc-nick {
+      font-family:'Exo 2',sans-serif; font-size:16px; font-weight:900;
+      color:#fff; text-transform:uppercase; letter-spacing:.07em;
+      line-height:1.1; margin-bottom:3px;
+      text-shadow: 0 2px 12px rgba(0,0,0,1), 0 0 24px rgba(0,0,0,0.8);
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    }
+    .pc-fullname {
+      font-family:'Roboto',sans-serif; font-size:9px;
+      color:rgba(255,255,255,0.38); margin-bottom:8px;
+    }
+    .pc-tier-row { display:flex; justify-content:center; margin-top:2px; }
+    .pc-tier {
+      padding:2px 9px; border-radius:3px;
+      font-family:'Exo 2',sans-serif; font-size:8px; font-weight:700;
+      text-transform:uppercase; letter-spacing:.08em;
+    }
+
+    /* Botões no rodapé da dog tag */
+    .pc-actions {
+      position:relative; z-index:2; margin-top:auto;
+      display:flex; gap:5px; padding:8px 12px 14px;
+      flex-shrink:0;
+    }
+    .pc-btn {
+      flex:1; padding:5px 4px; border-radius:5px;
+      font-family:'Exo 2',sans-serif; font-size:8px; font-weight:700;
+      letter-spacing:.06em; text-transform:uppercase;
+      cursor:pointer; border:none; transition:all 180ms;
+    }
+    .pc-btn-edit { background:rgba(255,255,255,0.1); color:rgba(255,255,255,0.6); }
+    .pc-btn-edit:hover { background:rgba(255,255,255,0.18); color:#fff; }
+    .pc-btn-remove { background:rgba(248,113,113,0.1); color:#f87171; }
+    .pc-btn-remove:hover { background:rgba(248,113,113,0.22); }
+
+    /* Add player card */
+    .player-card-add {
+      aspect-ratio: 10 / 16;
+      background: transparent; border: 2px dashed rgba(255,255,255,0.07);
+      border-radius: 22px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 12px; cursor: pointer; transition: all 220ms; color: var(--txt3);
+    }
+    .player-card-add:hover { border-color: rgba(170,0,0,0.4); color: var(--accent-b); background: rgba(170,0,0,0.03); }
+    .player-card-add span { font-family:'Exo 2',sans-serif; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; }
+
+    /* ═══════════════════════════════════════
+       ADD PLAYER MODAL
+    ═══════════════════════════════════════ */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.75);
+      backdrop-filter: blur(8px); z-index: 999;
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px; opacity: 0; pointer-events: none; transition: opacity 200ms;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+    .modal {
+      background: var(--bg-card); border: 1px solid var(--bg-border);
+      border-radius: 16px; padding: 28px;
+      width: 100%; max-width: 420px;
+      transform: translateY(12px); transition: transform 200ms;
+      max-height: 90vh; overflow-y: auto;
+    }
+    .modal-overlay.open .modal { transform: none; }
+    .modal-title {
+      font-family: 'Exo 2', sans-serif; font-size: 16px; font-weight: 800;
+      text-transform: uppercase; letter-spacing: .06em; color: var(--txt);
+      margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between;
+    }
+    .modal-close { background: none; border: none; color: var(--txt2); cursor: pointer; padding: 4px; transition: color 180ms; }
+    .modal-close:hover { color: var(--txt); }
+
+    .f-label { display: block; font-family: 'Roboto', sans-serif; font-size: 10px; font-weight: 500; color: var(--txt2); text-transform: uppercase; letter-spacing: .09em; margin-bottom: 5px; }
+    .f-input {
+      width: 100%; background: rgba(255,255,255,0.04); border: 1px solid var(--bg-border);
+      border-radius: 8px; padding: 10px 13px;
+      font-family: 'Roboto', sans-serif; font-size: 14px; color: var(--txt);
+      outline: none; transition: border-color 180ms; margin-bottom: 14px;
+    }
+    .f-input:focus { border-color: rgba(170,0,0,0.5); }
+    .f-input::placeholder { color: var(--txt3); }
+    select.f-input { cursor: pointer; }
+    select.f-input option { background: #0a0a0f; }
+
+    /* ═══════════════════════════════════════
+       SETTINGS
+    ═══════════════════════════════════════ */
+    .settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .settings-avatar-upload {
+      display: flex; align-items: center; gap: 18px;
+      padding: 18px; background: rgba(255,255,255,0.02);
+      border: 1px dashed var(--bg-border); border-radius: 12px;
+      margin-bottom: 20px; flex-wrap: wrap;
+    }
+    .upload-preview {
+      width: 68px; height: 68px; border-radius: 14px;
+      background: linear-gradient(135deg, #1a0000, #330000);
+      border: 2px solid rgba(170,0,0,0.4);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Exo 2', sans-serif; font-size: 26px; font-weight: 900;
+      color: var(--txt); flex-shrink: 0; overflow: hidden; position: relative;
+    }
+    .upload-preview img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+
+    /* Toggle switch */
+    .toggle-switch { position:relative; display:inline-block; width:44px; height:24px; flex-shrink:0; }
+    .toggle-switch input { opacity:0; width:0; height:0; }
+    .toggle-slider { position:absolute; inset:0; background:rgba(255,255,255,0.1); border-radius:24px; cursor:pointer; transition:background 200ms; }
+    .toggle-slider::before { content:''; position:absolute; width:18px; height:18px; left:3px; top:3px; background:#fff; border-radius:50%; transition:transform 200ms; }
+    .toggle-switch input:checked + .toggle-slider { background:var(--accent); }
+    .toggle-switch input:checked + .toggle-slider::before { transform:translateX(20px); }
+
+    /* Banner upload */
+    .banner-upload-area {
+      width:100%; height:110px; border-radius:10px;
+      border:2px dashed rgba(255,255,255,0.12);
+      display:flex; align-items:center; justify-content:center;
+      cursor:pointer; transition:border-color 200ms; overflow:hidden;
+      background:rgba(255,255,255,0.02);
+      position:relative;
+    }
+    .banner-upload-area:hover { border-color:rgba(170,0,0,0.4); }
+    .banner-upload-hint {
+      display:flex; flex-direction:column; align-items:center; gap:6px;
+      color:var(--txt3); pointer-events:none;
+    }
+    .banner-upload-hint span { font-family:'Exo 2',sans-serif; font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.07em; }
+
+    /* ═══════════════════════════════════════
+       RANKING — PROGRESS TIERS
+    ═══════════════════════════════════════ */
+    .tier-track { display: flex; flex-direction: column; gap: 14px; }
+    .tier-row { display: flex; flex-direction: column; gap: 6px; }
+    .tier-row-head { display: flex; align-items: center; justify-content: space-between; }
+    .tier-name { font-family: 'Roboto', sans-serif; font-size: 13px; color: var(--txt2); }
+    .pb { background: rgba(255,255,255,0.06); border-radius: 20px; height: 5px; overflow: hidden; }
+    .pb-fill { height: 100%; border-radius: 20px; transition: width 700ms cubic-bezier(.4,0,.2,1); }
+
+    /* ═══════════════════════════════════════
+       COMPLETE BANNER
+    ═══════════════════════════════════════ */
+    .complete-bar {
+      display: flex; align-items: center; gap: 16px;
+      background: linear-gradient(90deg, rgba(170,0,0,0.1) 0%, rgba(170,0,0,0.04) 100%);
+      border: 1px solid rgba(170,0,0,0.22); border-radius: 12px;
+      padding: 16px 20px; margin-bottom: 22px; flex-wrap: wrap;
+    }
+    .complete-bar-icon { color: var(--accent); flex-shrink: 0; }
+    .complete-bar-body { flex: 1; min-width: 160px; }
+    .complete-bar-body h4 { font-family: 'Exo 2', sans-serif; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--txt); margin-bottom: 3px; }
+    .complete-bar-body p { font-family: 'Roboto', sans-serif; font-size: 12px; color: var(--txt2); }
+    .complete-bar-prog { width: 140px; flex-shrink: 0; }
+    .complete-bar-prog .pb { margin-top: 6px; }
+
+    /* ═══════════════════════════════════════
+       MOBILE
+    ═══════════════════════════════════════ */
+    .mob-topbar {
+      display: none; height: 54px;
+      background: var(--bg-sidebar); border-bottom: 1px solid var(--bg-border);
+      align-items: center; justify-content: space-between;
+      padding: 0 16px; position: sticky; top: 0; z-index: 300;
+    }
+    .mob-logo { display: flex; align-items: center; gap: 8px; text-decoration: none; color: var(--txt); font-family: 'Exo 2', sans-serif; font-size: 14px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
+    .mob-ham { display: flex; flex-direction: column; gap: 4px; background: none; border: none; cursor: pointer; padding: 6px; }
+    .mob-ham span { display: block; width: 20px; height: 2px; background: var(--txt); border-radius: 2px; }
+    .sb-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.65); z-index: 199; }
+    .sb-overlay.open { display: block; }
+
+    @media (max-width: 900px) {
+      .stats-grid { grid-template-columns: repeat(2,1fr); }
+      .zp-grid { grid-template-columns: repeat(2,1fr); }
+    }
+    @media (max-width: 768px) {
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); }
+      .main { margin-left: 0; }
+      .mob-topbar { display: flex; }
+      .topbar { display: none; }
+      .content { padding: 16px; }
+      .team-banner-content { padding: 20px; }
+      .team-logo-big { width: 60px; height: 60px; font-size: 24px; }
+      .team-info h2 { font-size: 20px; }
+      .settings-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 500px) {
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+      .roster-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 380px) {
+      .roster-grid { grid-template-columns: 1fr; }
+    }
+    .tab-btn { font-family: 'Exo 2', sans-serif; font-weight: 700; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; padding: 7px 14px; border-radius: 7px; border: none; background: transparent; color: var(--txt2); cursor: pointer; transition: all .15s; white-space: nowrap; }
+    .tab-btn:hover { color: var(--txt); }
+    .tab-btn.active { background: var(--accent); color: #fff; }
+    @keyframes orgPulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(1.4)} }
+  </style>
+</head>
+<body>
+
+<!-- Sidebar overlay mobile -->
+<div class="sb-overlay" id="sb-overlay" onclick="closeSidebar()"></div>
+
+<!-- ── MODAL: Organizador — Novo Scrim ── -->
+<div class="modal-overlay" id="modal-org-scrim" onclick="if(event.target===this)closeOrgModal('modal-org-scrim')">
+  <div class="modal" style="max-width:520px;">
+    <div class="modal-title">Novo Scrim
+      <button class="modal-close" onclick="closeOrgModal('modal-org-scrim')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+      <div style="grid-column:1/-1;"><label class="f-label">Nome do Scrim *</label><input class="f-input" id="osc-name" placeholder="Ex: Scrim Bronze — Sábado"></div>
+      <div><label class="f-label">Tier</label>
+        <select class="f-input" id="osc-tier">
+          <option value="bronze">Bronze</option>
+          <option value="prata">Prata</option>
+          <option value="ouro">Ouro</option>
+        </select>
+      </div>
+      <div><label class="f-label">Formato</label><input class="f-input" id="osc-format" value="Trios · Resurgência"></div>
+      <div><label class="f-label">Data e Hora *</label><input type="datetime-local" class="f-input" id="osc-date"></div>
+      <div><label class="f-label">Máx. Trios</label><input type="number" class="f-input" id="osc-max" value="20" min="4" max="60"></div>
+      <div><label class="f-label">KD Mínimo</label><input type="number" class="f-input" id="osc-kd" step="0.1" placeholder="Ex: 1.0"></div>
+      <div style="grid-column:1/-1;"><label class="f-label">Modelo de Pontuação</label>
+        <select class="f-input" id="osc-model">
+          <option value="corridos">Pontos Corridos (BR) — flat: 15pts 1º + kills</option>
+          <option value="ewc">EWC 2025 — 1.6× kills, Match Point 135</option>
+          <option value="wsow">WSOW — 2.0× kills, Match Point 150</option>
+        </select>
+      </div>
+      <div style="grid-column:1/-1;"><label class="f-label">Link de Transmissão <span style="color:var(--txt2);font-size:11px;">(YouTube, Twitch, Kick...)</span></label><input class="f-input" id="osc-stream" placeholder="https://youtube.com/live/..."></div>
+      <div style="grid-column:1/-1;">
+        <label class="f-label">Flyer / Banner</label>
+        <div style="border:1px dashed var(--bg-border);border-radius:8px;background:var(--bg-card2);padding:12px;text-align:center;cursor:pointer;" onclick="document.getElementById('osc-flyer').click()">
+          <input type="file" id="osc-flyer" accept="image/*" onchange="previewOrgFlyer('osc-flyer','osc-flyer-prev')" style="display:none;">
+          <div style="font-size:12px;color:var(--txt2);"><strong style="color:var(--accent);">Clique para subir</strong> · JPG, PNG, WebP · 1280×720px</div>
+          <img id="osc-flyer-prev" style="max-height:60px;margin-top:8px;border-radius:4px;display:none;" alt="preview">
+        </div>
+      </div>
+    </div>
+    <div id="org-scrim-msg" style="font-size:12px;color:#f87171;margin-bottom:8px;display:none;"></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;">
+      <button class="btn btn-ghost" onclick="closeOrgModal('modal-org-scrim')">Cancelar</button>
+      <button class="btn btn-red" onclick="createOrgScrim()">Criar Scrim</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── MODAL: Organizador — Novo Campeonato ── -->
+<div class="modal-overlay" id="modal-org-camp" onclick="if(event.target===this)closeOrgModal('modal-org-camp')">
+  <div class="modal" style="max-width:520px;">
+    <div class="modal-title">Novo Campeonato
+      <button class="modal-close" onclick="closeOrgModal('modal-org-camp')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+      <div style="grid-column:1/-1;"><label class="f-label">Nome do Campeonato *</label><input class="f-input" id="oca-name" placeholder="Ex: ZERO CUP — Temporada 1"></div>
+      <div><label class="f-label">Categoria</label>
+        <select class="f-input" id="oca-cat">
+          <option value="amador">Amador</option>
+          <option value="profissional">Profissional</option>
+          <option value="aberto">Aberto</option>
+        </select>
+      </div>
+      <div><label class="f-label">Modelo de Pontuação</label>
+        <select class="f-input" id="oca-model">
+          <option value="corridos">Pontos Corridos (BR)</option>
+          <option value="ewc">EWC 2025</option>
+          <option value="wsow">WSOW</option>
+        </select>
+      </div>
+      <div><label class="f-label">Formato</label><input class="f-input" id="oca-format" placeholder="Ex: Battle Royale — 40 Trios"></div>
+      <div><label class="f-label">Data *</label><input type="datetime-local" class="f-input" id="oca-date"></div>
+      <div><label class="f-label">Max. Times</label><input type="number" class="f-input" id="oca-max" value="40"></div>
+      <div style="grid-column:1/-1;"><label class="f-label">Descrição</label><textarea class="f-input" id="oca-desc" rows="3" style="resize:none;" placeholder="Detalhes, regras, requisitos de participação..."></textarea></div>
+      <div style="grid-column:1/-1;"><label class="f-label">Link de Transmissão <span style="color:var(--txt2);font-size:11px;">(YouTube, Twitch, Kick...)</span></label><input class="f-input" id="oca-stream" placeholder="https://youtube.com/live/..."></div>
+      <div style="grid-column:1/-1;">
+        <label class="f-label">Flyer / Banner</label>
+        <div style="border:1px dashed var(--bg-border);border-radius:8px;background:var(--bg-card2);padding:12px;text-align:center;cursor:pointer;" onclick="document.getElementById('oca-flyer').click()">
+          <input type="file" id="oca-flyer" accept="image/*" onchange="previewOrgFlyer('oca-flyer','oca-flyer-prev')" style="display:none;">
+          <div style="font-size:12px;color:var(--txt2);"><strong style="color:var(--accent);">Clique para subir</strong> · JPG, PNG, WebP · 1280×720px</div>
+          <img id="oca-flyer-prev" style="max-height:60px;margin-top:8px;border-radius:4px;display:none;" alt="preview">
+        </div>
+      </div>
+    </div>
+    <div id="org-camp-msg" style="font-size:12px;color:#f87171;margin-bottom:8px;display:none;"></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;">
+      <button class="btn btn-ghost" onclick="closeOrgModal('modal-org-camp')">Cancelar</button>
+      <button class="btn btn-red" onclick="createOrgCamp()">Criar Campeonato</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add player modal -->
+<div class="modal-overlay" id="modal-add-player">
+  <div class="modal">
+    <div class="modal-title">
+      Adicionar Jogador
+      <button class="modal-close" onclick="closeModal()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <label class="f-label">Nick / Gamertag *</label>
+    <input type="text" class="f-input" id="p-nick" placeholder="NickDoJogador">
+    <label class="f-label">Nome completo</label>
+    <input type="text" class="f-input" id="p-name" placeholder="Nome completo">
+    <label class="f-label">Função no time</label>
+    <select class="f-input" id="p-role">
+      <option value="">Selecione</option>
+      <option>IGL</option>
+      <option>Fragger</option>
+      <option>Support</option>
+    </select>
+    <label class="f-label">KD Médio</label>
+    <input type="number" step="0.01" class="f-input" id="p-kd" placeholder="Ex: 2.80">
+    <label class="f-label">Activision ID</label>
+    <input type="text" class="f-input" id="p-activision" placeholder="Nick#1234">
+    <label class="f-label" style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+      <input type="checkbox" id="p-captain" style="accent-color:var(--accent);"> Capitão / IGL principal
+    </label>
+    <div style="margin-top:20px;display:flex;gap:8px;">
+      <button class="btn btn-red" style="flex:1;" onclick="addPlayer()">Adicionar</button>
+      <button class="btn btn-ghost" onclick="closeModal()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<div class="layout">
+
+  <!-- ════════════ SIDEBAR ════════════ -->
+  <aside class="sidebar" id="sidebar">
+
+    <a href="/" class="sb-logo">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1263.01 1443.68" style="width:20px;height:24px;flex-shrink:0;">
+        <path fill="#AA0000" d="M552.08 1443.68l0.68 -142.2c-444.31,-80.52 -502.61,-489.38 -255.86,-835.86l-104.47 -76.79c-132.74,119.99 -254.44,414.77 -157.43,664.13 72.31,185.89 277.47,358.22 517.09,390.71zm-216.37 -1174.62l258.13 270.41 119.34 -96.68 -73.49 -85.95c490.45,-3.46 723.2,718.98 68.7,935.03l-3.88 145.57c304.55,-15.06 567.68,-327.76 558.24,-640.93 -11.09,-367.53 -266.2,-573.86 -620.82,-609.61l78.24 -86.32 -117.3 -100.59 -267.16 269.06z"/>
+      </svg>
+      <span><span style="color:#fff;">THE</span> <span style="color:#aa0000;">ZERO</span></span>
+    </a>
+
+    <div class="sb-profile">
+      <div class="sb-avatar-wrap">
+        <div class="sb-avatar" id="sb-avatar">T</div>
+        <div class="sb-online"></div>
+      </div>
+      <div class="sb-name" id="sb-name">Meu Perfil</div>
+      <div class="sb-tags" id="sb-tags">
+        <span class="sb-tag tag-type" id="sb-type-tag">Jogador</span>
+      </div>
+    </div>
+
+    <nav class="sb-nav">
+      <div class="sb-section">Principal</div>
+      <a class="sb-item active" onclick="go('overview')">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Visão Geral
+      </a>
+      <a class="sb-item" onclick="go('scrims')">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        Scrims
+        <span class="sb-badge" id="scrims-count">0</span>
+      </a>
+      <a class="sb-item" onclick="go('campeonatos')">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+        Campeonatos
+      </a>
+      <a class="sb-item" onclick="go('ranking')">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        Meu Ranking
+      </a>
+
+      <div class="sb-section" id="nav-team-sec" style="display:none;">Time / Org</div>
+      <a class="sb-item" id="nav-roster" onclick="go('roster')" style="display:none;">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Meu Time
+      </a>
+
+      <div class="sb-section" id="nav-org-sec" style="display:none;">Organizador</div>
+      <a class="sb-item" id="nav-meus-eventos" onclick="go('meus-eventos')" style="display:none;">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Meus Eventos
+        <span class="sb-badge" id="eventos-count" style="display:none;">0</span>
+      </a>
+
+      <div class="sb-section">Conta</div>
+      <a class="sb-item" onclick="go('settings')">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+        Configurações
+      </a>
+    </nav>
+
+    <div class="sb-bottom">
+      <a class="sb-btn-small" href="/" target="_blank" title="Abre o site público">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        Ver site público
+      </a>
+      <button class="sb-btn-small danger" onclick="logout()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Encerrar sessão
+      </button>
+    </div>
+  </aside>
+
+  <!-- ════════════ MAIN ════════════ -->
+  <main class="main">
+
+    <!-- Mobile topbar -->
+    <div class="mob-topbar">
+      <a href="/" class="mob-logo">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1263.01 1443.68" style="width:16px;height:20px;">
+          <path fill="#AA0000" d="M552.08 1443.68l0.68 -142.2c-444.31,-80.52 -502.61,-489.38 -255.86,-835.86l-104.47 -76.79c-132.74,119.99 -254.44,414.77 -157.43,664.13 72.31,185.89 277.47,358.22 517.09,390.71zm-216.37 -1174.62l258.13 270.41 119.34 -96.68 -73.49 -85.95c490.45,-3.46 723.2,718.98 68.7,935.03l-3.88 145.57c304.55,-15.06 567.68,-327.76 558.24,-640.93 -11.09,-367.53 -266.2,-573.86 -620.82,-609.61l78.24 -86.32 -117.3 -100.59 -267.16 269.06z"/>
+        </svg>
+        <span style="color:#fff;">THE</span><span style="color:#aa0000;margin-left:4px;">ZERO</span>
+      </a>
+      <button class="mob-ham" onclick="openSidebar()"><span></span><span></span><span></span></button>
+    </div>
+
+    <!-- Desktop topbar -->
+    <div class="topbar">
+      <div class="topbar-left">
+        <span class="topbar-crumb">Dashboard / <span id="tb-section">Visão Geral</span></span>
+      </div>
+      <div class="topbar-right">
+        <button class="tb-btn tb-primary" onclick="go('settings')">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          Editar Perfil
+        </button>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- ════ OVERVIEW ════ -->
+      <section class="section active" id="s-overview">
+
+        <!-- Team identity banner -->
+        <div class="team-banner" id="team-banner">
+          <div class="team-banner-bg"></div>
+          <div class="team-banner-content">
+            <div class="team-logo-big" id="banner-logo">T</div>
+            <div class="team-info">
+              <h2 id="banner-name">Meu Perfil</h2>
+              <p id="banner-desc">Complete seu perfil para aparecer no ranking nacional.</p>
+              <div class="team-meta">
+                <div class="team-stat-mini">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                  Scrims: <strong>0</strong>
+                </div>
+                <div class="team-stat-mini" id="banner-category" style="display:none;">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                  Categoria: <strong id="banner-cat-val">—</strong>
+                </div>
+              </div>
+            </div>
+            <div class="team-actions">
+              <a href="#" onclick="viewPublicPage();return false;" class="btn-view-public">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                Ver página pública
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Complete profile banner -->
+        <div class="complete-bar" id="complete-bar">
+          <div class="complete-bar-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+          </div>
+          <div class="complete-bar-body">
+            <h4>Complete seu perfil</h4>
+            <p id="complete-msg">Adicione Activision ID, foto e dados do time para aparecer no ranking.</p>
+          </div>
+          <div class="complete-bar-prog">
+            <div style="font-family:'Exo 2',sans-serif;font-size:11px;color:var(--txt2);text-align:right;" id="complete-pct">30%</div>
+            <div class="pb"><div class="pb-fill" id="complete-fill" style="width:30%;background:linear-gradient(90deg,var(--accent),var(--accent-b));"></div></div>
+          </div>
+          <button class="btn btn-red" onclick="go('settings')" style="flex-shrink:0;">Completar</button>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+            <div class="stat-label">ZERO Points</div>
+            <div class="stat-val gold" id="stat-points">—</div>
+            <div class="stat-note">Temporada 1</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg></div>
+            <div class="stat-label">Ranking Nacional</div>
+            <div class="stat-val" id="stat-rank">—</div>
+            <div class="stat-note">Aguardando T1</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
+            <div class="stat-label">Scrims Jogados</div>
+            <div class="stat-val red" id="stat-scrims">0</div>
+            <div class="stat-note">Temporada 1</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+            <div class="stat-label">Tier</div>
+            <div class="stat-val" id="stat-tier" style="font-size:18px;margin-top:4px;">—</div>
+            <div class="stat-note">Defina seu KD</div>
+          </div>
+        </div>
+
+        <!-- KPIs de desempenho -->
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px;" id="kpi-grid">
+          <div class="card" style="margin:0;padding:16px 18px;">
+            <div style="font-size:10px;color:var(--txt2);text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px;font-family:'Roboto',sans-serif;">KD Médio do Time</div>
+            <div style="font-family:'Exo 2',sans-serif;font-size:24px;font-weight:900;color:var(--gold);" id="kpi-kd">—</div>
+            <div style="font-size:11px;color:var(--txt3);margin-top:4px;font-family:'Roboto',sans-serif;">Média do roster</div>
+          </div>
+          <div class="card" style="margin:0;padding:16px 18px;">
+            <div style="font-size:10px;color:var(--txt2);text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px;font-family:'Roboto',sans-serif;">Taxa Top 3</div>
+            <div style="font-family:'Exo 2',sans-serif;font-size:24px;font-weight:900;color:var(--accent-b);">—</div>
+            <div style="font-size:11px;color:var(--txt3);margin-top:4px;font-family:'Roboto',sans-serif;">Scrims finalizados</div>
+          </div>
+          <div class="card" style="margin:0;padding:16px 18px;">
+            <div style="font-size:10px;color:var(--txt2);text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px;font-family:'Roboto',sans-serif;">Fair Play Score</div>
+            <div style="font-family:'Exo 2',sans-serif;font-size:24px;font-weight:900;color:var(--green);">—</div>
+            <div style="font-size:11px;color:var(--txt3);margin-top:4px;font-family:'Roboto',sans-serif;">Sem penalidades</div>
+          </div>
+        </div>
+
+        <!-- Scrims + Campeonatos -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;" id="overview-cols">
+
+          <div class="card">
+            <div class="card-head">
+              <div class="card-title">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                Próximos Scrims
+              </div>
+              <button onclick="go('scrims')" class="btn btn-ghost" style="padding:5px 12px;font-size:10px;">Ver todos</button>
+            </div>
+            <div class="empty">
+              <div class="empty-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
+              <h3>Nenhuma inscrição</h3>
+              <p>Inscreva-se num scrim para acumular ZERO Points.</p>
+              <button onclick="go('scrims')" class="btn btn-red">Ver Scrims</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <div class="card-title">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+                Próximos Campeonatos
+              </div>
+              <button onclick="go('campeonatos')" class="btn btn-ghost" style="padding:5px 12px;font-size:10px;">Ver todos</button>
+            </div>
+            <!-- ZERO CUP T1 -->
+            <div style="padding:14px;background:rgba(170,0,0,0.05);border:1px solid rgba(170,0,0,0.14);border-radius:10px;">
+              <div style="font-family:'Exo 2',sans-serif;font-size:13px;font-weight:800;color:var(--txt);text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px;">ZERO CUP T1</div>
+              <div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:8px;">
+                <div style="font-size:11px;color:var(--txt2);">40 Trios · R$ 70/trio</div>
+                <div style="font-size:11px;color:var(--gold);">Prize: 50% arrecadação</div>
+              </div>
+              <span style="display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;background:rgba(232,178,74,0.1);border:1px solid rgba(232,178,74,0.2);font-size:10px;color:var(--gold);">
+                <span style="width:5px;height:5px;border-radius:50%;background:var(--gold);animation:pulse-online 2s infinite;"></span>
+                Em breve
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Atividade recente -->
+        <div class="card" style="margin-top:18px;">
+          <div class="card-head">
+            <div class="card-title">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+              Atividade Recente
+            </div>
+          </div>
+          <div class="empty">
+            <div class="empty-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+            <h3>Sem atividade ainda</h3>
+            <p>Seu histórico de partidas e conquistas aparece aqui após a Temporada 1.</p>
+          </div>
+        </div>
+
+        <!-- ZERO Points breakdown -->
+        <div class="card" style="margin-top:18px;">
+          <div class="card-head">
+            <div class="card-title">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              Como funciona o ZERO Points
+            </div>
+          </div>
+          <div class="zp-grid">
+            <div class="zp-item"><div class="zp-pct" style="color:var(--gold);">40%</div><div class="zp-label">Posição final</div></div>
+            <div class="zp-item"><div class="zp-pct" style="color:var(--accent-b);">30%</div><div class="zp-label">Kills acumuladas</div></div>
+            <div class="zp-item"><div class="zp-pct" style="color:var(--silver);">20%</div><div class="zp-label">Presença</div></div>
+            <div class="zp-item"><div class="zp-pct" style="color:var(--green);">10%</div><div class="zp-label">Fair Play</div></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ════ SCRIMS ════ -->
+      <section class="section" id="s-scrims">
+        <div class="sec-head">
+          <div><div class="sec-title">Scrims</div><div class="sec-sub">Inscrições e histórico de treinos competitivos</div></div>
+          <button onclick="go('scrims')" class="btn btn-red">+ Nova Inscrição</button>
+        </div>
+        <div class="card">
+          <div class="card-head"><div class="card-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Inscrições Ativas</div></div>
+          <div id="scrims-list-active">
+            <div class="empty">
+              <div class="empty-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
+              <h3>Nenhum scrim inscrito</h3>
+              <p>A Temporada 1 está chegando. Garanta sua vaga agora.</p>
+              <button onclick="go('scrims')" class="btn btn-red">Ver Scrims</button>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head"><div class="card-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Histórico</div></div>
+          <div id="scrims-list-history">
+            <div class="empty">
+              <div class="empty-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+              <h3>Sem histórico ainda</h3>
+              <p>Seus resultados aparecem aqui após a Temporada 1.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ════ CAMPEONATOS ════ -->
+      <section class="section" id="s-campeonatos">
+        <div class="sec-head">
+          <div><div class="sec-title">Campeonatos</div><div class="sec-sub">Competições disponíveis e histórico</div></div>
+          <button onclick="go('campeonatos')" class="btn btn-ghost">Ver Calendário</button>
+        </div>
+        <div class="card">
+          <div class="card-head"><div class="card-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>ZERO CUP T1 — Em breve</div></div>
+          <div style="padding:16px;background:rgba(170,0,0,0.05);border:1px solid rgba(170,0,0,0.14);border-radius:10px;">
+            <div style="display:flex;gap:24px;flex-wrap:wrap;margin-bottom:12px;">
+              <div><div style="font-size:10px;color:var(--txt2);text-transform:uppercase;letter-spacing:.09em;margin-bottom:3px;">Formato</div><div style="font-family:'Exo 2',sans-serif;font-size:14px;font-weight:700;color:var(--txt);">Battle Royale — 40 Trios</div></div>
+              <div><div style="font-size:10px;color:var(--txt2);text-transform:uppercase;letter-spacing:.09em;margin-bottom:3px;">Categoria</div><div style="font-family:'Exo 2',sans-serif;font-size:14px;font-weight:700;color:var(--txt);">Amador</div></div>
+              <div><div style="font-size:10px;color:var(--txt2);text-transform:uppercase;letter-spacing:.09em;margin-bottom:3px;">Broadcast</div><div style="font-family:'Exo 2',sans-serif;font-size:14px;font-weight:700;color:var(--gold);">AO VIVO</div></div>
+            </div>
+            <p style="font-size:12px;color:var(--txt2);line-height:1.6;margin-bottom:12px;">Você não está apenas concorrendo — você está jogando em um ambiente profissional: broadcast ao vivo, anti-cheat Zero Eye, stats validadas e ranking oficial.</p>
+            <span style="display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:20px;background:rgba(232,178,74,0.1);border:1px solid rgba(232,178,74,0.22);font-family:'Roboto',sans-serif;font-size:11px;color:var(--gold);">
+              <span style="width:6px;height:6px;border-radius:50%;background:var(--gold);animation:pulse-online 2s infinite;"></span>
+              Inscrições em breve
+            </span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ════ RANKING ════ -->
+      <section class="section" id="s-ranking">
+        <div class="sec-head">
+          <div><div class="sec-title">Meu Ranking</div><div class="sec-sub">Posição e progresso no ranking nacional</div></div>
+          <button onclick="go('ranking')" class="btn btn-ghost">Ranking Completo</button>
+        </div>
+        <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);">
+          <div class="stat-card"><div class="stat-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg></div><div class="stat-label">Posição Geral</div><div class="stat-val">—</div><div class="stat-note">Temporada 1</div></div>
+          <div class="stat-card"><div class="stat-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><div class="stat-label">ZERO Points</div><div class="stat-val gold">—</div><div class="stat-note">Acumule jogando</div></div>
+          <div class="stat-card"><div class="stat-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><div class="stat-label">Tier</div><div class="stat-val" id="r-tier" style="font-size:18px;margin-top:4px;">—</div><div class="stat-note">Complete o perfil</div></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><div class="card-title">Progresso por Tier — KD Gate</div></div>
+          <div class="tier-track">
+            <div class="tier-row"><div class="tier-row-head"><span class="tier-name">Bronze &nbsp;·&nbsp; 1.0 – 2.0 KD</span><span class="sb-tag tag-bronze" style="font-size:9px;">Entrada</span></div><div class="pb"><div class="pb-fill" id="pb-bronze" style="width:0%;background:linear-gradient(90deg,var(--bronze),#d4985c);"></div></div></div>
+            <div class="tier-row"><div class="tier-row-head"><span class="tier-name">Prata &nbsp;·&nbsp; 2.0 – 3.5 KD</span><span class="sb-tag tag-prata" style="font-size:9px;">Top 10%</span></div><div class="pb"><div class="pb-fill" id="pb-prata" style="width:0%;background:linear-gradient(90deg,var(--silver),#cbd5e0);"></div></div></div>
+            <div class="tier-row"><div class="tier-row-head"><span class="tier-name">Ouro &nbsp;·&nbsp; 3.5 – 5.5 KD</span><span class="sb-tag tag-ouro" style="font-size:9px;">Top 1%</span></div><div class="pb"><div class="pb-fill" id="pb-ouro" style="width:0%;background:linear-gradient(90deg,var(--gold),#f5c842);"></div></div></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ════ MEUS EVENTOS (Organizador) ════ -->
+      <section class="section" id="s-meus-eventos">
+        <div class="sec-head">
+          <div><div class="sec-title">Meus Eventos</div><div class="sec-sub">Scrims e campeonatos que você organizou</div></div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="btn btn-ghost btn-sm" onclick="loadOrgEvents()">Atualizar</button>
+            <button class="btn btn-ghost btn-sm" onclick="openOrgModal('scrim')">+ Novo Scrim</button>
+            <button class="btn btn-red btn-sm" onclick="openOrgModal('camp')">+ Novo Campeonato</button>
+          </div>
+        </div>
+
+        <!-- Sub-view: lista de eventos -->
+        <div id="org-events-list">
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;" id="org-events-grid">
+            <div style="grid-column:1/-1;padding:40px;text-align:center;color:var(--txt2);font-size:13px;">Carregando eventos...</div>
+          </div>
+        </div>
+
+        <!-- Sub-view: detalhe de um evento — PAINEL DE CONTROLE -->
+        <div id="org-event-detail" style="display:none;">
+          <!-- Header -->
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;flex-wrap:wrap;">
+            <button class="btn btn-ghost btn-sm" onclick="backToOrgList()">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+              Voltar
+            </button>
+            <div style="flex:1;min-width:0;">
+              <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                <span id="org-det-name" style="font-family:'Exo 2',sans-serif;font-size:20px;font-weight:800;">—</span>
+                <span id="org-det-status-badge"></span>
+                <span id="org-live-dot" style="display:none;width:8px;height:8px;border-radius:50%;background:#ff4444;animation:orgPulse 1s infinite;flex-shrink:0;"></span>
+              </div>
+              <div id="org-det-meta" style="font-size:12px;color:var(--txt2);margin-top:2px;"></div>
+            </div>
+            <div id="org-status-controls" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
+          </div>
+
+          <!-- Stats bar -->
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:12px;margin-bottom:20px;">
+            <div class="stat-card"><div class="stat-lbl">Times</div><div class="stat-val" id="ost-teams">0</div></div>
+            <div class="stat-card"><div class="stat-lbl">Drops</div><div class="stat-val" id="ost-drops">0</div></div>
+            <div class="stat-card"><div class="stat-lbl">Kills</div><div class="stat-val" id="ost-kills">0</div></div>
+            <div class="stat-card"><div class="stat-lbl">Líder</div><div class="stat-val" id="ost-leader" style="font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">—</div></div>
+          </div>
+
+          <!-- MVP banner -->
+          <div id="org-mvp-banner" style="display:none;background:linear-gradient(90deg,rgba(232,178,74,0.1),rgba(232,178,74,0.04));border:1px solid rgba(232,178,74,0.3);border-radius:12px;padding:16px 20px;margin-bottom:20px;align-items:center;gap:16px;">
+            <div style="font-size:28px;flex-shrink:0;">⭐</div>
+            <div>
+              <div style="font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);margin-bottom:2px;">MVP do Evento</div>
+              <div id="org-mvp-name" style="font-family:'Exo 2',sans-serif;font-size:18px;font-weight:800;color:#fff;">—</div>
+              <div id="org-mvp-stats" style="font-size:12px;color:var(--txt2);"></div>
+            </div>
+          </div>
+
+          <!-- Tabs -->
+          <div style="display:flex;gap:2px;background:var(--bg-card);border:1px solid var(--bg-border);border-radius:10px;padding:4px;width:fit-content;margin-bottom:20px;overflow-x:auto;max-width:100%;">
+            <button class="tab-btn active" onclick="orgTab('info')" id="otab-info">⚙ Info</button>
+            <button class="tab-btn" onclick="orgTab('times')" id="otab-times">👥 Times</button>
+            <button class="tab-btn" onclick="orgTab('leaderboard')" id="otab-leaderboard">🏆 Leaderboard</button>
+            <button class="tab-btn" onclick="orgTab('resultado')" id="otab-resultado">📊 Resultado</button>
+          </div>
+
+          <!-- Tab: Info -->
+          <div id="org-tab-info">
+            <div class="card" style="margin-bottom:16px;">
+              <div class="card-head"><div class="card-title">Controles do Evento</div></div>
+              <div class="card-body">
+                <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;">
+                  <div>
+                    <label class="f-label">Código do Lobby</label>
+                    <div style="display:flex;gap:8px;">
+                      <input type="text" class="f-input" id="org-lobby-input" placeholder="Ex: TZB2026" style="font-family:'Exo 2',sans-serif;font-weight:700;letter-spacing:.1em;">
+                      <button class="btn btn-ghost btn-sm" onclick="orgSaveLobby()">Salvar</button>
+                    </div>
+                  </div>
+                  <div>
+                    <label class="f-label">Link da Transmissão</label>
+                    <div style="display:flex;gap:8px;">
+                      <input type="text" class="f-input" id="org-stream-input" placeholder="https://twitch.tv/...">
+                      <button class="btn btn-ghost btn-sm" onclick="orgSaveStream()">Salvar</button>
+                    </div>
+                  </div>
+                </div>
+                <div style="margin-top:16px;">
+                  <img id="org-det-flyer" style="max-width:280px;border-radius:8px;border:1px solid var(--bg-border);display:none;" alt="flyer">
+                </div>
+                <!-- QR CODE -->
+                <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--bg-border);">
+                  <div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--txt2);margin-bottom:10px;">QR Code do Evento</div>
+                  <div id="org-qr-wrap" style="display:inline-block;background:#fff;padding:10px;border-radius:8px;"></div>
+                  <div style="font-size:11px;color:var(--txt2);margin-top:8px;" id="org-qr-url"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab: Times -->
+          <div id="org-tab-times" style="display:none;">
+            <div class="card">
+              <div class="card-head">
+                <div class="card-title">Times Inscritos</div>
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <span id="org-det-count" style="font-family:'Exo 2',sans-serif;font-size:13px;font-weight:800;color:var(--accent);">0</span>
+                  <span style="font-size:11px;color:var(--txt2);">times · tempo real</span>
+                </div>
+              </div>
+              <div id="org-det-teams"></div>
+            </div>
+          </div>
+
+          <!-- Tab: Leaderboard -->
+          <div id="org-tab-leaderboard" style="display:none;">
+            <div class="card">
+              <div class="card-head">
+                <div class="card-title">Leaderboard — ZERO Points</div>
+                <span style="font-size:11px;color:var(--txt2);" id="org-leader-updated">—</span>
+              </div>
+              <div id="org-det-leaderboard"></div>
+            </div>
+          </div>
+
+          <!-- Tab: Resultado -->
+          <div id="org-tab-resultado" style="display:none;">
+            <div class="card" style="margin-bottom:16px;">
+              <div class="card-head">
+                <div class="card-title">Lançar Resultado de Drop</div>
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <label class="f-label" style="margin:0;white-space:nowrap;">Drop nº</label>
+                  <input type="number" class="f-input" id="org-drop-num" value="1" min="1" style="width:70px;padding:4px 8px;font-size:13px;text-align:center;">
+                </div>
+              </div>
+              <div class="card-body">
+                <div style="font-size:11px;color:var(--txt2);margin-bottom:12px;" id="org-model-label">Modelo: —</div>
+                <div style="display:grid;grid-template-columns:1fr 72px 72px 56px;gap:8px;padding:6px 0;border-bottom:1px solid var(--bg-border);margin-bottom:8px;">
+                  <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--txt2);">Time</span>
+                  <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--txt2);text-align:center;">Pos</span>
+                  <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--txt2);text-align:center;">Kills</span>
+                  <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--txt2);text-align:center;">ZP</span>
+                </div>
+                <div id="org-res-form" style="display:flex;flex-direction:column;gap:6px;margin-bottom:16px;max-height:320px;overflow-y:auto;"></div>
+                <button class="btn btn-red" onclick="orgLancarDrop()">Salvar Drop</button>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-head"><div class="card-title">Drops Lançados</div></div>
+              <div id="org-drops-history" style="padding:16px;"><div style="text-align:center;color:var(--txt2);font-size:13px;">Nenhum drop lançado ainda.</div></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ════ ROSTER ════ -->
+      <section class="section" id="s-roster">
+        <div class="sec-head">
+          <div><div class="sec-title" id="roster-sec-title">Meu Time</div><div class="sec-sub">Gerencie o roster da sua organização</div></div>
+          <button class="btn btn-red" onclick="openModal()">+ Adicionar Jogador</button>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div class="card-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>Roster</div>
+            <span style="font-family:'Roboto',sans-serif;font-size:12px;color:var(--txt2);" id="roster-count">0 / 6 jogadores</span>
+          </div>
+          <div class="roster-grid" id="roster-grid">
+            <!-- Player cards rendered by JS -->
+            <div class="player-card-add" onclick="openModal()">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+              <span>Adicionar Jogador</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ════ SETTINGS ════ -->
+      <section class="section" id="s-settings">
+        <div class="sec-head">
+          <div><div class="sec-title">Configurações</div><div class="sec-sub">Personalize sua identidade na plataforma</div></div>
+        </div>
+
+        <!-- Avatar upload -->
+        <div class="card">
+          <div class="card-head"><div class="card-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="7" r="4"/><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/></svg>Foto / Logo</div></div>
+          <div class="settings-avatar-upload">
+            <div class="upload-preview" id="up-preview">T</div>
+            <div>
+              <p style="font-family:'Exo 2',sans-serif;font-size:13px;font-weight:700;color:var(--txt);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px;">Foto de Perfil / Logo da Org</p>
+              <p style="font-family:'Roboto',sans-serif;font-size:12px;color:var(--txt2);margin-bottom:10px;">PNG ou JPG, máximo 2MB · Recomendado: 256×256px</p>
+              <label class="btn btn-ghost" style="cursor:pointer;">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                Enviar imagem
+                <input type="file" accept="image/*" style="display:none;" onchange="previewLogo(this)">
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Profile info -->
+        <div class="card">
+          <div class="card-head"><div class="card-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Informações do Perfil</div></div>
+          <div class="settings-grid">
+            <div><label class="f-label">Nome completo</label><input type="text" class="f-input" id="s-name" placeholder="Seu nome completo"></div>
+            <div><label class="f-label">Activision ID</label><input type="text" class="f-input" id="s-activision" placeholder="NickWarzone#1234"></div>
+            <div><label class="f-label">WhatsApp</label><input type="tel" class="f-input" id="s-whatsapp" placeholder="(11) 99999-9999"></div>
+            <div><label class="f-label">KD Médio (últimas 20 partidas)</label><input type="number" step="0.01" class="f-input" id="s-kd" placeholder="Ex: 2.45" oninput="updateKD(this.value)"></div>
+            <div><label class="f-label">Região</label><select class="f-input" id="s-region"><option value="">Selecione</option><option>Sul</option><option>Sudeste</option><option>Centro-Oeste</option><option>Nordeste</option><option>Norte</option></select></div>
+            <div><label class="f-label">Estilo de jogo</label><select class="f-input" id="s-style"><option value="">Selecione</option><option>Agressivo</option><option>Estratégico</option><option>Suporte</option><option>Versátil</option></select></div>
+          </div>
+
+          <!-- Team-specific fields -->
+          <div id="team-fields" style="display:none;">
+            <div style="height:1px;background:var(--bg-border);margin:20px 0;"></div>
+            <div class="card-title" style="margin-bottom:16px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Dados da Organização</div>
+            <div class="settings-grid">
+              <div><label class="f-label">Nome do time / org</label><input type="text" class="f-input" id="s-teamname" placeholder="Nome oficial"></div>
+              <div><label class="f-label">Categoria</label><select class="f-input" id="s-category"><option value="">Selecione</option><option>Amador</option><option>Profissional</option></select></div>
+              <div><label class="f-label">Instagram</label><input type="text" class="f-input" id="s-instagram" placeholder="@seutimeoficial"></div>
+              <div><label class="f-label">Twitter / X</label><input type="text" class="f-input" id="s-twitter" placeholder="@seutimeoficial"></div>
+            </div>
+            <div style="margin-top:14px;"><label class="f-label">Descrição da organização</label><textarea class="f-input" id="s-bio" rows="3" placeholder="Fale sobre a história e objetivos do seu time..." style="resize:vertical;"></textarea></div>
+          </div>
+
+          <div style="margin-top:20px;display:flex;align-items:center;gap:12px;">
+            <button class="btn btn-red" onclick="saveSettings()">Salvar alterações</button>
+            <span id="save-ok" style="font-family:'Roboto',sans-serif;font-size:13px;color:var(--green);display:none;opacity:0;transition:opacity 300ms;">✓ Salvo com sucesso!</span>
+          </div>
+        </div>
+
+        <!-- Agente Livre (somente jogadores individuais) -->
+        <div class="card" id="free-agent-card" style="display:none;">
+          <div class="card-head">
+            <div class="card-title">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              Agente Livre
+            </div>
+            <span style="font-family:'Roboto',sans-serif;font-size:11px;color:var(--txt2);">Apareça no radar das organizações em /agentes-livres</span>
+          </div>
+
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:rgba(255,255,255,0.02);border:1px solid var(--bg-border);border-radius:10px;margin-bottom:18px;">
+            <div>
+              <div style="font-family:'Exo 2',sans-serif;font-size:13px;font-weight:700;color:var(--txt);text-transform:uppercase;letter-spacing:.04em;">Estou procurando time</div>
+              <div style="font-family:'Roboto',sans-serif;font-size:11px;color:var(--txt2);margin-top:2px;">Seu perfil aparece publicamente para organizações buscarem talentos</div>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="s-free-agent">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+
+          <div class="settings-grid" style="margin-bottom:14px;">
+            <div>
+              <label class="f-label">Seu role principal</label>
+              <select class="f-input" id="s-player-role">
+                <option value="">Selecione</option>
+                <option>IGL</option>
+                <option>Fragger</option>
+                <option>Support</option>
+              </select>
+            </div>
+            <div>
+              <label class="f-label">Região</label>
+              <select class="f-input" id="s-fa-region">
+                <option value="">Selecione</option>
+                <option>Sul</option>
+                <option>Sudeste</option>
+                <option>Centro-Oeste</option>
+                <option>Nordeste</option>
+                <option>Norte</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="margin-bottom:18px;">
+            <label class="f-label">Apresentação (o que as orgs vão ler)</label>
+            <textarea class="f-input" id="s-fa-bio" rows="3" placeholder="Ex: IGL com 2 anos de experiência competitiva, KD 3.8 médio, disponível para scrims diários..." style="resize:vertical;"></textarea>
+          </div>
+
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+            <button class="btn btn-red" onclick="saveFreeAgent()">Salvar e Publicar</button>
+            <a href="/agentes-livres" target="_blank" class="btn btn-ghost">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              Ver lista pública
+            </a>
+            <span id="save-fa-ok" style="font-family:'Roboto',sans-serif;font-size:13px;color:var(--green);display:none;opacity:0;transition:opacity 300ms;">✓ Perfil publicado!</span>
+          </div>
+        </div>
+
+        <!-- Página Pública -->
+        <div class="card" id="pub-page-card">
+          <div class="card-head">
+            <div class="card-title">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              Página Pública do Time
+            </div>
+            <span style="font-family:'Roboto',sans-serif;font-size:11px;color:var(--txt2);">O que a galera vai ver em /perfil/seutime</span>
+          </div>
+
+          <!-- Toggle ativo -->
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:rgba(255,255,255,0.02);border:1px solid var(--bg-border);border-radius:10px;margin-bottom:18px;">
+            <div>
+              <div style="font-family:'Exo 2',sans-serif;font-size:13px;font-weight:700;color:var(--txt);text-transform:uppercase;letter-spacing:.04em;">Página ativa</div>
+              <div style="font-family:'Roboto',sans-serif;font-size:11px;color:var(--txt2);margin-top:2px;">Visível publicamente para qualquer pessoa com o link</div>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="s-page-active" checked>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+
+          <!-- Banner -->
+          <div style="margin-bottom:16px;">
+            <label class="f-label">Banner do time <span style="color:var(--txt3);font-weight:400;">(1200×400px recomendado)</span></label>
+            <div class="banner-upload-area" onclick="document.getElementById('s-banner-input').click()" id="banner-upload-area">
+              <div class="banner-upload-hint" id="banner-upload-hint">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                <span>Clique para enviar banner</span>
+              </div>
+              <input type="file" id="s-banner-input" accept="image/*" style="display:none;" onchange="previewBanner(this)">
+            </div>
+          </div>
+
+          <!-- Descrição -->
+          <div style="margin-bottom:14px;">
+            <label class="f-label">Descrição da organização</label>
+            <textarea class="f-input" id="s-pub-desc" rows="4" placeholder="Conte a história do seu time, objetivos, estilo de jogo..." style="resize:vertical;"></textarea>
+          </div>
+
+          <!-- Conquistas -->
+          <div style="margin-bottom:18px;">
+            <label class="f-label">Conquistas em destaque</label>
+            <textarea class="f-input" id="s-pub-achievements" rows="2" placeholder="Ex: Campeão ZERO CUP T1 · Top 3 Ranking Nacional · 50+ Scrims" style="resize:vertical;"></textarea>
+          </div>
+
+          <!-- Redes sociais -->
+          <div class="settings-grid" style="margin-bottom:20px;">
+            <div><label class="f-label">Instagram</label><input type="text" class="f-input" id="s-pub-instagram" placeholder="@seutimeoficial"></div>
+            <div><label class="f-label">Twitter / X</label><input type="text" class="f-input" id="s-pub-twitter" placeholder="@seutimeoficial"></div>
+            <div><label class="f-label">Discord</label><input type="text" class="f-input" id="s-pub-discord" placeholder="discord.gg/seuservidor"></div>
+            <div><label class="f-label">YouTube</label><input type="text" class="f-input" id="s-pub-youtube" placeholder="youtube.com/@seutime"></div>
+          </div>
+
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+            <button class="btn btn-red" onclick="savePublicPage()">Salvar e Publicar</button>
+            <button class="btn btn-ghost" onclick="viewPublicPage()">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              Ver como a galera vê
+            </button>
+            <span id="save-pub-ok" style="font-family:'Roboto',sans-serif;font-size:13px;color:var(--green);display:none;opacity:0;transition:opacity 300ms;">✓ Página publicada!</span>
+          </div>
+        </div>
+
+        <!-- Danger zone -->
+        <div class="card" style="border-color:rgba(248,113,113,0.18);">
+          <div class="card-head"><div class="card-title" style="color:var(--red-soft);"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Zona de Perigo</div></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+            <div>
+              <p style="font-family:'Roboto',sans-serif;font-size:14px;color:var(--txt);margin-bottom:3px;">Encerrar conta</p>
+              <p style="font-family:'Roboto',sans-serif;font-size:12px;color:var(--txt2);">Ação irreversível. Todos os dados serão removidos permanentemente.</p>
+            </div>
+            <button class="btn btn-danger" onclick="alert('Entre em contato com suporte para encerrar sua conta.')">Encerrar conta</button>
+          </div>
+        </div>
+      </section>
+
+    </div><!-- /content -->
+  </main>
+</div><!-- /layout -->
+
+<script>
+// ══════════════════════════════════════════
+// SUPABASE
+// ══════════════════════════════════════════
+var SUPA_URL = 'https://hcpbpnwpdkvlonqoqchs.supabase.co';
+var SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhjcGJwbndwZGt2bG9ucW9xY2hzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0NTU0NzgsImV4cCI6MjA5MjAzMTQ3OH0.0QtczT9z_ctuHM-V3U44oCAJOdg3qUYcq-wDITnsch4';
+var supa = supabase.createClient(SUPA_URL, SUPA_KEY);
+var currentUserId  = null;
+var currentTeamId  = null;
+
+// ══════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════
+var user = {
+  name:'', email:'', type:'player', teamname:'', kd:null, role:null, category:'',
+  instagram:'', twitter:'', avatarUrl:'',
+  pubActive: true, pubBannerUrl:'', pubDescription:'', pubAchievements:'',
+  pubDiscord:'', pubYoutube:''
+};
+var roster = []; // { nick, name, role, kd, activision, captain, avatarUrl }
+
+async function loadState() {
+  // Carrega localStorage imediatamente para renderizar sem esperar
+  try { var u = localStorage.getItem('tzb_user'); if(u) user = Object.assign(user, JSON.parse(u)); } catch(e){}
+  try { var r = localStorage.getItem('tzb_roster'); if(r) roster = JSON.parse(r); } catch(e){}
+  render();
+
+  // Verifica sessão Supabase
+  var _s = await supa.auth.getSession();
+  if (!_s.data || !_s.data.session) {
+    window.location.href = '/auth';
+    return;
+  }
+  currentUserId = _s.data.session.user.id;
+
+  // Sincroniza perfil do Supabase
+  var _p = await supa.from('tzb_profiles').select('*').eq('id', currentUserId).maybeSingle();
+  if (_p.data) {
+    user.name      = _p.data.name || user.name;
+    user.type      = _p.data.type || user.type;
+    user.email     = _s.data.session.user.email;
+    user.avatarUrl = _p.data.avatar_url || user.avatarUrl;
+  }
+
+  // Sincroniza time se for team
+  if (user.type === 'team') {
+    var _t = await supa.from('tzb_teams').select('*').eq('user_id', currentUserId).maybeSingle();
+    if (_t.data) {
+      currentTeamId        = _t.data.id;
+      user.teamname        = _t.data.teamname        || user.teamname;
+      user.category        = _t.data.category        || user.category;
+      user.instagram       = _t.data.instagram       || user.instagram;
+      user.twitter         = _t.data.twitter         || user.twitter;
+      user.pubActive       = _t.data.pub_active       != null ? _t.data.pub_active : user.pubActive;
+      user.pubBannerUrl    = _t.data.banner_url       || user.pubBannerUrl;
+      user.pubDescription  = _t.data.description     || user.pubDescription;
+      user.pubAchievements = _t.data.achievements    || user.pubAchievements;
+      user.pubDiscord      = _t.data.discord         || user.pubDiscord;
+      user.pubYoutube      = _t.data.youtube         || user.pubYoutube;
+
+      // Sincroniza roster
+      var _r = await supa.from('tzb_roster').select('*').eq('team_id', currentTeamId).order('sort_order');
+      if (_r.data && _r.data.length > 0) {
+        roster = _r.data.map(function(p) { return {
+          id: p.id,
+          nick: p.nick, name: p.fullname, role: p.role, kd: p.kd,
+          captain: p.captain, avatarUrl: p.photo_url
+        }; });
+      }
+    }
+  }
+
+  localStorage.setItem('tzb_user', JSON.stringify(user));
+  localStorage.setItem('tzb_roster', JSON.stringify(roster));
+  render();
+  loadUserScrims();
+}
+
+function saveState() {
+  localStorage.setItem('tzb_user', JSON.stringify(user));
+  localStorage.setItem('tzb_roster', JSON.stringify(roster));
+}
+
+async function syncRosterToSupabase() {
+  if (!currentTeamId) return;
+  // Remove todos e reinsere (simples e seguro para <= 6 jogadores)
+  await supa.from('tzb_roster').delete().eq('team_id', currentTeamId);
+  if (roster.length === 0) return;
+  var rows = roster.map(function(p, i) { return {
+    team_id: currentTeamId, nick: p.nick, fullname: p.name || null,
+    role: p.role || null, kd: p.kd || null, captain: !!p.captain,
+    photo_url: p.avatarUrl || null, sort_order: i
+  }; });
+  await supa.from('tzb_roster').insert(rows);
+}
+
+// ══════════════════════════════════════════
+// RENDER
+// ══════════════════════════════════════════
+function render() {
+  var displayName = user.teamname || user.name || 'Meu Perfil';
+  var initial = displayName.charAt(0).toUpperCase() || 'T';
+
+  // Sidebar
+  document.getElementById('sb-avatar').textContent = initial;
+  document.getElementById('sb-name').textContent = displayName;
+  document.getElementById('up-preview').textContent = initial;
+
+  // Tags
+  var tagsEl = document.getElementById('sb-tags');
+  var typeLabel = user.type === 'team' ? 'Time / Org' : user.type === 'organizer' ? 'Organizador' : 'Jogador';
+  var html = '<span class="sb-tag tag-type">' + typeLabel + '</span>';
+  if (user.role === 'admin') html += '<span class="sb-tag tag-admin">Admin</span>';
+  if (user.role === 'organizer') html += '<span class="sb-tag" style="background:rgba(59,130,246,.12);color:#60a5fa;border:1px solid rgba(59,130,246,.3);">ORGANIZER</span>';
+  var tierTag = tierInfo(user.kd);
+  if (tierTag) html += '<span class="sb-tag ' + tierTag.tagClass + '">' + tierTag.name + '</span>';
+  tagsEl.innerHTML = html;
+
+  // Team/player specific nav
+  var isTeam = user.type === 'team';
+  var isOrg  = user.type === 'organizer';
+  document.getElementById('nav-team-sec').style.display = isTeam ? '' : 'none';
+  document.getElementById('nav-org-sec').style.display  = isOrg  ? '' : 'none';
+  document.getElementById('nav-meus-eventos').style.display = isOrg ? '' : 'none';
+  if (isOrg) { loadOrgEvents(); }
+  document.getElementById('nav-roster').style.display = isTeam ? '' : 'none';
+  document.getElementById('team-fields').style.display   = isTeam ? '' : 'none';
+  document.getElementById('free-agent-card').style.display = isTeam ? 'none' : '';
+  document.getElementById('pub-page-card').style.display   = isTeam ? '' : 'none';
+
+  // Team banner
+  document.getElementById('banner-logo').textContent = initial;
+  document.getElementById('banner-name').textContent = displayName;
+  if (isTeam && user.category) {
+    document.getElementById('banner-category').style.display = 'flex';
+    document.getElementById('banner-cat-val').textContent = user.category;
+  }
+
+  // Stats
+  var t = tierInfo(user.kd);
+  document.getElementById('stat-tier').textContent = t ? t.name : '—';
+  document.getElementById('r-tier').textContent = t ? t.name : '—';
+
+  // Settings form
+  if(user.name) document.getElementById('s-name').value = user.name;
+  if(user.teamname) document.getElementById('s-teamname').value = user.teamname;
+  if(user.kd) document.getElementById('s-kd').value = user.kd;
+
+  // Progress
+  var fields = [user.name, user.email, user.kd, user.teamname || !isTeam].filter(Boolean).length;
+  var pct = Math.min(100, Math.round((fields / 4) * 100));
+  document.getElementById('complete-fill').style.width = pct + '%';
+  document.getElementById('complete-pct').textContent = pct + '%';
+  if (pct >= 90) document.getElementById('complete-bar').style.display = 'none';
+
+  // KD tier progress bars
+  if (user.kd) {
+    var kd = parseFloat(user.kd);
+    document.getElementById('pb-bronze').style.width = Math.min(100, Math.max(0, ((kd - 1.0) / 1.0) * 100)) + '%';
+    document.getElementById('pb-prata').style.width = Math.min(100, Math.max(0, ((kd - 2.0) / 1.5) * 100)) + '%';
+    document.getElementById('pb-ouro').style.width = Math.min(100, Math.max(0, ((kd - 3.5) / 2.0) * 100)) + '%';
+  }
+
+  // Roster
+  renderRoster();
+}
+
+function tierInfo(kd) {
+  if (!kd) return null;
+  kd = parseFloat(kd);
+  if (kd >= 3.5) return { name: 'Ouro', tagClass: 'tag-ouro' };
+  if (kd >= 2.0) return { name: 'Prata', tagClass: 'tag-prata' };
+  if (kd >= 1.0) return { name: 'Bronze', tagClass: 'tag-bronze' };
+  return null;
+}
+
+// ══════════════════════════════════════════
+// ROSTER
+// ══════════════════════════════════════════
+function renderRoster() {
+  var grid = document.getElementById('roster-grid');
+  document.getElementById('roster-count').textContent = roster.length + ' / 6 jogadores';
+
+  var html = '';
+  roster.forEach(function(p, i) {
+    var ti = tierInfo(p.kd);
+    var tierStyle_str = ti ? tierStyle(ti.name) : '';
+    var tierHtml = ti
+      ? '<div class="pc-tier" style="' + tierStyle_str + '">' + ti.name + '</div>'
+      : '';
+    var photoHtml = p.avatarUrl
+      ? '<img class="pc-photo-img" src="' + p.avatarUrl + '" alt="">'
+      : '<span class="pc-photo-initial">' + escHtml(p.nick.charAt(0).toUpperCase()) + '</span>';
+    var num = String(i + 1).padStart(2, '0');
+
+    html +=
+      '<div class="player-card">' +
+        /* dog tag PNG como fundo, rotacionada 90° pra vertical */
+        '<img class="pc-dogtag-bg" src="assets/images/referencias/dog-tag.png" alt="">' +
+        /* overlay só na parte inferior pra texto ser legível */
+        '<div class="pc-overlay"></div>' +
+        /* serial estilo plaquinha militar */
+        '<div class="pc-serial">TZB · S01 · #' + num + '</div>' +
+        /* badge capitão */
+        (p.captain
+          ? '<div class="pc-captain-badge" style="display:block;"><span>Capitão</span></div>'
+          : '') +
+        /* foto */
+        '<div class="pc-photo-area">' +
+          '<div class="pc-photo-ring" onclick="triggerAvatarUpload(' + i + ')" title="Trocar foto">' +
+            photoHtml +
+            '<div class="pc-photo-hint"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>' +
+          '</div>' +
+          '<input type="file" accept="image/*" class="pc-avatar-input" id="avatar-input-' + i + '" onchange="setPlayerAvatar(' + i + ',this)">' +
+        '</div>' +
+        /* info: role, nick, nome, tier */
+        '<div class="pc-info">' +
+          (p.role ? '<div class="pc-role-tag">' + escHtml(p.role) + '</div>' : '') +
+          '<div class="pc-nick">' + escHtml(p.nick) + '</div>' +
+          '<div class="pc-fullname">' + (p.name ? escHtml(p.name) : '') + '</div>' +
+          '<div class="pc-tier-row">' + tierHtml + '</div>' +
+        '</div>' +
+        /* botões editar/remover */
+        '<div class="pc-actions">' +
+          '<button class="pc-btn pc-btn-edit" onclick="editPlayer(' + i + ')">Editar</button>' +
+          '<button class="pc-btn pc-btn-remove" onclick="removePlayer(' + i + ')">Remover</button>' +
+        '</div>' +
+      '</div>';
+  });
+
+  if (roster.length < 6) {
+    html += '<div class="player-card-add" onclick="openModal()">' +
+      '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>' +
+      '<span>Adicionar Jogador</span>' +
+    '</div>';
+  }
+
+  grid.innerHTML = html;
+}
+
+function tierStyle(name) {
+  if (name === 'Ouro') return 'background:rgba(232,178,74,0.14);border:1px solid rgba(232,178,74,0.3);color:#e8b24a;';
+  if (name === 'Prata') return 'background:rgba(160,174,192,0.12);border:1px solid rgba(160,174,192,0.3);color:#a0aec0;';
+  if (name === 'Bronze') return 'background:rgba(180,120,60,0.14);border:1px solid rgba(180,120,60,0.3);color:#b4783c;';
+  return '';
+}
+
+function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function triggerAvatarUpload(i) {
+  document.getElementById('avatar-input-' + i).click();
+}
+
+function setPlayerAvatar(i, input) {
+  if (!input.files || !input.files[0]) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    roster[i].avatarUrl = e.target.result;
+    saveState(); renderRoster();
+    syncRosterToSupabase();
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+
+function removePlayer(i) {
+  if (!confirm('Remover ' + roster[i].nick + ' do roster?')) return;
+  roster.splice(i, 1);
+  saveState(); renderRoster();
+  document.getElementById('roster-count').textContent = roster.length + ' / 6 jogadores';
+  syncRosterToSupabase();
+}
+
+function editPlayer(i) {
+  var p = roster[i];
+  document.getElementById('p-nick').value = p.nick || '';
+  document.getElementById('p-name').value = p.name || '';
+  document.getElementById('p-role').value = p.role || '';
+  document.getElementById('p-kd').value = p.kd || '';
+  document.getElementById('p-activision').value = p.activision || '';
+  document.getElementById('p-captain').checked = !!p.captain;
+  openModal(i);
+}
+
+var editingIndex = null;
+function openModal(idx) {
+  editingIndex = (typeof idx === 'number') ? idx : null;
+  if (editingIndex === null) {
+    document.getElementById('p-nick').value = '';
+    document.getElementById('p-name').value = '';
+    document.getElementById('p-role').value = '';
+    document.getElementById('p-kd').value = '';
+    document.getElementById('p-activision').value = '';
+    document.getElementById('p-captain').checked = false;
+  }
+  document.getElementById('modal-add-player').classList.add('open');
+}
+function closeModal() { document.getElementById('modal-add-player').classList.remove('open'); }
+
+function addPlayer() {
+  var nick = document.getElementById('p-nick').value.trim();
+  if (!nick) { document.getElementById('p-nick').style.borderColor = 'rgba(170,0,0,0.7)'; return; }
+  var player = {
+    nick: nick,
+    name: document.getElementById('p-name').value.trim(),
+    role: document.getElementById('p-role').value,
+    kd: parseFloat(document.getElementById('p-kd').value) || null,
+    activision: document.getElementById('p-activision').value.trim(),
+    captain: document.getElementById('p-captain').checked,
+    avatarUrl: null
+  };
+  if (editingIndex !== null) {
+    player.avatarUrl = roster[editingIndex].avatarUrl || null;
+    roster[editingIndex] = player;
+  } else {
+    if (roster.length >= 6) { alert('Máximo de 6 jogadores no roster.'); return; }
+    roster.push(player);
+  }
+  saveState(); renderRoster(); closeModal();
+  syncRosterToSupabase();
+}
+
+// ══════════════════════════════════════════
+// SETTINGS
+// ══════════════════════════════════════════
+function updateKD(v) { user.kd = parseFloat(v) || null; render(); }
+
+async function saveSettings() {
+  user.name = document.getElementById('s-name').value.trim();
+  user.kd = parseFloat(document.getElementById('s-kd').value) || null;
+  if (user.type === 'team') {
+    user.teamname  = document.getElementById('s-teamname').value.trim();
+    user.category  = document.getElementById('s-category').value;
+    user.instagram = document.getElementById('s-instagram').value.trim();
+    user.twitter   = document.getElementById('s-twitter').value.trim();
+    user.bio       = document.getElementById('s-bio').value.trim();
+  }
+  saveState(); render();
+
+  // Sincroniza com Supabase
+  if (currentUserId) {
+    await supa.from('tzb_profiles').upsert({
+      id: currentUserId, name: user.name, type: user.type
+    }, { onConflict: 'id' });
+    if (user.type === 'team' && currentTeamId) {
+      await supa.from('tzb_teams').update({
+        display_name: user.teamname, category: user.category,
+        instagram: user.instagram, twitter: user.twitter
+      }).eq('id', currentTeamId);
+    }
+  }
+
+  var ok = document.getElementById('save-ok');
+  ok.style.display = 'inline';
+  requestAnimationFrame(function() { ok.style.opacity = '1'; });
+  setTimeout(function() { ok.style.opacity = '0'; setTimeout(function() { ok.style.display = 'none'; }, 300); }, 2500);
+}
+
+async function savePublicPage() {
+  user.pubActive       = document.getElementById('s-page-active').checked;
+  user.pubBannerUrl    = user.pubBannerUrl || '';
+  user.pubDescription  = document.getElementById('s-pub-desc').value.trim();
+  user.pubAchievements = document.getElementById('s-pub-achievements').value.trim();
+  user.pubDiscord      = document.getElementById('s-pub-discord').value.trim();
+  user.pubYoutube      = document.getElementById('s-pub-youtube').value.trim();
+  user.instagram       = document.getElementById('s-pub-instagram').value.trim();
+  user.twitter         = document.getElementById('s-pub-twitter').value.trim();
+
+  saveState();
+
+  // Sincroniza com Supabase
+  if (currentTeamId) {
+    await supa.from('tzb_teams').update({
+      pub_active:   user.pubActive,
+      banner_url:   user.pubBannerUrl || null,
+      description:  user.pubDescription || null,
+      achievements: user.pubAchievements || null,
+      discord:      user.pubDiscord || null,
+      youtube:      user.pubYoutube || null,
+      instagram:    user.instagram || null,
+      twitter:      user.twitter || null
+    }).eq('id', currentTeamId);
+    await syncRosterToSupabase();
+  }
+
+  var ok = document.getElementById('save-pub-ok');
+  ok.style.display = 'inline';
+  requestAnimationFrame(function() { ok.style.opacity = '1'; });
+  setTimeout(function() { ok.style.opacity = '0'; setTimeout(function() { ok.style.display = 'none'; }, 300); }, 2500);
+}
+
+async function saveFreeAgent() {
+  var freeAgent = document.getElementById('s-free-agent').checked;
+  var role      = document.getElementById('s-player-role').value.trim();
+  var region    = document.getElementById('s-fa-region').value.trim();
+  var bio       = document.getElementById('s-fa-bio').value.trim();
+
+  if (currentUserId) {
+    await supa.from('tzb_profiles').update({
+      free_agent:      freeAgent,
+      player_role:     role   || null,
+      region:          region || null,
+      free_agent_bio:  bio    || null
+    }).eq('id', currentUserId);
+  }
+
+  var ok = document.getElementById('save-fa-ok');
+  ok.style.display = 'inline';
+  requestAnimationFrame(function() { ok.style.opacity = '1'; });
+  setTimeout(function() { ok.style.opacity = '0'; setTimeout(function() { ok.style.display = 'none'; }, 300); }, 2500);
+}
+
+function viewPublicPage() {
+  if (currentTeamId) {
+    window.open('/time.html?id=' + currentTeamId, '_blank');
+  } else {
+    alert('Salve o perfil primeiro para gerar sua página pública.');
+  }
+}
+
+async function previewBanner(input) {
+  if (!input.files || !input.files[0]) return;
+  var file = input.files[0];
+  var area = document.getElementById('banner-upload-area');
+  var hint = document.getElementById('banner-upload-hint');
+
+  // Preview local imediato
+  var localUrl = URL.createObjectURL(file);
+  area.style.backgroundImage = 'url(' + localUrl + ')';
+  area.style.backgroundSize = 'cover';
+  area.style.backgroundPosition = 'center';
+
+  // Indicador de upload
+  hint.style.display = 'flex';
+  hint.innerHTML = '<span style="color:#fff;font-family:\'Exo 2\',sans-serif;font-size:12px;font-weight:700;letter-spacing:.06em;">ENVIANDO...</span>';
+
+  var folder = currentTeamId || ('u_' + (currentUserId || 'anon'));
+  var ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+  var path = 'banners/' + folder + '/banner.' + ext;
+
+  var _up = await supa.storage.from('tzb-media').upload(path, file, {
+    cacheControl: '3600', upsert: true, contentType: file.type
+  });
+
+  if (_up.error) {
+    hint.innerHTML = '<span style="color:#cc0000;font-family:\'Exo 2\',sans-serif;font-size:11px;font-weight:700;">ERRO — crie o bucket tzb-media no Supabase</span>';
+    console.error('Banner upload:', _up.error);
+    return;
+  }
+
+  var _url = supa.storage.from('tzb-media').getPublicUrl(path);
+  user.pubBannerUrl = _url.data.publicUrl;
+  hint.style.display = 'none';
+}
+
+async function previewLogo(input) {
+  if (!input.files || !input.files[0]) return;
+  var file = input.files[0];
+
+  // Preview local imediato
+  var localUrl = URL.createObjectURL(file);
+  document.getElementById('up-preview').innerHTML = '<img src="' + localUrl + '" style="width:100%;height:100%;object-fit:cover;">';
+  document.getElementById('sb-avatar').innerHTML = '<img src="' + localUrl + '" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;">';
+  document.getElementById('banner-logo').innerHTML = '<img src="' + localUrl + '" style="width:100%;height:100%;object-fit:cover;">';
+
+  // Upload para Supabase Storage
+  var folder = currentUserId || 'anon';
+  var ext = (file.name.split('.').pop() || 'png').toLowerCase();
+  var path = 'logos/' + folder + '/logo.' + ext;
+
+  var _up = await supa.storage.from('tzb-media').upload(path, file, {
+    cacheControl: '3600', upsert: true, contentType: file.type
+  });
+
+  if (_up.error) { console.error('Logo upload:', _up.error); return; }
+
+  var _url = supa.storage.from('tzb-media').getPublicUrl(path);
+  user.avatarUrl = _url.data.publicUrl;
+
+  // Atualiza também o Supabase profile com a URL real
+  if (currentUserId) {
+    await supa.from('tzb_profiles').update({ avatar_url: user.avatarUrl }).eq('id', currentUserId);
+  }
+  if (currentTeamId) {
+    await supa.from('tzb_teams').update({ logo_url: user.avatarUrl }).eq('id', currentTeamId);
+  }
+}
+
+// ══════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════
+var sectionTitles = { overview:'Visão Geral', scrims:'Scrims', campeonatos:'Campeonatos', ranking:'Meu Ranking', roster:'Meu Time', settings:'Configurações', 'meus-eventos':'Meus Eventos' };
+
+function go(id) {
+  document.querySelectorAll('.section').forEach(function(s) { s.classList.remove('active'); });
+  document.querySelectorAll('.sb-item').forEach(function(n) { n.classList.remove('active'); });
+  var sec = document.getElementById('s-' + id);
+  if (sec) sec.classList.add('active');
+  document.getElementById('tb-section').textContent = sectionTitles[id] || id;
+  document.querySelectorAll('.sb-item').forEach(function(n) {
+    if (n.getAttribute('onclick') && n.getAttribute('onclick').indexOf("'" + id + "'") !== -1) n.classList.add('active');
+  });
+  closeSidebar();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Mobile sidebar
+function openSidebar() { document.getElementById('sidebar').classList.add('open'); document.getElementById('sb-overlay').classList.add('open'); }
+function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sb-overlay').classList.remove('open'); }
+
+// Logout
+async function logout() {
+  await supa.auth.signOut();
+  localStorage.removeItem('tzb_user');
+  localStorage.removeItem('tzb_roster');
+  window.location.href = '/auth';
+}
+
+// ══════════════════════════════════════════
+// OVERVIEW COLS RESPONSIVE
+// ══════════════════════════════════════════
+function fixCols() {
+  var cols = document.getElementById('overview-cols');
+  if (cols) cols.style.gridTemplateColumns = window.innerWidth < 768 ? '1fr' : '1fr 1fr';
+}
+window.addEventListener('resize', fixCols);
+fixCols();
+
+// ══════════════════════════════════════════
+// SCRIMS — INSCRIÇÕES DO USUÁRIO
+// ══════════════════════════════════════════
+async function loadUserScrims() {
+  if (!currentUserId) return;
+
+  var _reg = await supa
+    .from('tzb_scrim_registrations')
+    .select('scrim_id, registered_at, status, tzb_scrims(id, name, tier, format, scheduled_at, status, lobby_code)')
+    .eq('user_id', currentUserId)
+    .order('registered_at', { ascending: false });
+
+  if (_reg.error || !_reg.data || _reg.data.length === 0) return;
+
+  var now = new Date();
+  var active = [];
+  var history = [];
+
+  _reg.data.forEach(function(reg) {
+    var s = reg.tzb_scrims;
+    if (!s) return;
+    var dt = new Date(s.scheduled_at);
+    if (dt >= now || s.status === 'aberto') {
+      active.push({ reg: reg, scrim: s, dt: dt });
+    } else {
+      history.push({ reg: reg, scrim: s, dt: dt });
+    }
+  });
+
+  function tierClass(t) {
+    if (t === 'ouro')  return 'tag-ouro';
+    if (t === 'prata') return 'tag-prata';
+    return 'tag-bronze';
+  }
+  function tierLabel(t) {
+    if (t === 'ouro')  return 'Ouro';
+    if (t === 'prata') return 'Prata';
+    return 'Bronze';
+  }
+  function fmtDate(dt) {
+    return dt.toLocaleDateString('pt-BR', { weekday:'short', day:'2-digit', month:'short' }) +
+           ' · ' + dt.toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' });
+  }
+
+  if (active.length > 0) {
+    var html = '';
+    active.forEach(function(item) {
+      var s = item.scrim;
+      var lobbyHtml = s.lobby_code
+        ? '<div style="margin-top:10px;padding:8px 12px;background:rgba(170,0,0,0.08);border:1px solid rgba(170,0,0,0.2);border-radius:8px;font-family:\'Exo 2\',sans-serif;font-size:13px;color:var(--txt);font-weight:700;">Código do Lobby: ' + s.lobby_code + '</div>'
+        : '<div style="margin-top:10px;font-size:11px;color:var(--txt2);">Código do lobby sai 10 min antes. Fique atento.</div>';
+      html += '<div style="padding:14px 0;border-bottom:1px solid var(--bg-border);">' +
+        '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">' +
+        '<span class="sb-tag ' + tierClass(s.tier) + '">' + tierLabel(s.tier) + '</span>' +
+        '<span style="font-family:\'Exo 2\',sans-serif;font-size:14px;font-weight:700;color:var(--txt);">' + s.name + '</span>' +
+        '</div>' +
+        '<div style="font-size:12px;color:var(--txt2);">' + s.format + ' &nbsp;·&nbsp; ' + fmtDate(item.dt) + '</div>' +
+        lobbyHtml +
+        '</div>';
+    });
+    document.getElementById('scrims-list-active').innerHTML =
+      '<div style="padding:4px 0 0;">' + html + '</div>' +
+      '<div style="padding:14px 0 4px;"><button onclick="go(\'scrims\')" class="btn btn-ghost" style="font-size:12px;">Ver todos os scrims disponíveis</button></div>';
+  }
+
+  if (history.length > 0) {
+    var hhtml = '';
+    history.forEach(function(item) {
+      var s = item.scrim;
+      hhtml += '<div style="padding:12px 0;border-bottom:1px solid var(--bg-border);display:flex;align-items:center;justify-content:space-between;">' +
+        '<div>' +
+        '<span class="sb-tag ' + tierClass(s.tier) + '" style="margin-right:8px;">' + tierLabel(s.tier) + '</span>' +
+        '<span style="font-size:13px;color:var(--txt);">' + s.name + '</span>' +
+        '</div>' +
+        '<div style="font-size:11px;color:var(--txt2);">' + fmtDate(item.dt) + '</div>' +
+        '</div>';
+    });
+    document.getElementById('scrims-list-history').innerHTML =
+      '<div style="padding:4px 0 0;">' + hhtml + '</div>';
+  }
+}
+
+// ══════════════════════════════════════════
+// ORGANIZADOR — CRIAR EVENTOS
+// ══════════════════════════════════════════
+function openOrgModal(type) {
+  var id = type === 'scrim' ? 'modal-org-scrim' : 'modal-org-camp';
+  document.getElementById(id).classList.add('open');
+}
+function closeOrgModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+function previewOrgFlyer(inputId, previewId) {
+  var file = document.getElementById(inputId).files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var img = document.getElementById(previewId);
+    img.src = e.target.result;
+    img.style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+}
+async function uploadOrgFlyer(eventId, inputId) {
+  var file = document.getElementById(inputId).files[0];
+  if (!file) return null;
+  var ext = file.name.split('.').pop();
+  var path = 'flyers/' + eventId + '/flyer.' + ext;
+  var _up = await supa.storage.from('tzb-media').upload(path, file, { upsert: true, contentType: file.type });
+  if (_up.error) return null;
+  return SUPA_URL + '/storage/v1/object/public/tzb-media/' + path;
+}
+
+async function createOrgScrim() {
+  var name  = document.getElementById('osc-name').value.trim();
+  var date  = document.getElementById('osc-date').value;
+  var msg   = document.getElementById('org-scrim-msg');
+  if (!name || !date) { msg.textContent = 'Preencha nome e data.'; msg.style.display = 'block'; return; }
+  msg.style.display = 'none';
+  var _r = await supa.from('tzb_scrims').insert({
+    name:          name,
+    tier:          document.getElementById('osc-tier').value,
+    format:        document.getElementById('osc-format').value.trim(),
+    scheduled_at:  date,
+    max_trios:     parseInt(document.getElementById('osc-max').value) || 20,
+    kd_min:        parseFloat(document.getElementById('osc-kd').value) || null,
+    scoring_model: document.getElementById('osc-model').value,
+    status:        'aberto',
+    organizer_id:  currentUserId,
+    stream_url:    document.getElementById('osc-stream').value.trim() || null
+  }).select('id').maybeSingle();
+  if (_r.error) { msg.textContent = 'Erro: ' + _r.error.message; msg.style.display = 'block'; return; }
+  if (_r.data && document.getElementById('osc-flyer').files[0]) {
+    var furl = await uploadOrgFlyer(_r.data.id, 'osc-flyer');
+    if (furl) await supa.from('tzb_scrims').update({ flyer_url: furl }).eq('id', _r.data.id);
+  }
+  closeOrgModal('modal-org-scrim');
+  document.getElementById('osc-name').value = '';
+  document.getElementById('osc-date').value = '';
+  document.getElementById('osc-stream').value = '';
+  document.getElementById('osc-flyer').value = '';
+  document.getElementById('osc-flyer-prev').style.display = 'none';
+  loadOrgEvents();
+}
+
+async function createOrgCamp() {
+  var name = document.getElementById('oca-name').value.trim();
+  var msg  = document.getElementById('org-camp-msg');
+  if (!name) { msg.textContent = 'Preencha o nome do campeonato.'; msg.style.display = 'block'; return; }
+  msg.style.display = 'none';
+  var _r = await supa.from('tzb_campeonatos').insert({
+    name:          name,
+    category:      document.getElementById('oca-cat').value,
+    scoring_model: document.getElementById('oca-model').value,
+    format:        document.getElementById('oca-format').value.trim(),
+    scheduled_at:  document.getElementById('oca-date').value || null,
+    max_teams:     parseInt(document.getElementById('oca-max').value) || 40,
+    description:   document.getElementById('oca-desc').value.trim(),
+    status:        'embreve',
+    organizer_id:  currentUserId,
+    stream_url:    document.getElementById('oca-stream').value.trim() || null
+  }).select('id').maybeSingle();
+  if (_r.error) { msg.textContent = 'Erro: ' + _r.error.message; msg.style.display = 'block'; return; }
+  if (_r.data && document.getElementById('oca-flyer').files[0]) {
+    var furl = await uploadOrgFlyer(_r.data.id, 'oca-flyer');
+    if (furl) await supa.from('tzb_campeonatos').update({ flyer_url: furl }).eq('id', _r.data.id);
+  }
+  closeOrgModal('modal-org-camp');
+  document.getElementById('oca-name').value = '';
+  document.getElementById('oca-desc').value = '';
+  document.getElementById('oca-stream').value = '';
+  document.getElementById('oca-flyer').value = '';
+  document.getElementById('oca-flyer-prev').style.display = 'none';
+  loadOrgEvents();
+}
+
+// ══════════════════════════════════════════
+// ORGANIZADOR — MEUS EVENTOS
+// ══════════════════════════════════════════
+async function loadOrgEvents() {
+  if (!currentUserId) return;
+  var grid = document.getElementById('org-events-grid');
+  grid.innerHTML = '<div style="grid-column:1/-1;padding:40px;text-align:center;color:var(--txt2);font-size:13px;">Carregando...</div>';
+
+  // Busca scrims E campeonatos criados por este organizador
+  var [_sc, _ca] = await Promise.all([
+    supa.from('tzb_scrims').select('id,name,tier,format,scheduled_at,max_trios,registered_trios,status,lobby_code,scoring_model').eq('organizer_id', currentUserId).order('scheduled_at', {ascending:false}),
+    supa.from('tzb_campeonatos').select('id,name,category,format,scheduled_at,max_teams,status,flyer_url,scoring_model').eq('organizer_id', currentUserId).order('scheduled_at', {ascending:false})
+  ]);
+
+  var scrims = (_sc.data || []).map(function(s){ return Object.assign({}, s, {_kind:'scrim'}); });
+  var camps  = (_ca.data || []).map(function(c){ return Object.assign({}, c, {_kind:'camp'}); });
+  var all    = scrims.concat(camps).sort(function(a,b){ return new Date(b.scheduled_at) - new Date(a.scheduled_at); });
+
+  var badge = document.getElementById('eventos-count');
+  if (all.length > 0) { badge.textContent = all.length; badge.style.display = ''; }
+  else { badge.style.display = 'none'; }
+
+  if (!all.length) {
+    grid.innerHTML = '<div style="grid-column:1/-1;padding:48px;text-align:center;">' +
+      '<div style="font-family:\'Exo 2\',sans-serif;font-size:14px;font-weight:700;color:var(--txt2);margin-bottom:8px;">Nenhum evento criado</div>' +
+      '<div style="font-size:12px;color:var(--txt3);">O administrador precisa criar eventos vinculados à sua conta para aparecerem aqui.</div></div>';
+    return;
+  }
+
+  grid.innerHTML = all.map(function(ev) {
+    var kindLabel = ev._kind === 'scrim' ? 'SCRIM' : 'CAMPEONATO';
+    var kindColor = ev._kind === 'scrim' ? 'rgba(170,0,0,.15)' : 'rgba(232,178,74,.1)';
+    var kindTextColor = ev._kind === 'scrim' ? '#cc4444' : '#e8b24a';
+    var flyer = ev.flyer_url ? '<img src="' + ev.flyer_url + '" style="width:100%;height:100px;object-fit:cover;display:block;" alt="flyer">' : '';
+    var slots = ev._kind === 'scrim' ? ((ev.registered_trios||0) + '/' + ev.max_trios + ' trios') : (ev.max_teams + ' times');
+    return '<div style="background:var(--bg-card);border:1px solid var(--bg-border);border-radius:12px;overflow:hidden;cursor:pointer;" onclick="openOrgEvent(\'' + ev.id + '\',\'' + ev._kind + '\')">' +
+      (flyer ? '<div style="overflow:hidden;">' + flyer + '</div>' : '<div style="height:6px;background:' + kindColor + ';"></div>') +
+      '<div style="padding:14px;">' +
+        '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">' +
+          '<span style="font-size:10px;font-weight:700;letter-spacing:.1em;color:' + kindTextColor + ';">' + kindLabel + '</span>' +
+          '<span style="font-size:10px;color:var(--txt2);">' + (ev.scheduled_at ? new Date(ev.scheduled_at).toLocaleDateString('pt-BR') : '—') + '</span>' +
+        '</div>' +
+        '<div style="font-family:\'Exo 2\',sans-serif;font-size:14px;font-weight:800;margin-bottom:4px;">' + (ev.name||'—') + '</div>' +
+        '<div style="font-size:11px;color:var(--txt2);">' + (ev.format||ev.category||'—') + ' · ' + slots + '</div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+// ══════════════════════════════════════════
+// ZERO POINTS — CÁLCULO POR MODELO
+// ══════════════════════════════════════════
+function calcZeroPoints(position, kills, totalTeams, model) {
+  model = model || 'corridos';
+  if (model === 'corridos') {
+    var placePts = [0,15,12,10,8,7,5,5,5,5,5,3,3,3,3,3,3,3,3,3,3,1];
+    var pts = (position <= 20 ? (placePts[position] || 1) : 1);
+    return pts + kills;
+  }
+  if (model === 'ewc') {
+    var mult = position === 1 ? 1.6 : position <= 5 ? 1.4 : position <= 10 ? 1.2 : 1.0;
+    return Math.round(kills * mult * 10) / 10;
+  }
+  if (model === 'wsow') {
+    var mult = position === 1 ? 2.0 : position <= 5 ? 1.8 : position <= 10 ? 1.6
+      : position <= 20 ? 1.4 : position <= 30 ? 1.2 : 1.0;
+    return Math.round(kills * mult * 10) / 10;
+  }
+  var posScore   = ((totalTeams - position) / Math.max(totalTeams - 1, 1)) * 40;
+  var killsScore = Math.min(kills / 20, 1) * 30;
+  return Math.round(posScore + killsScore + 30);
+}
+
+// ══════════════════════════════════════════
+// ORGANIZADOR — PAINEL DE CONTROLE DO EVENTO
+// ══════════════════════════════════════════
+var orgCurrentEvent = null;
+var orgDrops = [];
+var orgRealtime = null;
+var orgRefreshInterval = null;
+
+function orgTab(tab) {
+  ['info','times','leaderboard','resultado'].forEach(function(t) {
+    var el = document.getElementById('org-tab-' + t);
+    var btn = document.getElementById('otab-' + t);
+    if (el) el.style.display = t === tab ? '' : 'none';
+    if (btn) btn.classList.toggle('active', t === tab);
+  });
+}
+
+function orgStatusBadge(status) {
+  var map = {
+    aberto:    ['rgba(0,200,80,0.15)','#4ade80','rgba(0,200,80,0.3)','ABERTO'],
+    em_breve:  ['rgba(232,178,74,0.12)','#e8b24a','rgba(232,178,74,0.3)','EM BREVE'],
+    embreve:   ['rgba(232,178,74,0.12)','#e8b24a','rgba(232,178,74,0.3)','EM BREVE'],
+    ao_vivo:   ['rgba(170,0,0,0.2)','#ff4444','rgba(170,0,0,0.4)','AO VIVO'],
+    encerrado: ['rgba(136,146,164,0.1)','#8892a4','rgba(136,146,164,0.25)','ENCERRADO']
+  };
+  var s = map[status] || map.em_breve;
+  return '<span style="display:inline-block;font-size:10px;font-weight:700;letter-spacing:.1em;padding:3px 10px;border-radius:4px;background:'+s[0]+';color:'+s[1]+';border:1px solid '+s[2]+';">'+s[3]+'</span>';
+}
+
+function orgRenderStatusControls(status) {
+  var html = '';
+  if (status === 'em_breve' || status === 'embreve')
+    html += '<button class="btn btn-sm" style="background:rgba(0,200,80,0.15);color:#4ade80;border:1px solid rgba(0,200,80,0.3);" onclick="orgSetStatus(\'aberto\')">Abrir Inscrições</button>';
+  if (status === 'aberto')
+    html += '<button class="btn btn-sm" style="background:rgba(170,0,0,0.15);color:#ff6666;border:1px solid rgba(170,0,0,0.3);" onclick="orgSetStatus(\'ao_vivo\')">▶ Ir Ao Vivo</button>';
+  if (status === 'ao_vivo')
+    html += '<button class="btn btn-sm" style="background:rgba(170,0,0,0.25);color:#ff4444;border:1px solid rgba(170,0,0,0.5);" onclick="orgSetStatus(\'aberto\')">⬤ LIVE — Sair do ar</button>';
+  if (status !== 'encerrado')
+    html += '<button class="btn btn-danger btn-sm" onclick="orgSetStatus(\'encerrado\')">Encerrar</button>';
+  return html;
+}
+
+async function orgSetStatus(newStatus) {
+  if (!orgCurrentEvent) return;
+  if (newStatus === 'encerrado' && !confirm('Encerrar este evento?')) return;
+  var tabela = orgCurrentEvent.kind === 'scrim' ? 'tzb_scrims' : 'tzb_campeonatos';
+  await supa.from(tabela).update({ status: newStatus }).eq('id', orgCurrentEvent.id);
+  orgCurrentEvent.status = newStatus;
+  document.getElementById('org-det-status-badge').innerHTML = orgStatusBadge(newStatus);
+  document.getElementById('org-status-controls').innerHTML = orgRenderStatusControls(newStatus);
+  var dot = document.getElementById('org-live-dot');
+  if (dot) dot.style.display = newStatus === 'ao_vivo' ? 'inline-block' : 'none';
+  toast(newStatus === 'ao_vivo' ? '🔴 AO VIVO!' : newStatus === 'encerrado' ? 'Evento encerrado.' : 'Status atualizado.');
+}
+
+async function orgSaveLobby() {
+  if (!orgCurrentEvent) return;
+  var code = document.getElementById('org-lobby-input').value.trim();
+  if (!code) { toast('Informe o código.', true); return; }
+  var tabela = orgCurrentEvent.kind === 'scrim' ? 'tzb_scrims' : 'tzb_campeonatos';
+  await supa.from(tabela).update({ lobby_code: code }).eq('id', orgCurrentEvent.id);
+  toast('Lobby: ' + code);
+}
+
+async function orgSaveStream() {
+  if (!orgCurrentEvent) return;
+  var url = document.getElementById('org-stream-input').value.trim();
+  var tabela = orgCurrentEvent.kind === 'scrim' ? 'tzb_scrims' : 'tzb_campeonatos';
+  await supa.from(tabela).update({ stream_url: url || null }).eq('id', orgCurrentEvent.id);
+  toast('Link de transmissão salvo.');
+}
+
+function orgRenderTeams(teams) {
+  var countEl = document.getElementById('org-det-count');
+  if (countEl) countEl.textContent = teams.length;
+  var statEl = document.getElementById('ost-teams');
+  if (statEl) statEl.textContent = teams.length;
+  var el = document.getElementById('org-det-teams');
+  if (!el) return;
+  if (!teams.length) {
+    el.innerHTML = '<div style="padding:20px;text-align:center;color:var(--txt2);font-size:13px;">Nenhum time inscrito ainda.</div>';
+    return;
+  }
+  el.innerHTML = teams.map(function(t, i) {
+    var avatar = t.logo_url
+      ? '<img src="'+t.logo_url+'" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0;">'
+      : '<div style="width:28px;height:28px;border-radius:50%;background:var(--bg-card2);border:1px solid var(--bg-border);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:11px;font-weight:700;color:var(--txt2);">'+(t.display_name||'?')[0]+'</div>';
+    return '<div style="display:flex;align-items:center;gap:12px;padding:11px 16px;border-bottom:1px solid rgba(26,32,48,.5);">' +
+      '<span style="font-size:11px;color:var(--txt2);width:22px;text-align:center;">' + (i+1) + '</span>' +
+      avatar +
+      '<span style="font-size:13px;font-weight:500;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (t.display_name||'—') + '</span>' +
+      '<span style="font-size:11px;color:var(--txt2);">' + (t.category||'') + '</span>' +
+    '</div>';
+  }).join('');
+}
+
+function orgRenderLeaderboard(teams) {
+  var sorted = teams.slice().sort(function(a,b){ return (b.event_pts||0)-(a.event_pts||0); });
+  var el = document.getElementById('org-det-leaderboard');
+  var medals = ['🥇','🥈','🥉'];
+
+  // Stats
+  var leaderEl = document.getElementById('ost-leader');
+  if (leaderEl && sorted.length) leaderEl.textContent = sorted[0].display_name || '—';
+  var totalKills = orgDrops.reduce(function(acc,d){ return acc+d.teams.reduce(function(a,t){ return a+(t.kills||0); },0); }, 0);
+  var killsEl = document.getElementById('ost-kills');
+  if (killsEl) killsEl.textContent = totalKills;
+
+  // MVP
+  if (sorted.length) {
+    var mvpBanner = document.getElementById('org-mvp-banner');
+    var mvpName   = document.getElementById('org-mvp-name');
+    var mvpStats  = document.getElementById('org-mvp-stats');
+    if (mvpBanner) mvpBanner.style.display = 'flex';
+    if (mvpName)   mvpName.textContent = sorted[0].display_name || '—';
+    if (mvpStats)  mvpStats.textContent = (sorted[0].event_pts||0)+' ZP neste evento · Líder do ranking';
+  }
+
+  if (!el) return;
+  if (!sorted.length) {
+    el.innerHTML = '<div style="padding:20px;text-align:center;color:var(--txt2);font-size:13px;">Aguardando inscrições.</div>';
+    return;
+  }
+  el.innerHTML = sorted.map(function(t, i) {
+    var isFirst = i === 0;
+    return '<div style="display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid rgba(26,32,48,.5);'+(isFirst?'background:rgba(232,178,74,.04);':'')+'">' +
+      '<span style="font-size:18px;width:28px;text-align:center;">' + (medals[i] || '#'+(i+1)) + '</span>' +
+      '<span style="font-family:\'Exo 2\',sans-serif;font-size:14px;font-weight:700;flex:1;">' + (t.display_name||'—') + '</span>' +
+      '<div style="text-align:right;">' +
+        '<div style="font-family:\'Exo 2\',sans-serif;font-size:18px;font-weight:800;color:'+(isFirst?'var(--gold)':'var(--accent)')+';line-height:1;">'+(t.event_pts||0)+'</div>' +
+        '<div style="font-size:10px;color:var(--txt2);">ZP evento</div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+  var upd = document.getElementById('org-leader-updated');
+  if (upd) upd.textContent = 'atualizado ' + new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+}
+
+function orgBuildResForm(teams, model) {
+  var label = model === 'ewc' ? 'EWC 2025' : model === 'wsow' ? 'WSOW' : 'Pontos Corridos';
+  var lbl = document.getElementById('org-model-label');
+  if (lbl) lbl.textContent = 'Modelo: ' + label + ' · Preencha placement e kills de cada time';
+  var form = document.getElementById('org-res-form');
+  if (!form || !teams.length) return;
+  form.dataset.teamIds   = teams.map(function(t){ return t.id; }).join(',');
+  form.dataset.teamCount = teams.length;
+  form.dataset.model     = model;
+  form.innerHTML = teams.map(function(t) {
+    return '<div style="display:grid;grid-template-columns:1fr 72px 72px 56px;gap:8px;align-items:center;">' +
+      '<span style="font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (t.display_name||'—') + '</span>' +
+      '<input type="number" class="f-input" id="rpos-'+t.id+'" placeholder="1-'+teams.length+'" min="1" max="'+teams.length+'" style="padding:4px 6px;font-size:12px;text-align:center;" oninput="orgPrevPts(\''+t.id+'\','+teams.length+',\''+model+'\')">' +
+      '<input type="number" class="f-input" id="rkills-'+t.id+'" placeholder="0" min="0" max="99" style="padding:4px 6px;font-size:12px;text-align:center;" oninput="orgPrevPts(\''+t.id+'\','+teams.length+',\''+model+'\')">' +
+      '<span id="rzp-'+t.id+'" style="font-family:\'Exo 2\',sans-serif;font-size:12px;font-weight:700;color:var(--accent);text-align:center;">—</span>' +
+    '</div>';
+  }).join('');
+}
+
+function orgPrevPts(tid, total, model) {
+  var pos   = parseInt(document.getElementById('rpos-'+tid)?.value) || 0;
+  var kills = parseInt(document.getElementById('rkills-'+tid)?.value) || 0;
+  var el    = document.getElementById('rzp-'+tid);
+  if (el && pos > 0) el.textContent = calcZeroPoints(pos, kills, total, model);
+}
+
+async function orgLancarDrop() {
+  var form = document.getElementById('org-res-form');
+  if (!form || !orgCurrentEvent) return;
+  var teamIds = (form.dataset.teamIds || '').split(',').filter(Boolean);
+  var total   = parseInt(form.dataset.teamCount) || teamIds.length;
+  var model   = form.dataset.model || 'corridos';
+  var dropNum = parseInt(document.getElementById('org-drop-num').value) || 1;
+  var errors  = [];
+  var dropTeams = [];
+  for (var i = 0; i < teamIds.length; i++) {
+    var tid   = teamIds[i];
+    var posEl = document.getElementById('rpos-'+tid);
+    var kilEl = document.getElementById('rkills-'+tid);
+    var pos   = posEl ? parseInt(posEl.value) : 0;
+    var kills = kilEl ? (parseInt(kilEl.value)||0) : 0;
+    if (!pos || pos < 1) { errors.push(tid); continue; }
+    var pts = calcZeroPoints(pos, kills, total, model);
+    var _cur = await supa.from('tzb_teams').select('zero_points,display_name').eq('id', tid).maybeSingle();
+    var current = (_cur.data && _cur.data.zero_points) || 0;
+    // 1. Atualiza zero_points global do time
+    await supa.from('tzb_teams').update({ zero_points: current + pts }).eq('id', tid);
+    // 2. Upsert tzb_event_points — pontos isolados por evento
+    var _ep = await supa.from('tzb_event_points').select('total_pts,total_kills,drops_count').eq('event_id', orgCurrentEvent.id).eq('team_id', tid).maybeSingle();
+    var prevPts   = (_ep.data && _ep.data.total_pts)   || 0;
+    var prevKills = (_ep.data && _ep.data.total_kills) || 0;
+    var prevDrops = (_ep.data && _ep.data.drops_count) || 0;
+    await supa.from('tzb_event_points').upsert({
+      event_id:    orgCurrentEvent.id,
+      event_type:  orgCurrentEvent.kind === 'scrim' ? 'scrim' : 'campeonato',
+      team_id:     tid,
+      total_pts:   prevPts + pts,
+      total_kills: prevKills + kills,
+      drops_count: prevDrops + 1,
+      updated_at:  new Date().toISOString()
+    }, { onConflict: 'event_id,team_id' });
+    dropTeams.push({ id:tid, name:(_cur.data && _cur.data.display_name)||tid, pos:pos, kills:kills, pts:pts });
+  }
+  if (errors.length) { toast(errors.length + ' time(s) sem posição — ignorados.', true); }
+  if (dropTeams.length) {
+    orgDrops.push({ num:dropNum, teams:dropTeams, ts: new Date() });
+    orgRenderDropHistory();
+    document.getElementById('org-drop-num').value = dropNum + 1;
+    form.querySelectorAll('input[type=number]').forEach(function(i){ i.value = ''; });
+    form.querySelectorAll('[id^=rzp-]').forEach(function(el){ el.textContent = '—'; });
+    var dropEl = document.getElementById('ost-drops');
+    if (dropEl) dropEl.textContent = orgDrops.length;
+    toast('Drop ' + dropNum + ' salvo!');
+    await orgRefreshData();
+  }
+}
+
+function orgRenderDropHistory() {
+  var el = document.getElementById('org-drops-history');
+  if (!el || !orgDrops.length) return;
+  el.innerHTML = orgDrops.slice().reverse().map(function(drop) {
+    var sorted = drop.teams.slice().sort(function(a,b){ return a.pos - b.pos; });
+    return '<div style="padding:14px 18px;border-bottom:1px solid rgba(26,32,48,.5);">' +
+      '<div style="font-family:\'Exo 2\',sans-serif;font-size:12px;font-weight:700;color:var(--gold);margin-bottom:8px;">Drop ' + drop.num + ' · ' + drop.ts.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}) + '</div>' +
+      sorted.map(function(t){
+        return '<div style="display:flex;gap:12px;font-size:12px;align-items:center;padding:3px 0;">' +
+          '<span style="color:var(--txt2);width:24px;text-align:right;">#'+t.pos+'</span>' +
+          '<span style="flex:1;">'+t.name+'</span>' +
+          '<span style="color:var(--txt2);">'+t.kills+' kills</span>' +
+          '<span style="font-family:\'Exo 2\',sans-serif;font-weight:700;color:var(--accent);">+'+t.pts+' ZP</span>' +
+        '</div>';
+      }).join('') +
+    '</div>';
+  }).join('');
+}
+
+async function orgRefreshData() {
+  if (!orgCurrentEvent) return;
+  var teams = [];
+  if (orgCurrentEvent.kind === 'scrim') {
+    var _regs = await supa.from('tzb_scrim_registrations')
+      .select('team_id, tzb_teams(id, display_name, zero_points, category, logo_url)')
+      .eq('scrim_id', orgCurrentEvent.id);
+    teams = (_regs.data || []).map(function(r){ return r.tzb_teams; }).filter(Boolean);
+  } else if (orgCurrentEvent.kind === 'campeonato') {
+    var _regs = await supa.from('tzb_camp_registrations')
+      .select('team_id, tzb_teams(id, display_name, zero_points, category, logo_url)')
+      .eq('camp_id', orgCurrentEvent.id);
+    teams = (_regs.data || []).map(function(r){ return r.tzb_teams; }).filter(Boolean);
+  }
+  // Busca pontos isolados deste evento
+  var _ep = await supa.from('tzb_event_points').select('team_id,total_pts,total_kills').eq('event_id', orgCurrentEvent.id);
+  var epMap = {};
+  (_ep.data || []).forEach(function(e){ epMap[e.team_id] = e; });
+  teams.forEach(function(t){
+    var ep = epMap[t.id];
+    t.event_pts   = (ep && ep.total_pts)   || 0;
+    t.event_kills = (ep && ep.total_kills) || 0;
+  });
+  orgRenderTeams(teams);
+  orgRenderLeaderboard(teams);
+  orgBuildResForm(teams, orgCurrentEvent.model || 'corridos');
+}
+
+async function openOrgEvent(id, kind) {
+  orgDrops = [];
+  orgCurrentEvent = { id:id, kind:kind };
+  document.getElementById('org-events-list').style.display = 'none';
+  document.getElementById('org-event-detail').style.display = 'block';
+  orgTab('info');
+
+  var tabela = kind === 'scrim' ? 'tzb_scrims' : 'tzb_campeonatos';
+  var _ev = await supa.from(tabela).select('*').eq('id', id).maybeSingle();
+  if (!_ev.data) { backToOrgList(); return; }
+  var ev = _ev.data;
+  orgCurrentEvent.model  = ev.scoring_model || 'corridos';
+  orgCurrentEvent.status = ev.status;
+
+  document.getElementById('org-det-name').textContent = ev.name || '—';
+  document.getElementById('org-det-status-badge').innerHTML = orgStatusBadge(ev.status);
+  var dot = document.getElementById('org-live-dot');
+  if (dot) dot.style.display = ev.status === 'ao_vivo' ? 'inline-block' : 'none';
+  var meta = [ev.format, ev.category === 'profissional' ? 'Profissional' : ev.category ? 'Amador' : '', ev.scheduled_at ? new Date(ev.scheduled_at).toLocaleString('pt-BR',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}) : ''].filter(Boolean);
+  document.getElementById('org-det-meta').textContent = meta.join(' · ');
+  document.getElementById('org-status-controls').innerHTML = orgRenderStatusControls(ev.status);
+  document.getElementById('org-lobby-input').value  = ev.lobby_code  || '';
+  document.getElementById('org-stream-input').value = ev.stream_url  || '';
+  var flyerEl = document.getElementById('org-det-flyer');
+  if (flyerEl) { flyerEl.src = ev.flyer_url || ''; flyerEl.style.display = ev.flyer_url ? 'block' : 'none'; }
+
+  // QR code
+  var qrPage = kind === 'scrim' ? 'scrims' : 'campeonatos';
+  var qrUrl  = 'https://thezerobase.vercel.app/' + qrPage;
+  var qrWrap = document.getElementById('org-qr-wrap');
+  var qrLbl  = document.getElementById('org-qr-url');
+  if (qrWrap && typeof QRCode !== 'undefined') {
+    qrWrap.innerHTML = '';
+    QRCode.toCanvas(document.createElement('canvas'), qrUrl, {width:120,margin:1}, function(err, canvas) {
+      if (!err) { qrWrap.innerHTML = ''; qrWrap.appendChild(canvas); }
+    });
+  }
+  if (qrLbl) qrLbl.textContent = qrUrl;
+
+  await orgRefreshData();
+
+  if (orgRefreshInterval) clearInterval(orgRefreshInterval);
+  orgRefreshInterval = setInterval(orgRefreshData, 20000);
+
+  if (orgRealtime) { try { supa.removeChannel(orgRealtime); } catch(e){} orgRealtime = null; }
+  if (kind === 'scrim') {
+    orgRealtime = supa.channel('org-ev-' + id)
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'tzb_scrim_registrations', filter: 'scrim_id=eq.' + id }, function() { orgRefreshData(); })
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'tzb_teams' }, function() { orgRefreshData(); })
+      .subscribe();
+  } else if (kind === 'campeonato') {
+    orgRealtime = supa.channel('org-ev-' + id)
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'tzb_camp_registrations', filter: 'camp_id=eq.' + id }, function() { orgRefreshData(); })
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'tzb_teams' }, function() { orgRefreshData(); })
+      .subscribe();
+  }
+}
+
+function backToOrgList() {
+  if (orgRefreshInterval) { clearInterval(orgRefreshInterval); orgRefreshInterval = null; }
+  if (orgRealtime) { try { supa.removeChannel(orgRealtime); } catch(e){} orgRealtime = null; }
+  orgCurrentEvent = null;
+  orgDrops = [];
+  document.getElementById('org-event-detail').style.display = 'none';
+  document.getElementById('org-events-list').style.display = 'block';
+}
+
+// ══════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════
+loadState();
+</script>
+</body>
+</html>

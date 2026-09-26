@@ -1,0 +1,2858 @@
+<!doctype html>
+<html class="no-js" lang="pt-BR">
+
+<head>
+  <meta charset="utf-8">
+  <title>THE ZERO BASE — Warzone Competitivo Brasileiro</title>
+  <meta name="description" content="Scrims organizados, ranking nacional, agentes livres e campeonatos de Warzone, tudo em português. A primeira plataforma 100% BR feita para quem leva o jogo a sério.">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="assets/images/logo/simbolo.png">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;600;700;800;900&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+  <!-- Template CSS -->
+  <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+  <link rel="stylesheet" href="assets/css/animate.css">
+  <link rel="stylesheet" href="assets/css/icofont.min.css">
+  <link rel="stylesheet" href="assets/css/swiper.min.css">
+  <link rel="stylesheet" href="assets/css/lightcase.css">
+  <link rel="stylesheet" href="assets/css/style.min.css">
+
+  <!-- The Zero Base — Custom Design System Override -->
+  <style>
+    /* =========================================
+       THE ZERO BASE — Design System v2.0
+       Futuristic Neon Red & Black
+    ========================================= */
+    :root {
+      --bg-base:        #000000;
+      --bg-card:        #000000;
+      --bg-elevated:    #000000;
+      --bg-border:      #1a1a1a;
+      --accent:         #aa0000;
+      --accent-bright:  #cc0000;
+      --accent-red:     #aa0000;
+      --accent-glow:    rgba(170,0,0,0.35);
+      --accent-secondary: #00d4ff;
+      --text-primary:   #ffffff;
+      --text-secondary: #b0b0b0;
+      --text-muted:     #707070;
+      --success:        #00ff41;
+      --font-heading:   'Exo 2', sans-serif;
+      --font-body:      'Roboto', sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: var(--font-body) !important;
+      background: #000000 !important;
+      color: var(--text-primary) !important;
+      position: relative;
+      -webkit-tap-highlight-color: transparent;
+    }
+    * { -webkit-tap-highlight-color: transparent; }
+
+    /* EPIC Neon Background — Ainz Style */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background:
+        /* Multiple red neon glows */
+        radial-gradient(ellipse 800px 600px at 10% 20%, rgba(255,0,0,0.15) 0%, transparent 40%),
+        radial-gradient(ellipse 600px 700px at 85% 30%, rgba(170,0,0,0.12) 0%, transparent 45%),
+        radial-gradient(ellipse 700px 500px at 50% 70%, rgba(220,0,0,0.1) 0%, transparent 50%),
+        radial-gradient(ellipse 500px 600px at 20% 80%, rgba(200,0,0,0.08) 0%, transparent 45%),
+        /* Animated line effects */
+        linear-gradient(90deg, transparent 0%, rgba(170,0,0,0.1) 50%, transparent 100%),
+        /* Base black */
+        #000000;
+      background-attachment: fixed;
+      pointer-events: none;
+      z-index: -1;
+      animation: neon-pulse 8s ease-in-out infinite;
+    }
+
+    @keyframes neon-pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.95; }
+    }
+
+    /* Ensure all sections visible above neon background */
+    section, .header-section, .footer-section, footer {
+      position: relative !important;
+      z-index: 1 !important;
+    }
+
+
+    /* ── Preloader ── */
+    .preloader { background: var(--bg-base); }
+    .preloader-icon span { background: var(--accent); }
+
+    /* ── Scroll to top — vermelho, sem rosa ── */
+    a.scrollToTop,
+    .scrollToTop {
+      background: transparent !important;
+      backdrop-filter: none !important;
+      border: none !important;
+      box-shadow: none !important;
+      width: auto !important; height: auto !important;
+    }
+    /* O elemento colorido é o <i> interno — template usa background:#ff0052 nele */
+    .scrollToTop i {
+      background: #aa0000 !important;
+      color: #ffffff !important;
+      border-radius: 8px !important;
+      box-shadow: 0 4px 20px rgba(170,0,0,0.45) !important;
+      width: 44px !important; height: 44px !important;
+      line-height: 44px !important;
+      font-size: 18px !important;
+      transition: all 0.25s ease !important;
+    }
+    .scrollToTop i:hover {
+      background: #cc0000 !important;
+      box-shadow: 0 6px 28px rgba(170,0,0,0.6) !important;
+      transform: translateY(-3px) !important;
+    }
+
+    /* ── Logo TZB pulse animation (parceiros) ── */
+    @keyframes logoPulse {
+      0%, 100% { filter: drop-shadow(0 0 10px rgba(170,0,0,0.35)); opacity: 0.85; }
+      50%       { filter: drop-shadow(0 0 24px rgba(170,0,0,0.75)); opacity: 1; }
+    }
+
+    /* ── Footer-top redesign ── */
+    .footer-top {
+      background: #0a0a0f !important;
+      border-top: 1px solid rgba(170,0,0,0.2) !important;
+      border-bottom: 1px solid rgba(255,255,255,0.05) !important;
+      padding: 40px 0 !important;
+    }
+    .footer-top-item { padding: 0 !important; }
+    .lab-inner {
+      display: flex !important;
+      align-items: center !important;
+      gap: 16px !important;
+      padding: 20px 24px !important;
+      background: rgba(255,255,255,0.03) !important;
+      border: 1px solid rgba(255,255,255,0.06) !important;
+      border-radius: 12px !important;
+      transition: border-color 0.25s ease !important;
+    }
+    .lab-inner:hover { border-color: rgba(170,0,0,0.25) !important; }
+    .lab-thumb {
+      width: 44px !important; height: 44px !important;
+      background: rgba(170,0,0,0.1) !important;
+      border: 1px solid rgba(170,0,0,0.25) !important;
+      border-radius: 10px !important;
+      display: flex !important; align-items: center !important; justify-content: center !important;
+      flex-shrink: 0 !important;
+    }
+    .lab-thumb img { width: 22px !important; height: 22px !important; object-fit: contain !important; filter: invert(1) sepia(1) saturate(5) hue-rotate(330deg) !important; }
+    .lab-content { display: flex !important; flex-direction: column !important; }
+    .lab-content span {
+      font-family: 'Roboto', sans-serif !important;
+      font-size: 14px !important;
+      color: #c0c0c0 !important;
+      font-weight: 400 !important;
+      letter-spacing: 0 !important;
+    }
+    .lab-content strong, .lab-content b {
+      font-family: 'Exo 2', sans-serif !important;
+      font-size: 11px !important;
+      font-weight: 700 !important;
+      letter-spacing: 0.12em !important;
+      text-transform: uppercase !important;
+      color: #606060 !important;
+      display: block !important;
+      margin-bottom: 2px !important;
+    }
+
+    /* ── Body shape ── */
+    .body-shape { opacity: 0.04; max-width: 100%; overflow: hidden; }
+
+    /* ── Header — Single Row Clean ── */
+    .header-section {
+      background: rgba(0,0,0,0.92) !important;
+      backdrop-filter: blur(20px) !important;
+      -webkit-backdrop-filter: blur(20px) !important;
+      border-bottom: 1px solid rgba(170,0,0,0.35) !important;
+      position: sticky !important;
+      top: 0 !important;
+      z-index: 999 !important;
+      box-shadow: 0 2px 40px rgba(0,0,0,0.6) !important;
+    }
+    /* Oculta info bar superior — deixa só o nav */
+    header .header-top { display: none !important; }
+
+    /* Layout do holder: logo | nav | botões em 1 linha */
+    .header-holder {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      flex-wrap: nowrap !important;
+      padding: 0 !important;
+      height: 68px !important;
+    }
+    .brand-logo {
+      display: inline-flex !important;
+      align-items: center !important;
+      flex-shrink: 0 !important;
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+    .brand-logo .logo a { text-decoration: none !important; }
+
+    /* Nav centralizado */
+    .header-menu-part {
+      flex: 1 !important;
+      display: flex !important;
+      justify-content: center !important;
+    }
+    .header-bottom { width: 100% !important; }
+    .header-wrapper {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      width: 100% !important;
+    }
+    .menu-area {
+      display: flex !important;
+      align-items: center !important;
+      gap: 6px !important;
+      justify-content: flex-end !important;
+      width: 100% !important;
+    }
+    .menu {
+      display: flex !important;
+      align-items: center !important;
+      gap: 0 !important;
+      margin: 0 auto !important;
+      padding: 0 !important;
+      list-style: none !important;
+    }
+    .menu > li { margin: 0 2px !important; }
+    .menu > li > a {
+      font-family: var(--font-heading) !important;
+      font-weight: 700 !important;
+      font-size: 14px !important;
+      letter-spacing: 0.1em !important;
+      text-transform: uppercase !important;
+      color: var(--text-secondary) !important;
+      padding: 8px 14px !important;
+      border-radius: 6px !important;
+      transition: all 200ms ease !important;
+      display: block !important;
+    }
+    .menu > li > a:hover,
+    .menu > li > a.active {
+      color: #ffffff !important;
+      background: rgba(170,0,0,0.12) !important;
+    }
+    /* Indicador ativo — sublinhado vermelho */
+    .menu > li > a.active {
+      color: var(--accent) !important;
+      background: transparent !important;
+      position: relative !important;
+    }
+    .menu > li > a.active::after {
+      content: '' !important;
+      position: absolute !important;
+      bottom: 0; left: 50%; transform: translateX(-50%) !important;
+      width: 20px !important; height: 2px !important;
+      background: var(--accent) !important;
+      border-radius: 2px !important;
+    }
+    .submenu {
+      background: rgba(8,8,12,0.95) !important;
+      backdrop-filter: blur(16px) !important;
+      border: 1px solid rgba(170,0,0,0.2) !important;
+      border-radius: 8px !important;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5) !important;
+    }
+    .submenu li a {
+      color: var(--text-secondary) !important;
+      font-family: var(--font-body) !important;
+      font-size: 13px !important;
+    }
+    .submenu li a:hover { color: var(--accent) !important; background: rgba(170,0,0,0.08) !important; }
+
+    /* Botões no header */
+    .menu-area .btn-outline-hero,
+    .menu-area .btn-primary-hero {
+      font-size: 13px !important;
+      padding: 9px 22px !important;
+      border-radius: 8px !important;
+      flex-shrink: 0 !important;
+    }
+
+    /* Apply red throughout home */
+    a { color: var(--accent) !important; }
+    a:hover { color: var(--accent-bright) !important; }
+    .lab-inner h3, .lab-inner h4 { color: var(--accent) !important; }
+    .lab-inner p { color: var(--text-secondary) !important; }
+
+    /* Header Menu Buttons — legacy margin */
+    .menu-area .btn-primary-hero,
+    .menu-area .btn-outline-hero {
+      margin-left: 4px !important;
+      font-size: 13px !important;
+      padding: 10px 28px !important;
+    }
+    }
+
+    /* ── Section Headers ── */
+    .section-header p {
+      font-family: var(--font-heading) !important;
+      font-size: 13px !important;
+      font-weight: 600 !important;
+      letter-spacing: 0.15em !important;
+      text-transform: uppercase !important;
+      color: var(--accent) !important;
+    }
+    .section-header h2 {
+      font-family: var(--font-heading) !important;
+      font-weight: 800 !important;
+      text-transform: uppercase !important;
+      background: linear-gradient(to bottom, #ffffff 0%, #cccccc 100%) !important;
+      -webkit-background-clip: text !important;
+      -webkit-text-fill-color: transparent !important;
+      background-clip: text !important;
+      font-size: clamp(2rem, 4vw, 3rem) !important;
+      line-height: 1.1 !important;
+    }
+
+    /* ── Default Button ── */
+    /* ── Botões padronizados — default-button = btn-primary-hero ── */
+    .default-button,
+    .default-button span {
+      font-family: var(--font-heading) !important;
+      font-weight: 700 !important;
+      letter-spacing: 0.1em !important;
+      text-transform: uppercase !important;
+    }
+    /* Reset pseudo-elements do template */
+    .default-button::before,
+    .default-button::after { display: none !important; }
+    .default-button {
+      background: var(--accent) !important;
+      border: 2px solid var(--accent) !important;
+      border-radius: 12px !important;
+      color: #ffffff !important;
+      padding: 12px 32px !important;
+      font-size: 14px !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 8px !important;
+      transition: all 300ms ease !important;
+      position: relative !important;
+      overflow: hidden !important;
+      text-decoration: none !important;
+    }
+    .default-button:hover {
+      background: var(--accent-bright) !important;
+      box-shadow: 0 0 32px rgba(170,0,0,0.45) !important;
+      transform: translateY(-2px) !important;
+      color: #ffffff !important;
+      border-color: var(--accent-bright) !important;
+    }
+    .default-button.reverse-effect {
+      background: transparent !important;
+      border: 2px solid var(--accent) !important;
+      color: #ffffff !important;
+    }
+    .default-button.reverse-effect:hover {
+      background: rgba(170,0,0,0.15) !important;
+      border-color: var(--accent-bright) !important;
+      box-shadow: 0 0 30px rgba(170,0,0,0.35) !important;
+      color: #ffffff !important;
+    }
+    .default-button.reverse-effect span { color: inherit !important; }
+
+    /* ── Banner original — oculto, substituído pelo hero-tzb ── */
+    .banner-section { display: none !important; }
+    .banner-content h4 {
+      font-family: var(--font-heading) !important;
+      font-size: 14px !important;
+      font-weight: 600 !important;
+      letter-spacing: 0.2em !important;
+      text-transform: uppercase !important;
+      color: var(--accent) !important;
+    }
+    .banner-content h1, .banner-content h2 {
+      font-family: var(--font-heading) !important;
+      font-weight: 800 !important;
+      text-transform: uppercase !important;
+      background: linear-gradient(to bottom, #ffffff 0%, #cccccc 100%) !important;
+      -webkit-background-clip: text !important;
+      -webkit-text-fill-color: transparent !important;
+      background-clip: text !important;
+      line-height: 1.05 !important;
+    }
+    .banner-content p { font-family: var(--font-body) !important; color: var(--text-secondary) !important; }
+
+    /* ── Game/Feature Cards ── */
+    .game-item-inner {
+      background: linear-gradient(135deg, #1a1a1a 0%, #252525 100%) !important;
+      border: 2px solid var(--accent) !important;
+      border-radius: 16px !important;
+      overflow: hidden !important;
+      transition: all 300ms ease !important;
+      position: relative !important;
+      box-shadow: 0 0 30px rgba(170,0,0,0.2), inset 0 0 20px rgba(170,0,0,0.05) !important;
+    }
+    .game-item-inner:hover {
+      box-shadow: 0 0 50px rgba(170,0,0,0.4), inset 0 0 30px rgba(170,0,0,0.1) !important;
+      border-color: var(--accent-bright) !important;
+      transform: translateY(-4px);
+    }
+    .game-item-inner:hover {
+      border-color: rgba(170,0,0,0.5) !important;
+      box-shadow: 0 0 20px var(--accent-glow) !important;
+      transform: translateY(-4px);
+    }
+    .game-overlay {
+      background: linear-gradient(0deg, rgba(8,10,14,0.97) 0%, rgba(8,10,14,0.7) 100%) !important;
+    }
+    .game-overlay h4 a {
+      font-family: var(--font-heading) !important;
+      font-weight: 700 !important;
+      text-transform: uppercase !important;
+      color: var(--text-primary) !important;
+    }
+    .game-overlay h4 a:hover { color: var(--accent) !important; }
+    .rating-star li i { color: var(--accent) !important; }
+
+    /* ── About Section ── */
+    .about-section {
+      background:
+        linear-gradient(rgba(0,0,0,0.78), rgba(0,0,0,0.78)),
+        url('assets/images/about/bg-sobre.webp') center / cover no-repeat !important;
+    }
+    /* Hover nos 3 itens da seção Cena BR */
+    .about-item {
+      padding: 16px 12px !important;
+      border-radius: 12px !important;
+      border: 1px solid transparent !important;
+      transition: all 0.3s ease !important;
+      cursor: default;
+    }
+    .about-item:hover {
+      background: rgba(170,0,0,0.06) !important;
+      border-color: rgba(170,0,0,0.22) !important;
+      transform: translateX(8px) !important;
+    }
+    .about-item:hover .about-item-thumb {
+      background: rgba(170,0,0,0.2) !important;
+      border-color: rgba(170,0,0,0.55) !important;
+      box-shadow: 0 0 28px rgba(170,0,0,0.45) !important;
+    }
+    .about-item:hover .about-item-content h5 {
+      color: #ee2020 !important;
+    }
+    /* ── Scroll suave + performance ── */
+    html { scroll-behavior: smooth; overflow-x: hidden; }
+    body { overflow-x: hidden !important; max-width: 100vw; }
+    * { -webkit-font-smoothing: antialiased; }
+    /* Reduz repaint de backdrop-filter: só onde essencial */
+    .player-item-2,
+    .step-card,
+    .sponsor-item,
+    .tzb-social-btn { will-change: auto !important; }
+    /* Isola camadas das seções com imagem absoluta */
+    .about-section,
+    .section-como-funciona,
+    #parceiros { contain: layout style; }
+    /* Scanline e logoPulse: usa GPU para não bloquear main thread */
+    .hero-scanline { will-change: transform; }
+    svg[style*="logoPulse"] { will-change: filter, opacity; }
+
+    /* Footer social buttons */
+    .tzb-social-btn {
+      width: 36px !important; height: 36px !important;
+      display: flex !important; align-items: center !important; justify-content: center !important;
+      border: 1px solid rgba(255,255,255,0.08) !important;
+      border-radius: 8px !important;
+      text-decoration: none !important;
+      transition: border-color 0.2s ease !important;
+      background: transparent !important;
+    }
+
+    /* Mata o ripple branco do template nos ícones redondos */
+    .about-item .about-item-thumb::before,
+    .about-item .about-item-thumb::after { display: none !important; }
+    .about-item-thumb {
+      background: rgba(170,0,0,0.12) !important;
+      border: 1px solid rgba(170,0,0,0.35) !important;
+      border-radius: 50% !important;
+      box-shadow: 0 0 18px rgba(170,0,0,0.2) !important;
+    }
+    .about-item-content h5 {
+      font-family: var(--font-heading) !important;
+      font-weight: 700 !important;
+      font-size: 18px !important;
+      color: var(--text-primary) !important;
+      text-transform: uppercase !important;
+    }
+    .about-item-content p { font-family: var(--font-body) !important; color: var(--text-secondary) !important; font-size: 14px !important; }
+
+    /* ── Match / Tournament Section ── */
+    .match-section { background-size: cover !important; position: relative !important; }
+    .match-section::before {
+      content: '';
+      position: absolute;
+      top:0;left:0;right:0;bottom:0;
+      background: rgba(8,10,14,0.65);
+      z-index: 0;
+    }
+    .match-section .container { position: relative; z-index: 1; }
+    .match-inner {
+      background: var(--bg-card) !important;
+      border: 1px solid var(--bg-border) !important;
+      border-radius: 8px !important;
+      overflow: hidden !important;
+    }
+    .match-header {
+      background: var(--bg-elevated) !important;
+      border-bottom: 1px solid var(--bg-border) !important;
+      padding: 10px 16px !important;
+    }
+    .match-header p { font-family: var(--font-body) !important; font-size: 13px !important; color: var(--text-secondary) !important; margin: 0 !important; }
+    .match-header .match-prize span { color: var(--accent) !important; font-weight: 700 !important; }
+    .match-game-info h4 a {
+      font-family: var(--font-heading) !important;
+      font-weight: 700 !important;
+      text-transform: uppercase !important;
+      color: var(--text-primary) !important;
+    }
+    .match-game-info h4 a:hover { color: var(--accent) !important; }
+    .match-date, .match-time { font-family: var(--font-body) !important; font-size: 12px !important; color: var(--text-secondary) !important; }
+    .gradient-bg-yellow { background: linear-gradient(135deg, #161b24 0%, #0f1218 100%) !important; border-left: 3px solid var(--accent) !important; }
+    .gradient-bg-orange { background: linear-gradient(135deg, #161b24 0%, #0f1218 100%) !important; border-left: 3px solid #f5844a !important; }
+    .gradient-bg-blue   { background: linear-gradient(135deg, #161b24 0%, #0f1218 100%) !important; border-left: 3px solid #4a9af5 !important; }
+    .gradient-bg-pink   { background: linear-gradient(135deg, #161b24 0%, #0f1218 100%) !important; border-left: 3px solid var(--accent-red) !important; }
+    .upcome-match-header {
+      font-family: var(--font-heading) !important;
+      font-weight: 700 !important;
+      text-transform: uppercase !important;
+      font-size: 20px !important;
+      color: var(--text-primary) !important;
+      border-bottom: 2px solid var(--accent) !important;
+      padding-bottom: 10px !important;
+      margin-bottom: 20px !important;
+    }
+
+    /* ── Player/Teams Slider — Glass Apple ── */
+    .player-section { background: var(--bg-base) !important; }
+    .player-item-2 {
+      border-radius: 20px !important;
+      overflow: hidden !important;
+      background: rgba(8,8,18,0.6) !important;
+      backdrop-filter: blur(20px) !important;
+      -webkit-backdrop-filter: blur(20px) !important;
+      border: 1px solid rgba(255,255,255,0.08) !important;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.06) !important;
+      transition: box-shadow .3s ease, border-color .3s ease, transform .3s ease !important;
+    }
+    .player-item-2:hover {
+      border-color: rgba(170,0,0,0.35) !important;
+      box-shadow: 0 16px 56px rgba(170,0,0,0.22), 0 0 0 1px rgba(170,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.08) !important;
+      transform: translateY(-8px) !important;
+    }
+    /* Glass overlay interno — gradiente sutil */
+    .player-inner-2 {
+      background: linear-gradient(180deg, rgba(255,255,255,0.02) 0%, rgba(0,0,0,0.5) 100%) !important;
+      position: relative !important;
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      justify-content: center !important;
+      padding: 40px 24px !important;
+      min-height: 260px !important;
+    }
+    /* Logo do time — fundo branco para destacar */
+    .player-thumb-2 { position: relative !important; }
+    .player-thumb-2 a {
+      display: inline-flex !important;
+      align-items: center !important; justify-content: center !important;
+      background: #ffffff !important;
+      border: none !important;
+      border-radius: 16px !important;
+      padding: 16px !important;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.5) !important;
+      width: 120px !important; height: 120px !important;
+      transition: box-shadow 0.3s ease !important;
+    }
+    .player-thumb-2 a img {
+      width: 80px !important; height: 80px !important;
+      object-fit: contain !important;
+      border-radius: 0 !important;
+      transition: transform 0.3s ease !important;
+    }
+    .player-item-2:hover .player-thumb-2 a {
+      box-shadow: 0 6px 32px rgba(170,0,0,0.35) !important;
+    }
+    .player-item-2:hover .player-thumb-2 a img {
+      transform: scale(1.08) !important;
+    }
+    /* Fix overflow no hover — cards sobem e cortam */
+    .player-section .section-wrapper { overflow: visible !important; }
+    .player-section .player-slider { overflow: visible !important; padding-top: 12px !important; }
+    .player-section .swiper-wrapper { overflow: visible !important; }
+    /* Badge categoria — glass pill */
+    .player-content-2 p {
+      display: inline-block !important;
+      background: rgba(170,0,0,0.12) !important;
+      backdrop-filter: blur(8px) !important;
+      border: 1px solid rgba(170,0,0,0.25) !important;
+      border-radius: 20px !important;
+      padding: 4px 14px !important;
+      font-family: var(--font-body) !important;
+      font-size: 11px !important;
+      color: #cc0000 !important;
+      text-transform: uppercase !important;
+      letter-spacing: 0.12em !important;
+      margin-top: 4px !important;
+    }
+    .player-content-2 h2 {
+      font-family: var(--font-heading) !important;
+      font-weight: 800 !important;
+      font-size: 1.2rem !important;
+      text-transform: uppercase !important;
+      color: var(--text-primary) !important;
+      margin-bottom: 4px !important;
+    }
+    .player-inner-2 { justify-content: space-between !important; min-height: 280px !important; }
+    .team-card-top { display:flex;flex-direction:column;align-items:center;gap:12px; }
+    .team-card-btn {
+      display: inline-block;
+      font-family: var(--font-heading);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #aa0000;
+      border: 1px solid rgba(170,0,0,0.35);
+      border-radius: 8px;
+      padding: 8px 22px;
+      transition: all 0.25s ease;
+      text-decoration: none !important;
+    }
+    .team-card-btn:hover { background: rgba(170,0,0,0.15) !important; border-color: #aa0000 !important; color: #cc0000 !important; }
+
+    /* ── CTA Section ── */
+    .cta-wrapper { border-radius: 16px !important; overflow: hidden !important; }
+    .cta-item {
+      background-color: transparent !important;
+      background-blend-mode: normal !important;
+      background-size: cover !important;
+      background-position: center right !important;
+      border-radius: 16px !important;
+      position: relative !important;
+      border: none !important;
+    }
+    /* Remove o ::before que compete com o overlay HTML */
+    .cta-item::before { display: none !important; }
+
+    /* ── Sponsors — tamanho uniforme ── */
+    .sponsor-inner {
+      height: 100px !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      padding: 20px !important;
+    }
+    .sponsor-thumb {
+      width: 100% !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+    }
+    .sponsor-thumb img {
+      max-height: 55px !important;
+      max-width: 130px !important;
+      width: auto !important;
+      height: auto !important;
+      object-fit: contain !important;
+      filter: brightness(1.1) !important;
+      opacity: 0.85 !important;
+      transition: all 250ms ease !important;
+    }
+    .sponsor-inner:hover .sponsor-thumb img {
+      opacity: 1 !important;
+      filter: brightness(1.3) drop-shadow(0 0 8px rgba(255,255,255,0.2)) !important;
+    }
+
+    /* ── Sponsor / Partners ── */
+    .sponsor-section { background: var(--bg-card) !important; }
+    .sponsor-inner {
+      background: var(--bg-elevated) !important;
+      border: 1px solid var(--bg-border) !important;
+      border-radius: 8px !important;
+      padding: 24px !important;
+      transition: all 200ms ease !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+    }
+    .sponsor-inner:hover {
+      border-color: rgba(170,0,0,0.4) !important;
+      box-shadow: 0 0 12px var(--accent-glow) !important;
+    }
+    .sponsor-thumb img { filter: grayscale(1) brightness(1.5); opacity: 0.7; transition: all 200ms ease; }
+    .sponsor-inner:hover .sponsor-thumb img { filter: grayscale(0); opacity: 1; }
+
+    /* ── Blog Section ── */
+    .blog-section { background: var(--bg-elevated) !important; }
+    .blog-inner {
+      background: var(--bg-card) !important;
+      border: 1px solid var(--bg-border) !important;
+      border-radius: 8px !important;
+      overflow: hidden !important;
+      transition: all 200ms ease !important;
+    }
+    .blog-inner:hover {
+      border-color: rgba(170,0,0,0.35) !important;
+      box-shadow: 0 0 16px var(--accent-glow) !important;
+    }
+    .blog-content h3 a {
+      font-family: var(--font-heading) !important;
+      font-weight: 700 !important;
+      color: var(--text-primary) !important;
+      text-transform: uppercase !important;
+    }
+    .blog-content h3 a:hover { color: var(--accent) !important; }
+    .meta-post a { font-family: var(--font-body) !important; font-size: 12px !important; color: var(--text-muted) !important; }
+    .meta-post a:hover { color: var(--accent) !important; }
+    .blog-content p { font-family: var(--font-body) !important; font-size: 14px !important; color: var(--text-secondary) !important; }
+
+    /* ── Footer ── */
+    .footer-section { background: var(--bg-base) !important; border-top: 1px solid var(--bg-border) !important; }
+    /* Mata position:absolute do template e linhas verticais nas colunas */
+    .footer-section .footer-top {
+      position: relative !important;
+      background: var(--bg-elevated) !important;
+      border-bottom: 1px solid var(--bg-border) !important;
+      width: 100% !important;
+      top: auto !important;
+      z-index: auto !important;
+    }
+    .footer-section .footer-top .col-12,
+    .footer-section .footer-top .col-12:last-child {
+      border-left: none !important;
+      border-right: none !important;
+    }
+    .footer-middle { background: var(--bg-card) !important; }
+    .fm-item-title h4 {
+      font-family: var(--font-heading) !important;
+      font-weight: 700 !important;
+      text-transform: uppercase !important;
+      font-size: 18px !important;
+      color: var(--text-primary) !important;
+      border-bottom: 2px solid var(--accent) !important;
+      padding-bottom: 8px !important;
+    }
+    .fm-item-content p { font-family: var(--font-body) !important; color: var(--text-secondary) !important; font-size: 14px !important; }
+    .fm-item-content ul li a { font-family: var(--font-body) !important; font-size: 14px !important; color: var(--text-secondary) !important; }
+    .fm-item-content ul li a:hover { color: var(--accent) !important; padding-left: 6px !important; }
+    .footer-bottom { background: var(--bg-base) !important; border-top: 1px solid var(--bg-border) !important; }
+    .footer-bottom p { font-family: var(--font-body) !important; font-size: 13px !important; color: var(--text-muted) !important; }
+    .footer-bottom a { color: var(--accent) !important; }
+
+    /* ── Tier badges ── */
+    .badge-tier {
+      font-family: var(--font-heading);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 3px;
+    }
+    .tier-bronze  { background: rgba(205,127,50,0.15); color: #cd7f32; border: 1px solid rgba(205,127,50,0.3); }
+    .tier-prata   { background: rgba(156,163,175,0.15); color: #9ca3af; border: 1px solid rgba(156,163,175,0.3); }
+    .tier-ouro    { background: rgba(245,200,66,0.12); color: #f5c842; border: 1px solid rgba(245,200,66,0.3); }
+    .tier-diamante{ background: rgba(96,165,250,0.15); color: #60a5fa; border: 1px solid rgba(96,165,250,0.3); }
+    .tier-pro     { background: rgba(255,59,59,0.15); color: #ff3b3b; border: 1px solid rgba(255,59,59,0.3); }
+
+    /* ── Live Dot ── */
+    .live-dot {
+      display: inline-block;
+      width: 8px; height: 8px;
+      background: var(--accent-red);
+      border-radius: 50%;
+      animation: pulse-dot 1.5s ease-in-out infinite;
+      margin-right: 6px;
+      vertical-align: middle;
+    }
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.8); }
+    }
+
+    /* ── Stats Counter ── */
+    .stat-block {
+      text-align: center;
+      padding: 24px 16px;
+    }
+    .stat-block .stat-number {
+      font-family: var(--font-heading);
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      font-weight: 800;
+      color: var(--accent);
+      line-height: 1;
+      display: block;
+    }
+    .stat-block .stat-label {
+      font-family: var(--font-body);
+      font-size: 13px;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-top: 6px;
+      display: block;
+    }
+
+    /* ── Feature Cards Custom ── */
+    .feature-card {
+      background: var(--bg-card);
+      border: 1px solid var(--bg-border);
+      border-radius: 8px;
+      padding: 32px 24px;
+      transition: all 200ms ease;
+      height: 100%;
+    }
+    .feature-card:hover {
+      border-color: rgba(170,0,0,0.45);
+      box-shadow: 0 0 24px var(--accent-glow);
+      transform: translateY(-4px);
+    }
+    .feature-card .fc-icon {
+      font-size: 2.5rem;
+      color: var(--accent);
+      margin-bottom: 16px;
+      display: block;
+    }
+    .feature-card h4 {
+      font-family: var(--font-heading);
+      font-size: 20px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--text-primary);
+      margin-bottom: 10px;
+    }
+    .feature-card p {
+      font-family: var(--font-body);
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin: 0;
+    }
+    .feature-card .fc-badge {
+      margin-top: 16px;
+    }
+
+    /* ── Theme color ── */
+    .theme-color { color: var(--accent) !important; }
+
+    /* ── Item Layer ── */
+    .item-layer::before, .item-layer::after { opacity: 0.04 !important; }
+
+    /* ── Mobile menu ── */
+    .header-bar span { background: var(--text-primary) !important; }
+
+    /* ══════════════════════════════════════════
+       HERO ATMOSFÉRICO — TACTICAL WARZONE
+    ══════════════════════════════════════════ */
+    .hero-tzb {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      background: #060810;
+    }
+    /* Background image — direto no hero via múltiplos layers CSS (mais confiável) */
+    .hero-tzb {
+      background:
+        linear-gradient(rgba(0,0,0,0.68), rgba(0,0,0,0.68)),
+        url('assets/images/bg-topo.webp') center / cover no-repeat !important;
+    }
+    /* hero-bg div não precisa mais do background — mantido vazio */
+    .hero-tzb .hero-bg { display: none; }
+    /* Mesh glow âmbar — agora é só o layer do background acima */
+    .hero-tzb .hero-glow { display: none; }
+    /* Grid tático */
+    .hero-tzb .hero-grid {
+      position: absolute;
+      top:0;left:0;right:0;bottom:0;
+      background-image:
+        linear-gradient(rgba(170,0,0,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(170,0,0,0.05) 1px, transparent 1px);
+      background-size: 64px 64px;
+      z-index: 2;
+    }
+    /* Linha de scan animada */
+    .hero-tzb .hero-scanline {
+      position: absolute;
+      left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(170,0,0,0.6), transparent);
+      z-index: 3;
+      animation: scanline 6s linear infinite;
+    }
+    @keyframes scanline {
+      0%   { top: 0%; opacity: 0; }
+      5%   { opacity: 1; }
+      95%  { opacity: 1; }
+      100% { top: 100%; opacity: 0; }
+    }
+    /* Decoração: linha vertical vermelha esquerda */
+    .hero-tzb .hero-line-left {
+      position: absolute;
+      left: 48px;
+      top: 15%;
+      bottom: 15%;
+      width: 1px;
+      background: linear-gradient(180deg, transparent, rgba(170,0,0,0.8), transparent);
+      z-index: 4;
+    }
+    /* Corner bracket superior esquerdo */
+    .hero-tzb .hero-bracket {
+      position: absolute;
+      top: 40px;
+      left: 40px;
+      width: 60px;
+      height: 60px;
+      border-top: 2px solid rgba(170,0,0,0.6);
+      border-left: 2px solid rgba(170,0,0,0.6);
+      z-index: 4;
+    }
+    .hero-tzb .hero-bracket-br {
+      position: absolute;
+      bottom: 40px;
+      right: 40px;
+      width: 60px;
+      height: 60px;
+      border-bottom: 2px solid rgba(170,0,0,0.4);
+      border-right: 2px solid rgba(170,0,0,0.4);
+      z-index: 4;
+    }
+    /* Conteúdo do hero */
+    .hero-tzb .hero-content {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+    }
+    .hero-eyebrow {
+      font-family: var(--font-heading);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .hero-eyebrow::before {
+      content: '';
+      display: inline-block;
+      width: 40px;
+      height: 1px;
+      background: var(--accent);
+    }
+    .hero-h1 {
+      font-family: var(--font-heading);
+      font-size: clamp(3.5rem, 10vw, 8rem);
+      font-weight: 800;
+      text-transform: uppercase;
+      line-height: 0.9;
+      color: #f0f0f0;
+      margin-bottom: 8px;
+    }
+    .hero-h1 .accent { color: var(--accent); }
+    .hero-h1 .outline {
+      -webkit-text-stroke: 2px rgba(240,240,240,0.3);
+      color: transparent;
+    }
+    .hero-sub {
+      font-family: var(--font-body);
+      font-size: 16px;
+      line-height: 1.7;
+      color: var(--text-secondary);
+      max-width: 520px;
+      margin: 24px 0 36px;
+    }
+    .hero-ctas { display: flex; flex-wrap: wrap; gap: 12px; }
+    .btn-primary-hero {
+      font-family: var(--font-heading);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 12px 32px;
+      background: var(--accent);
+      color: #ffffff !important;
+      border: 2px solid var(--accent);
+      border-radius: 12px;
+      text-decoration: none !important;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 300ms ease;
+      cursor: pointer;
+    }
+    .btn-primary-hero:hover {
+      background: var(--accent-bright);
+      box-shadow: 0 0 40px var(--accent-glow), inset 0 0 15px rgba(255,255,255,0.2);
+      transform: translateY(-2px);
+      color: #ffffff !important;
+      text-decoration: none !important;
+      border-color: var(--accent-bright);
+    }
+    .btn-outline-hero {
+      font-family: var(--font-heading);
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 12px 32px;
+      background: transparent;
+      color: #ffffff !important;
+      border: 2px solid var(--accent);
+      border-radius: 12px;
+      text-decoration: none !important;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 300ms ease;
+      cursor: pointer;
+    }
+    .btn-outline-hero:hover {
+      background: rgba(170,0,0,0.15);
+      border-color: var(--accent-bright);
+      color: #ffffff !important;
+      text-decoration: none !important;
+      box-shadow: 0 0 30px var(--accent-glow);
+      transform: translateY(-2px);
+    }
+    /* Stats inline no hero */
+    .hero-stats {
+      display: flex;
+      gap: 40px;
+      margin-top: 56px;
+      padding-top: 32px;
+      border-top: 1px solid rgba(255,255,255,0.07);
+    }
+    .hero-stat-item .n {
+      font-family: var(--font-heading);
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--accent);
+      display: block;
+      line-height: 1;
+    }
+    .hero-stat-item .l {
+      font-family: var(--font-body);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-muted);
+      margin-top: 4px;
+      display: block;
+    }
+    /* Visual direito do hero */
+    .hero-visual {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .hero-img-wrap {
+      position: relative;
+      display: inline-block;
+    }
+    .hero-img-wrap img {
+      max-height: 520px;
+      object-fit: contain;
+      filter: drop-shadow(0 0 40px rgba(170,0,0,0.3));
+    }
+    .hero-ring {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 340px;
+      height: 340px;
+      border-radius: 50%;
+      border: 1px solid rgba(170,0,0,0.15);
+      animation: ring-pulse 3s ease-in-out infinite;
+    }
+    .hero-ring-2 {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 440px;
+      height: 440px;
+      border-radius: 50%;
+      border: 1px solid rgba(170,0,0,0.08);
+      animation: ring-pulse 3s ease-in-out infinite 1s;
+    }
+    @keyframes ring-pulse {
+      0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.6; }
+      50% { transform: translate(-50%, -50%) scale(1.05); opacity: 1; }
+    }
+    /* Tag do hero */
+    .hero-tag {
+      position: absolute;
+      top: 30px;
+      right: 20px;
+      background: rgba(170,0,0,0.12);
+      border: 1px solid rgba(170,0,0,0.35);
+      border-radius: 4px;
+      padding: 8px 16px;
+      font-family: var(--font-heading);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      backdrop-filter: blur(8px);
+    }
+    .hero-tag-2 {
+      position: absolute;
+      bottom: 60px;
+      left: 0;
+      background: rgba(8,10,14,0.85);
+      border: 1px solid var(--bg-border);
+      border-radius: 4px;
+      padding: 10px 16px;
+      font-family: var(--font-body);
+      font-size: 12px;
+      color: var(--text-secondary);
+      backdrop-filter: blur(8px);
+      min-width: 160px;
+    }
+    .hero-tag-2 strong {
+      display: block;
+      font-family: var(--font-heading);
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--accent);
+      line-height: 1;
+    }
+
+    /* ══════════════════════════════════════════
+       FEATURE CARDS — SVG ICONS
+    ══════════════════════════════════════════ */
+    .feature-card-v2 {
+      background: rgba(0,0,0,0.4);
+      border: 1px solid rgba(170,0,0,0.2);
+      border-radius: 8px;
+      padding: 32px 28px;
+      height: 100%;
+      position: relative;
+      overflow: hidden;
+      transition: all 250ms ease;
+      backdrop-filter: blur(10px);
+    }
+    .feature-card-v2::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      opacity: 0;
+      transition: opacity 250ms ease;
+    }
+    .feature-card-v2:hover {
+      border-color: var(--accent);
+      box-shadow: 0 0 30px var(--accent-glow), 0 0 60px rgba(170,0,0,0.2), inset 0 0 20px rgba(170,0,0,0.05);
+      transform: translateY(-6px);
+    }
+    .feature-card-v2:hover::before { opacity: 1; }
+    .fc-icon-svg {
+      width: 56px;
+      height: 56px;
+      margin-bottom: 20px;
+      display: block;
+      filter: invert(15%) sepia(95%) saturate(3000%) hue-rotate(350deg) brightness(0.9);
+      transition: filter 250ms ease, transform 250ms ease;
+    }
+    .feature-card-v2:hover .fc-icon-svg {
+      filter: invert(15%) sepia(95%) saturate(3000%) hue-rotate(350deg) brightness(1.1);
+      transform: scale(1.1);
+    }
+    .feature-card-v2 h4 {
+      font-family: var(--font-heading);
+      font-size: 22px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--text-primary);
+      margin-bottom: 10px;
+    }
+    .feature-card-v2 p {
+      font-family: var(--font-body);
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.65;
+      margin: 0 0 16px;
+    }
+    .feature-card-v2 .fc-corner {
+      position: absolute;
+      bottom: 16px;
+      right: 16px;
+      font-family: var(--font-heading);
+      font-size: 64px;
+      font-weight: 800;
+      color: rgba(170,0,0,0.06);
+      line-height: 1;
+      pointer-events: none;
+    }
+
+    /* ══════════════════════════════════════════
+       SECTION DIVIDER ÂMBAR
+    ══════════════════════════════════════════ */
+    .tzb-divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(170,0,0,0.4), transparent);
+      margin: 0;
+      border: none;
+    }
+
+    /* ══════════════════════════════════════════
+       BANNER / HERO — oculta seção original
+    ══════════════════════════════════════════ */
+    .banner-section { display: none !important; }
+
+    /* ══════════════════════════════════════════
+       STATS BAR — redesign
+    ══════════════════════════════════════════ */
+    .stats-bar-tzb {
+      background: var(--bg-card);
+      border-top: 1px solid var(--bg-border);
+      border-bottom: 1px solid var(--bg-border);
+    }
+    .stats-bar-tzb .s-item {
+      padding: 20px 24px;
+      text-align: center;
+      border-right: 1px solid var(--bg-border);
+    }
+    .stats-bar-tzb .s-item:last-child { border-right: none; }
+    .stats-bar-tzb .s-n {
+      font-family: var(--font-heading);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      display: block;
+    }
+    .stats-bar-tzb .s-v {
+      font-family: var(--font-heading);
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      display: block;
+      margin-top: 2px;
+    }
+
+    /* ══════════════════════════════════════════
+       STEP CARDS — limpos, alinhados, sem offset
+    ══════════════════════════════════════════ */
+    @keyframes stepFadeUp {
+      from { opacity: 0; transform: translateY(28px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes iconGlow {
+      0%, 100% { box-shadow: 0 0 8px rgba(170,0,0,0.3); }
+      50%       { box-shadow: 0 0 20px rgba(170,0,0,0.65), inset 0 0 8px rgba(170,0,0,0.12); }
+    }
+    @keyframes topLineSlide {
+      0%   { background-position: -100% 0; }
+      100% { background-position: 200% 0; }
+    }
+
+    .step-card {
+      position: relative;
+      transition: transform .28s ease, box-shadow .28s ease, border-color .28s ease;
+      height: 100%;
+    }
+    .step-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 14px 32px rgba(170,0,0,0.2), 0 0 0 1px rgba(170,0,0,0.15);
+    }
+    .step-card-featured {
+      box-shadow: 0 0 20px rgba(170,0,0,0.12);
+    }
+    /* linha de topo animada no card destaque */
+    .step-card-featured .step-top-line {
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent 0%, #cc0000 50%, transparent 100%);
+      background-size: 200% 100%;
+      animation: topLineSlide 2.5s linear infinite;
+      border-radius: 8px 8px 0 0;
+    }
+
+    .step-icon { animation: iconGlow 2.8s ease-in-out infinite; }
+
+    .step-anim-1 { animation: stepFadeUp .5s .00s ease both; }
+    .step-anim-2 { animation: stepFadeUp .5s .10s ease both; }
+    .step-anim-3 { animation: stepFadeUp .5s .20s ease both; }
+
+    /* ══════════════════════════════════════════
+       CAMPEONATOS — Glassmorphism + fixes
+    ══════════════════════════════════════════ */
+    /* "Temporada 1 chegando" fix */
+    .match-section .section-header p { color: #cc0000 !important; }
+
+    /* item-layer override — sem as camadas brancas do template */
+    .match-section .item-layer::before,
+    .match-section .item-layer::after { display: none !important; }
+
+    /* Glass cards */
+    .match-inner {
+      background: rgba(8,8,12,0.55) !important;
+      backdrop-filter: blur(18px) !important;
+      -webkit-backdrop-filter: blur(18px) !important;
+      border: 1px solid rgba(255,255,255,0.07) !important;
+      border-radius: 12px !important;
+      overflow: hidden !important;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05) !important;
+      transition: box-shadow .25s ease, border-color .25s ease !important;
+    }
+    .match-inner:hover {
+      border-color: rgba(170,0,0,0.25) !important;
+      box-shadow: 0 8px 40px rgba(170,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.07) !important;
+    }
+    .match-header {
+      background: rgba(0,0,0,0.3) !important;
+      border-bottom: 1px solid rgba(255,255,255,0.06) !important;
+      padding: 12px 20px !important;
+      backdrop-filter: blur(8px) !important;
+    }
+    .match-content.gradient-bg-yellow,
+    .match-content.gradient-bg-orange,
+    .match-content.gradient-bg-blue,
+    .match-content.gradient-bg-pink {
+      background: rgba(0,0,0,0.15) !important;
+      border-left: none !important;
+    }
+    /* VS — filtro pra ficar branco */
+    .match-team-list img[alt="vs"] {
+      filter: brightness(0) invert(1) !important;
+      opacity: 0.85 !important;
+    }
+
+    /* ══════════════════════════════════════════
+       FEATURES CARDS — item-layer hover
+    ══════════════════════════════════════════ */
+    .feature-card-v2 {
+      transition: transform .3s cubic-bezier(.79,.14,.15,.86), box-shadow .3s ease, border-color .25s ease !important;
+    }
+
+    /* ══════════════════════════════════════════
+       CAMPEONATOS — logos rotateY + hover lift
+    ══════════════════════════════════════════ */
+    .match-team-thumb a img {
+      transition: transform .4s linear !important;
+    }
+    .match-team-thumb a:hover img {
+      transform: rotateY(360deg) !important;
+    }
+    .match-social-list a {
+      transition: transform .3s cubic-bezier(0.175,0.885,0.32,1.275) !important;
+    }
+    .match-social-list a:hover {
+      transform: translateY(-3px) !important;
+      filter: drop-shadow(0 4px 6px rgba(170,0,0,0.4)) !important;
+    }
+
+    /* ══════════════════════════════════════════
+       PARCEIROS — hover lift suave
+    ══════════════════════════════════════════ */
+    .sponsor-inner {
+      transition: transform .3s cubic-bezier(0.175,0.885,0.32,1.275), border-color .2s ease !important;
+    }
+    .sponsor-inner:hover {
+      transform: translateY(-4px) !important;
+      filter: drop-shadow(0 6px 12px rgba(170,0,0,0.25)) !important;
+    }
+
+    /* ══════════════════════════════════════════
+       SECTION HEADERS — força vermelho em todos
+    ══════════════════════════════════════════ */
+    .section-header p,
+    #features .section-header p,
+    .player-section .section-header p,
+    #parceiros .section-header p,
+    .sponsor-section .section-header p {
+      color: #cc0000 !important;
+    }
+
+    /* player-thumb-2 — centralização (layout herdado) */
+    .player-thumb-2 {
+      display: flex !important;
+      justify-content: center !important;
+      margin-bottom: 12px !important;
+    }
+
+    /* =============================================
+       MOBILE RESPONSIVE — THE ZERO BASE
+       Breakpoints: 768px (tablet) / 480px (phone)
+       Regra: só afeta mobile, desktop intacto
+    ============================================= */
+
+    @media (max-width: 991px) {
+      /* Header */
+      .menu { display: none !important; }
+      .header-holder { height: 64px !important; }
+      .brand-logo a span { font-size: 18px !important; }
+
+      /* Botão CADASTRAR no header — menor */
+      .header-holder .btn-primary-hero {
+        padding: 7px 14px !important;
+        font-size: 12px !important;
+      }
+    }
+
+    @media (max-width: 768px) {
+
+      /* ---- HERO ---- */
+      .hero-tzb .row { min-height: 85vh !important; padding: 90px 0 40px !important; }
+      .hero-tzb .col-lg-6 { margin-left: 0 !important; padding: 0 16px !important; }
+      .hero-tzb .hero-line-left { display: none !important; }
+      .hero-h1 { font-size: clamp(2.6rem, 11vw, 4rem) !important; }
+      .hero-eyebrow { font-size: 13px !important; }
+      .hero-sub { font-size: 14px !important; line-height: 1.6 !important; }
+      .hero-ctas { flex-direction: column !important; gap: 12px !important; }
+      .hero-ctas .btn-primary-hero,
+      .hero-ctas .btn-outline-hero { width: 100% !important; justify-content: center !important; }
+      .hero-stats { gap: 16px !important; flex-wrap: wrap !important; }
+      .hero-stat-item .n { font-size: 1.6rem !important; }
+      .hero-visual { display: none !important; }
+
+      /* ---- STATS BAR ---- */
+      .stats-bar-tzb .s-item {
+        border-right: none !important;
+        border-bottom: 1px solid var(--bg-border) !important;
+        padding: 16px 0 !important;
+      }
+      .stats-bar-tzb .s-n { font-size: 1.1rem !important; }
+      .stats-bar-tzb .s-v { font-size: 11px !important; }
+
+      /* ---- SECTION HEADERS ---- */
+      .section-header h2 { font-size: clamp(1.5rem, 6vw, 2.2rem) !important; }
+      .section-header p { font-size: 12px !important; }
+
+      /* ---- FEATURES CARDS ---- */
+      .feature-card-v2 { padding: 28px 20px !important; }
+      .feature-card-v2 h4 { font-size: 16px !important; }
+      .feature-card-v2 p { font-size: 13px !important; }
+
+      /* ---- SOBRE ---- */
+      .about-section .section-wrapper { padding: 48px 0 !important; }
+      .about-item { gap: 12px !important; margin-bottom: 16px !important; }
+      .about-item-thumb { width: 40px !important; height: 40px !important; }
+
+      /* ---- COMO FUNCIONA ---- */
+      .section-como-funciona { padding: 48px 0 !important; }
+      /* Esconde operador no mobile — sobrepoeria o conteúdo */
+      .section-como-funciona > div[style*="position:absolute"] { display: none !important; }
+      .step-card { padding: 28px 20px !important; }
+      .step-card h4 { font-size: 17px !important; }
+
+      /* ---- CAMPEONATOS ---- */
+      .match-section { background-attachment: scroll !important; }
+      .match-content { padding: 16px !important; }
+      .match-header { flex-direction: column !important; gap: 4px !important; }
+      .match-game-info h4 { font-size: 1.3rem !important; }
+      .match-item { padding: 16px !important; }
+
+      /* ---- TIMES SLIDER ---- */
+      .player-section .section-header { text-align: center !important; }
+      .player-slider-btn-wrap { text-align: center !important; }
+
+      /* ---- CTA ---- */
+      .cta-section-tzb,
+      [style*="min-height:420px"] { min-height: 300px !important; }
+      .cta-section-tzb h2,
+      .cta-item h2 { font-size: clamp(1.6rem, 7vw, 2.4rem) !important; }
+      .cta-item { padding: 40px 20px !important; }
+
+      /* ---- PARCEIROS ---- */
+      #parceiros { padding-top: 48px !important; padding-bottom: 48px !important; }
+      /* Esconde operador-05 no mobile */
+      #parceiros > .container-fluid > div[style*="position:absolute"],
+      #parceiros div[style*="operator-05"],
+      #parceiros > div[style*="position:absolute"] { display: none !important; }
+      .sponsor-slider { padding: 0 8px !important; }
+
+      /* ---- FOOTER ---- */
+      .footer-section .footer-middle { padding: 40px 0 24px !important; }
+      .footer-section .footer-bottom { padding: 16px 0 !important; }
+      .footer-logo-wrap { margin-bottom: 16px !important; }
+      .footer-section h5 { font-size: 13px !important; }
+      .footer-section .footer-middle p,
+      .footer-section .footer-middle a { font-size: 13px !important; }
+      .match-social-list { gap: 8px !important; }
+      .tzb-social-btn { width: 36px !important; height: 36px !important; }
+
+      /* ---- GERAL ---- */
+      section[style*="padding:80px 0"] { padding: 48px 0 !important; }
+      .container { padding-left: 16px !important; padding-right: 16px !important; }
+    }
+
+    @media (max-width: 480px) {
+      /* Muito pequeno (iPhone SE, Galaxy A etc) */
+      .hero-tzb .row { min-height: 92vh !important; padding: 80px 0 32px !important; }
+      .hero-h1 { font-size: clamp(2.2rem, 13vw, 3.2rem) !important; }
+      .hero-sub { font-size: 13px !important; }
+      .hero-stats { justify-content: flex-start !important; }
+      .hero-stat-item .n { font-size: 1.4rem !important; }
+
+      .section-header h2 { font-size: clamp(1.3rem, 7vw, 1.8rem) !important; }
+
+      /* Feature cards: 1 por linha */
+      .col-md-6, .col-lg-3 { width: 100% !important; }
+
+      /* Steps: 1 por linha */
+      .step-card { margin-bottom: 12px !important; }
+
+      /* Campeonatos match-item */
+      .match-content .row { flex-direction: column !important; }
+      .match-team-list { justify-content: center !important; }
+
+      /* Header logo menor */
+      .brand-logo a span { font-size: 16px !important; }
+      .brand-logo svg { width: 22px !important; height: 25px !important; }
+
+      /* Botões hero */
+      .btn-primary-hero, .btn-outline-hero {
+        font-size: 13px !important;
+        padding: 10px 18px !important;
+      }
+
+      /* Footer stacking */
+      .footer-section .col-lg-4 { margin-bottom: 28px !important; }
+    }
+
+    /* =============================================
+       MOBILE IMAGES — versões otimizadas 768px
+       Serve img menor sem afetar desktop
+    ============================================= */
+    @media (max-width: 768px) {
+      /* Hero background */
+      .hero-tzb {
+        background:
+          linear-gradient(rgba(0,0,0,0.72), rgba(0,0,0,0.72)),
+          url('assets/images/bg-topo-mobile.webp') center / cover no-repeat !important;
+      }
+      /* About section */
+      .about-section {
+        background:
+          linear-gradient(rgba(0,0,0,0.82), rgba(0,0,0,0.82)),
+          url('assets/images/about/bg-sobre-mobile.webp') center / cover no-repeat !important;
+      }
+      /* Campeonatos */
+      .match-section {
+        background-image: url('assets/images/bg-lava-mobile.webp') !important;
+        background-attachment: scroll !important;
+      }
+      /* CTA */
+      .cta-bg-img {
+        background-image: url('assets/images/bg-cta-mobile.webp') !important;
+      }
+      /* Footer — sem imagem de background no mobile */
+      .footer-middle {
+        background-image: none !important;
+        background: var(--bg-card) !important;
+      }
+
+      /* ---- ESPAÇAMENTOS ENTRE SEÇÕES ---- */
+      /* Template .padding-top e .padding-bottom adicionam muito espaço */
+      .padding-top { padding-top: 40px !important; }
+      .padding-bottom { padding-bottom: 40px !important; }
+      .padding-lg-top { padding-top: 0 !important; }
+      hr.tzb-divider { margin: 0 !important; }
+
+      /* Seções com padding inline 80px */
+      section[style*="padding:80px"],
+      section[style*="padding: 80px"] { padding: 40px 0 !important; }
+
+      /* Match section internal spacing */
+      .match-section .section-header { margin-bottom: 24px !important; }
+      .match-section .section-wrapper { padding: 0 !important; }
+      .match-item { margin-bottom: 16px !important; }
+
+      /* Player section */
+      .player-section .section-wrapper { padding-top: 0 !important; }
+
+      /* Parceiros */
+      .sponsor-section { padding-top: 32px !important; padding-bottom: 32px !important; }
+      .sponsor-section .section-header { margin-bottom: 24px !important; }
+
+      /* Background-attachment: fixed quebra no iOS — desativa */
+      * { background-attachment: scroll !important; }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- preloader -->
+  <div class="preloader">
+    <div class="preloader-inner">
+      <div class="preloader-icon">
+        <span></span>
+        <span></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- scroll to top -->
+  <a href="#" class="scrollToTop"><i class="icofont-rounded-up"></i></a>
+
+  <!-- body shape decorativo -->
+  <div class="body-shape">
+    <img src="assets/images/shape/body-shape.png" alt="shape">
+  </div>
+
+
+  <!-- ============ HEADER ============ -->
+  <header class="header-section">
+    <div class="container-fluid px-4 px-lg-5">
+      <div class="header-holder">
+
+        <!-- Logo -->
+        <div class="brand-logo">
+          <a href="index.html" style="text-decoration:none;">
+            <span style="display:flex;align-items:center;gap:10px;font-family:'Exo 2',sans-serif;font-size:22px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;">
+              <!-- Símbolo SVG oficial TZB -->
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1263.01 1443.68" style="width:28px;height:32px;filter:drop-shadow(0 0 8px rgba(170,0,0,0.55));flex-shrink:0;">
+                <path fill="#AA0000" d="M552.08 1443.68l0.68 -142.2c-444.31,-80.52 -502.61,-489.38 -255.86,-835.86l-104.47 -76.79c-132.74,119.99 -254.44,414.77 -157.43,664.13 72.31,185.89 277.47,358.22 517.09,390.71zm-216.37 -1174.62l258.13 270.41 119.34 -96.68 -73.49 -85.95c490.45,-3.46 723.2,718.98 68.7,935.03l-3.88 145.57c304.55,-15.06 567.68,-327.76 558.24,-640.93 -11.09,-367.53 -266.2,-573.86 -620.82,-609.61l78.24 -86.32 -117.3 -100.59 -267.16 269.06z"/>
+              </svg>
+              <span style="color:#ffffff;">THE</span>
+              <span style="color:#aa0000;">ZERO</span>
+              <span style="color:#ffffff;">BASE</span>
+            </span>
+          </a>
+        </div>
+
+        <!-- Nav central -->
+        <nav class="d-none d-lg-flex align-items-center">
+          <ul class="menu" style="margin:0;padding:0;list-style:none;display:flex;align-items:center;gap:2px;">
+            <li><a href="/" class="active" style="font-family:'Exo 2',sans-serif;font-weight:700;font-size:13px;letter-spacing:0.1em;text-transform:uppercase;color:#ffffff;padding:8px 16px;border-radius:6px;display:block;text-decoration:none;transition:all 200ms;">Home</a></li>
+            <li><a href="/scrims" style="font-family:'Exo 2',sans-serif;font-weight:700;font-size:13px;letter-spacing:0.1em;text-transform:uppercase;color:#8892a4;padding:8px 16px;border-radius:6px;display:block;text-decoration:none;transition:all 200ms;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#8892a4'">Scrims</a></li>
+            <li><a href="/ranking" style="font-family:'Exo 2',sans-serif;font-weight:700;font-size:13px;letter-spacing:0.1em;text-transform:uppercase;color:#8892a4;padding:8px 16px;border-radius:6px;display:block;text-decoration:none;transition:all 200ms;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#8892a4'">Ranking</a></li>
+            <li><a href="/campeonatos" style="font-family:'Exo 2',sans-serif;font-weight:700;font-size:13px;letter-spacing:0.1em;text-transform:uppercase;color:#8892a4;padding:8px 16px;border-radius:6px;display:block;text-decoration:none;transition:all 200ms;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#8892a4'">Campeonatos</a></li>
+            <li><a href="/agentes-livres" style="font-family:'Exo 2',sans-serif;font-weight:700;font-size:13px;letter-spacing:0.1em;text-transform:uppercase;color:#8892a4;padding:8px 16px;border-radius:6px;display:block;text-decoration:none;transition:all 200ms;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#8892a4'">Agentes Livres</a></li>
+            <li><a href="/regras" style="font-family:'Exo 2',sans-serif;font-weight:700;font-size:13px;letter-spacing:0.1em;text-transform:uppercase;color:#8892a4;padding:8px 16px;border-radius:6px;display:block;text-decoration:none;transition:all 200ms;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#8892a4'">Regras</a></li>
+          </ul>
+        </nav>
+
+        <!-- Ações direita -->
+        <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
+          <!-- Social icons mini -->
+          <div class="d-none d-xl-flex align-items-center" style="gap:4px;margin-right:8px;">
+            <a href="#" style="width:30px;height:30px;display:flex;align-items:center;justify-content:center;color:#606060;border-radius:6px;transition:all 200ms;font-size:15px;text-decoration:none;"><i class="icofont-instagram"></i></a>
+            <a href="#" style="width:30px;height:30px;display:flex;align-items:center;justify-content:center;color:#606060;border-radius:6px;transition:all 200ms;font-size:15px;text-decoration:none;"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></a>
+          </div>
+          <!-- Divider -->
+          <div class="d-none d-xl-block" style="width:1px;height:24px;background:rgba(255,255,255,0.1);margin:0 4px;"></div>
+          <a href="/auth" class="btn-outline-hero d-none d-lg-inline-flex">ENTRAR</a>
+          <a href="/auth" class="btn-primary-hero">CADASTRAR</a>
+          <!-- Mobile hamburger -->
+          <div class="header-bar d-lg-none" style="margin-left:8px;cursor:pointer;"><span></span><span></span><span></span></div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Mobile menu -->
+    <div class="d-lg-none" id="mobile-menu" style="display:none;border-top:1px solid rgba(170,0,0,0.2);background:rgba(0,0,0,0.96);backdrop-filter:blur(16px);">
+      <div class="container py-3">
+        <ul style="list-style:none;margin:0;padding:0;">
+          <li style="border-bottom:1px solid rgba(255,255,255,0.05);"><a href="/" style="display:block;padding:12px 0;font-family:'Exo 2',sans-serif;font-weight:700;font-size:14px;text-transform:uppercase;color:#ffffff;text-decoration:none;">Home</a></li>
+          <li style="border-bottom:1px solid rgba(255,255,255,0.05);"><a href="/scrims" style="display:block;padding:12px 0;font-family:'Exo 2',sans-serif;font-size:14px;color:#8892a4;text-decoration:none;">Scrims</a></li>
+          <li style="border-bottom:1px solid rgba(255,255,255,0.05);"><a href="/ranking" style="display:block;padding:12px 0;font-family:'Exo 2',sans-serif;font-size:14px;color:#8892a4;text-decoration:none;">Ranking</a></li>
+          <li style="border-bottom:1px solid rgba(255,255,255,0.05);"><a href="/campeonatos" style="display:block;padding:12px 0;font-family:'Exo 2',sans-serif;font-size:14px;color:#8892a4;text-decoration:none;">Campeonatos</a></li>
+          <li style="border-bottom:1px solid rgba(255,255,255,0.05);"><a href="/agentes-livres" style="display:block;padding:12px 0;font-family:'Exo 2',sans-serif;font-size:14px;color:#8892a4;text-decoration:none;">Agentes Livres</a></li>
+          <li style="border-bottom:1px solid rgba(255,255,255,0.05);"><a href="/regras" style="display:block;padding:12px 0;font-family:'Exo 2',sans-serif;font-size:14px;color:#8892a4;text-decoration:none;">Regras</a></li>
+          <li style="padding-top:12px;display:flex;gap:8px;">
+            <a href="/auth" class="btn-outline-hero" style="flex:1;text-align:center;justify-content:center;">ENTRAR</a>
+            <a href="/auth" class="btn-primary-hero" style="flex:1;text-align:center;justify-content:center;">CADASTRAR</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+  </header>
+  <!-- ============ /HEADER ============ -->
+
+
+  <!-- ============ HERO ATMOSFÉRICO ============ -->
+  <section class="hero-tzb">
+    <div class="hero-bg"></div>
+    <div class="hero-glow"></div>
+    <div class="hero-grid"></div>
+    <div class="hero-scanline"></div>
+    <div class="hero-line-left"></div>
+    <div class="hero-bracket"></div>
+    <div class="hero-bracket-br"></div>
+    <div class="container hero-content">
+      <div class="row align-items-center" style="min-height:100vh;padding:100px 0 60px;">
+        <!-- LEFT: copy -->
+        <div class="col-lg-6" style="margin-left:80px;">
+          <!-- Símbolo decorativo grande — atrás do copy -->
+          <div style="position:absolute;right:-40px;top:50%;transform:translateY(-50%);opacity:0.04;pointer-events:none;z-index:0;display:none;" class="d-lg-block">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1263.01 1443.68" style="width:420px;height:480px;"><path fill="#ffffff" d="M552.08 1443.68l0.68 -142.2c-444.31,-80.52 -502.61,-489.38 -255.86,-835.86l-104.47 -76.79c-132.74,119.99 -254.44,414.77 -157.43,664.13 72.31,185.89 277.47,358.22 517.09,390.71zm-216.37 -1174.62l258.13 270.41 119.34 -96.68 -73.49 -85.95c490.45,-3.46 723.2,718.98 68.7,935.03l-3.88 145.57c304.55,-15.06 567.68,-327.76 558.24,-640.93 -11.09,-367.53 -266.2,-573.86 -620.82,-609.61l78.24 -86.32 -117.3 -100.59 -267.16 269.06z"/></svg>
+          </div>
+          <div class="hero-eyebrow" style="background:linear-gradient(to bottom, #ffffff 0%, #cccccc 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-size:16px;font-weight:600;letter-spacing:0.1em;margin-bottom:20px;">O CENÁRIO BRASILEIRO COMEÇA AQUI</div>
+          <h1 class="hero-h1">
+            <span style="display:inline-block;background:linear-gradient(to bottom, #ffffff 0%, #cccccc 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">ENTRE NA</span><br>
+            <span style="color:#aa0000;">BASE</span>
+          </h1>
+          <p class="hero-sub" style="color:#ffffff;font-family:'Roboto',sans-serif;font-weight:400;font-size:16px;line-height:1.6;">
+            The Zero Base não é uma plataforma de competições. É a infraestrutura que define e organiza o Warzone competitivo brasileiro — do amador que quer crescer até o atleta que sonha em viver de esports. Aqui, o Brasil tem um padrão.
+          </p>
+          <div class="hero-ctas">
+            <a href="/auth" class="btn-primary-hero">
+              Entrar na Base
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+            <a href="#categorias" class="btn-outline-hero">
+              Ver categorias
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+            </a>
+          </div>
+          <div class="hero-stats">
+            <div class="hero-stat-item">
+              <span class="n">100%</span>
+              <span class="l">Warzone BR</span>
+            </div>
+            <div class="hero-stat-item">
+              <span class="n">168</span>
+              <span class="l">Competições/ano</span>
+            </div>
+            <div class="hero-stat-item">
+              <span class="n">Free</span>
+              <span class="l">Cadastro grátis</span>
+            </div>
+          </div>
+        </div>
+        <!-- RIGHT: visual — REMOVIDO -->
+      </div>
+    </div>
+  </section>
+  <!-- ============ /HERO ============ -->
+
+  <hr class="tzb-divider">
+
+  <!-- ============ STATS BAR ============ -->
+  <div class="stats-bar-tzb">
+    <div class="container">
+      <div class="row g-0">
+        <div class="col-6 col-md-3"><div class="s-item">
+          <span class="s-n">Do Casual</span>
+          <span class="s-v">Ao Profissional</span>
+        </div></div>
+        <div class="col-6 col-md-3"><div class="s-item">
+          <span class="s-n">168 Competições</span>
+          <span class="s-v">Por Ano</span>
+        </div></div>
+        <div class="col-6 col-md-3"><div class="s-item">
+          <span class="s-n">5 Regiões</span>
+          <span class="s-v">1 Brasil</span>
+        </div></div>
+        <div class="col-6 col-md-3"><div class="s-item">
+          <span class="s-n">Temporada 1</span>
+          <span class="s-v">Em Breve</span>
+        </div></div>
+      </div>
+    </div>
+  </div>
+  <!-- ============ /STATS BAR ============ -->
+
+  <hr class="tzb-divider">
+
+  <!-- ============ FEATURES ============ -->
+  <section style="background:#000000;padding:80px 0;" id="features">
+    <div class="container">
+      <div class="section-header text-center" style="margin-bottom:48px;">
+        <p>O que a The Zero Base entrega</p>
+        <h2>Infraestrutura real para um cenário sério</h2>
+      </div>
+      <div class="row g-4">
+
+        <!-- Scrims -->
+        <div class="col-lg-3 col-md-6">
+          <div class="feature-card-v2">
+            <!-- Shield SVG — game-icons.net style -->
+            <img class="fc-icon-svg" loading="lazy" src="https://game-icons.net/1x1/sbed/shield.svg" alt="scrims"
+                 onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+            <svg style="display:none;width:56px;height:56px;color:var(--accent);margin-bottom:20px;" viewBox="0 0 24 24" fill="none" stroke="#aa0000" stroke-width="1.5"><path d="M12 2L3 6v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V6L12 2z"/></svg>
+            <h4>Treinos com KD Gate</h4>
+            <p>Sessões de treino organizadas por tier. Você pratica contra quem é do seu nível — Bronze, Prata ou Ouro. Sem smurf. Sem desculpa. Só evolução.</p>
+            <div>
+              <span class="badge-tier tier-bronze">Bronze</span>
+              <span class="badge-tier tier-ouro" style="margin-left:4px;">Ouro</span>
+              <span class="badge-tier tier-pro" style="margin-left:4px;">Pro</span>
+            </div>
+            <span class="fc-corner">01</span>
+          </div>
+        </div>
+
+        <!-- Ranking -->
+        <div class="col-lg-3 col-md-6">
+          <div class="feature-card-v2">
+            <img class="fc-icon-svg" loading="lazy" src="https://game-icons.net/1x1/lorc/trophy.svg" alt="ranking"
+                 onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+            <svg style="display:none;width:56px;height:56px;margin-bottom:20px;" viewBox="0 0 24 24" fill="none" stroke="#aa0000" stroke-width="1.5"><path d="M6 9H4.5a2.5 2.5 0 010-5H6M18 9h1.5a2.5 2.5 0 000-5H18M18 2H6v7a6 6 0 0012 0V2zM4 22h16M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/></svg>
+            <h4>Ranking Nacional</h4>
+            <p>O primeiro ranking oficial de Warzone no Brasil. ZERO Points por posição, kills e consistência — não por sorte de um dia.</p>
+            <div><span class="badge-tier tier-diamante">Temporada 1 — Em Breve</span></div>
+            <span class="fc-corner">02</span>
+          </div>
+        </div>
+
+        <!-- Agentes Livres -->
+        <div class="col-lg-3 col-md-6">
+          <div class="feature-card-v2">
+            <img class="fc-icon-svg" loading="lazy" src="https://game-icons.net/1x1/delapouite/crosshair.svg" alt="agentes livres"
+                 onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+            <svg style="display:none;width:56px;height:56px;margin-bottom:20px;" viewBox="0 0 24 24" fill="none" stroke="#aa0000" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/></svg>
+            <h4>Agentes Livres</h4>
+            <p>Sem time, quer competir? Sem player, quer completar o squad? O Squad Finder conecta você com quem precisa em minutos.</p>
+            <div><span class="badge-tier tier-prata">LFG em minutos</span></div>
+            <span class="fc-corner">03</span>
+          </div>
+        </div>
+
+        <!-- Campeonatos -->
+        <div class="col-lg-3 col-md-6">
+          <div class="feature-card-v2">
+            <img class="fc-icon-svg" loading="lazy" src="https://game-icons.net/1x1/lorc/skull-shield.svg" alt="campeonatos"
+                 onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+            <svg style="display:none;width:56px;height:56px;margin-bottom:20px;" viewBox="0 0 24 24" fill="none" stroke="#aa0000" stroke-width="1.5"><path d="M12 2L3 6v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V6L12 2z"/><circle cx="12" cy="10" r="3"/><path d="M10 14h4v2h-4z"/></svg>
+            <h4>Campeonatos</h4>
+            <p>168 competições por ano — promovidas pela TZB e por organizadores parceiros. Bracket oficial, prize pool real, broadcast profissional. O produto central da The Zero Base.</p>
+            <div><span class="badge-tier tier-pro">Prize Pool Real</span></div>
+            <span class="fc-corner">04</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+  <!-- ============ /FEATURES ============ -->
+
+  <hr class="tzb-divider">
+
+  <!-- ============ CATEGORIAS ============ -->
+  <section style="background:#000;padding:80px 0;" id="categorias">
+    <div class="container">
+      <div class="section-header text-center" style="margin-bottom:56px;">
+        <p>Onde você está nessa história</p>
+        <h2>Aqui tem espaço para você — seja quem for</h2>
+      </div>
+
+      <!-- Tabs -->
+      <div style="display:flex;gap:4px;background:#0a0a0f;border:1px solid #1a2030;border-radius:10px;padding:4px;width:fit-content;margin:0 auto 40px;">
+        <button id="tab-amador" onclick="showCat('amador')" style="font-family:'Exo 2',sans-serif;font-weight:700;font-size:13px;letter-spacing:0.1em;text-transform:uppercase;padding:10px 28px;border-radius:7px;border:none;background:#aa0000;color:#fff;cursor:pointer;transition:all 0.15s;">AMADOR</button>
+        <button id="tab-pro" onclick="showCat('pro')" style="font-family:'Exo 2',sans-serif;font-weight:700;font-size:13px;letter-spacing:0.1em;text-transform:uppercase;padding:10px 28px;border-radius:7px;border:none;background:transparent;color:#8892a4;cursor:pointer;transition:all 0.15s;">PROFISSIONAL</button>
+      </div>
+
+      <!-- Amador -->
+      <div id="cat-amador">
+        <div class="row g-5 align-items-start">
+          <div class="col-lg-6">
+            <p style="font-family:'Exo 2',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.3em;text-transform:uppercase;color:#aa0000;margin-bottom:12px;">Categoria Amador</p>
+            <h3 style="font-family:'Exo 2',sans-serif;font-weight:900;font-size:clamp(28px,4vw,40px);color:#fff;line-height:1.1;margin-bottom:20px;">Você não precisa ser pro<br>pra jogar de verdade.</h3>
+            <p style="font-family:'Roboto',sans-serif;font-size:15px;color:#8892a4;line-height:1.8;margin-bottom:32px;">Domingo à tarde. Você e seus dois amigos. Um lobby organizado, fair play garantido, transmissão ao vivo, stats reais e prêmios de verdade. Isso é competir na The Zero Base — sem precisar de org, sem precisar de contrato. Só você, seu time e vontade de jogar.</p>
+
+            <!-- 2 sub-nichos -->
+            <div style="display:flex;flex-direction:column;gap:16px;margin-bottom:32px;">
+              <div style="background:#0a0a0f;border:1px solid #1a2030;border-left:3px solid #aa0000;border-radius:0 10px 10px 0;padding:20px 24px;">
+                <p style="font-family:'Exo 2',sans-serif;font-weight:800;font-size:14px;color:#fff;margin:0 0 6px;">Jogo casual — entra, compete, se diverte</p>
+                <p style="font-family:'Roboto',sans-serif;font-size:13px;color:#8892a4;margin:0;line-height:1.6;">Quer sentir a emoção de uma competição de verdade sem compromisso de equipe fixa. Você encontra um lobby organizado, joga com quem é do seu nível e ainda pode ganhar um prêmio no final.</p>
+              </div>
+              <div style="background:#0a0a0f;border:1px solid #1a2030;border-left:3px solid #cc0000;border-radius:0 10px 10px 0;padding:20px 24px;">
+                <p style="font-family:'Exo 2',sans-serif;font-weight:800;font-size:14px;color:#fff;margin:0 0 6px;">Time sério — você e seus amigos querem subir</p>
+                <p style="font-family:'Roboto',sans-serif;font-size:13px;color:#8892a4;margin:0;line-height:1.6;">Seu trio treina junto, sabe que é bom, quer ser reconhecido. Os melhores trios amadores ganham vagas para disputar no nível profissional — e é aqui que as orgs vêm buscar quem vai contratar.</p>
+              </div>
+            </div>
+
+            <div style="margin-bottom:28px;">
+              <p style="font-family:'Exo 2',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:#555e6d;margin-bottom:12px;">Encontre seu nível</p>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                <span style="font-family:'Exo 2',sans-serif;font-weight:700;font-size:11px;padding:5px 14px;border-radius:5px;background:rgba(180,120,60,0.12);color:#b4783c;border:1px solid rgba(180,120,60,0.3);">BRONZE · KD 1.0–2.0</span>
+                <span style="font-family:'Exo 2',sans-serif;font-weight:700;font-size:11px;padding:5px 14px;border-radius:5px;background:rgba(160,174,192,0.1);color:#a0aec0;border:1px solid rgba(160,174,192,0.3);">PRATA · KD 2.0–3.5</span>
+                <span style="font-family:'Exo 2',sans-serif;font-weight:700;font-size:11px;padding:5px 14px;border-radius:5px;background:rgba(232,178,74,0.1);color:#e8b24a;border:1px solid rgba(232,178,74,0.3);">OURO · KD 3.5+</span>
+              </div>
+            </div>
+            <a href="/auth" style="display:inline-flex;align-items:center;gap:8px;background:#aa0000;color:#ffffff!important;font-family:'Exo 2',sans-serif;font-weight:700;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;padding:13px 28px;border-radius:8px;text-decoration:none;transition:background 0.15s;margin-top:4px;flex-shrink:0;-webkit-text-fill-color:#ffffff;" onmouseover="this.style.background='#cc0000'" onmouseout="this.style.background='#aa0000'">ENTRAR NA BASE — É GRÁTIS</a>
+          </div>
+          <div class="col-lg-6">
+            <div style="background:#0a0a0f;border:1px solid #1a2030;border-radius:16px;padding:32px;">
+              <p style="font-family:'Exo 2',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:#555e6d;margin-bottom:20px;">Do primeiro lobby ao próximo nível</p>
+              <div style="display:flex;flex-direction:column;">
+                <div style="display:flex;align-items:flex-start;gap:16px;padding-bottom:24px;border-left:2px solid rgba(170,0,0,0.3);margin-left:8px;padding-left:24px;position:relative;">
+                  <div style="position:absolute;left:-8px;top:0;width:16px;height:16px;border-radius:50%;background:#aa0000;border:2px solid #000;flex-shrink:0;"></div>
+                  <div>
+                    <p style="font-family:'Exo 2',sans-serif;font-weight:700;font-size:14px;color:#fff;margin:0 0 4px;">Entra na plataforma</p>
+                    <p style="font-family:'Roboto',sans-serif;font-size:13px;color:#8892a4;margin:0;">Cria seu perfil, monta o trio, define o tier. Gratuito, menos de 2 minutos.</p>
+                  </div>
+                </div>
+                <div style="display:flex;align-items:flex-start;gap:16px;padding-bottom:24px;border-left:2px solid rgba(170,0,0,0.4);margin-left:8px;padding-left:24px;position:relative;">
+                  <div style="position:absolute;left:-8px;top:0;width:16px;height:16px;border-radius:50%;background:#aa0000;border:2px solid #000;flex-shrink:0;"></div>
+                  <div>
+                    <p style="font-family:'Exo 2',sans-serif;font-weight:700;font-size:14px;color:#fff;margin:0 0 4px;">Treina e compete</p>
+                    <p style="font-family:'Roboto',sans-serif;font-size:13px;color:#8892a4;margin:0;">Scrims para praticar, competições para ganhar. Cada resultado vai pro ranking.</p>
+                  </div>
+                </div>
+                <div style="display:flex;align-items:flex-start;gap:16px;padding-bottom:24px;border-left:2px solid rgba(170,0,0,0.5);margin-left:8px;padding-left:24px;position:relative;">
+                  <div style="position:absolute;left:-8px;top:0;width:16px;height:16px;border-radius:50%;background:#cc0000;border:2px solid #000;flex-shrink:0;"></div>
+                  <div>
+                    <p style="font-family:'Exo 2',sans-serif;font-weight:700;font-size:14px;color:#fff;margin:0 0 4px;">Acumula ZERO Points</p>
+                    <p style="font-family:'Roboto',sans-serif;font-size:13px;color:#8892a4;margin:0;">Posição, kills, presença e fair play. Quem é consistente sobe — sem depender de sorte.</p>
+                  </div>
+                </div>
+                <div style="display:flex;align-items:flex-start;gap:16px;padding-bottom:24px;border-left:2px solid rgba(232,178,74,0.4);margin-left:8px;padding-left:24px;position:relative;">
+                  <div style="position:absolute;left:-8px;top:0;width:16px;height:16px;border-radius:50%;background:#e8b24a;border:2px solid #000;flex-shrink:0;"></div>
+                  <div>
+                    <p style="font-family:'Exo 2',sans-serif;font-weight:700;font-size:14px;color:#e8b24a;margin:0 0 4px;">Aparece no radar das orgs</p>
+                    <p style="font-family:'Roboto',sans-serif;font-size:13px;color:#8892a4;margin:0;">Os melhores trios são vistos. É aqui que organizações buscam quem contratar.</p>
+                  </div>
+                </div>
+                <div style="display:flex;align-items:flex-start;gap:16px;margin-left:8px;padding-left:24px;position:relative;">
+                  <div style="position:absolute;left:-8px;top:0;width:16px;height:16px;border-radius:50%;background:linear-gradient(135deg,#e8b24a,#fff);border:2px solid #000;flex-shrink:0;"></div>
+                  <div>
+                    <p style="font-family:'Exo 2',sans-serif;font-weight:700;font-size:14px;color:#fff;margin:0 0 4px;">Tem um caminho real para você</p>
+                    <p style="font-family:'Roboto',sans-serif;font-size:13px;color:#8892a4;margin:0;">Os melhores amadores disputam vagas nas competições profissionais. Carreira em esports se constrói — e começa exatamente aqui.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Profissional -->
+      <div id="cat-pro" style="display:none;">
+        <div class="row g-5 align-items-start">
+          <div class="col-lg-6">
+            <p style="font-family:'Exo 2',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.3em;text-transform:uppercase;color:#e8b24a;margin-bottom:12px;">Categoria Profissional</p>
+            <h3 style="font-family:'Exo 2',sans-serif;font-weight:900;font-size:clamp(28px,4vw,40px);color:#fff;line-height:1.1;margin-bottom:20px;">Esports é carreira.<br>Aqui você prova isso.</h3>
+            <p style="font-family:'Roboto',sans-serif;font-size:15px;color:#8892a4;line-height:1.8;margin-bottom:32px;">O nível profissional é onde jogadores viram atletas e orgs viram marcas. Não existe atalho — existe consistência, estrutura e visibilidade. A The Zero Base entrega os três. O que você faz com isso é o que vai definir a sua carreira.</p>
+
+            <div style="background:#0a0a0f;border:1px solid rgba(232,178,74,0.15);border-radius:10px;padding:24px;margin-bottom:28px;">
+              <p style="font-family:'Exo 2',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:#555e6d;margin-bottom:16px;">O circuito profissional</p>
+              <div style="display:flex;flex-direction:column;gap:10px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:10px;border-bottom:1px solid rgba(26,32,48,0.8);">
+                  <span style="font-family:'Roboto',sans-serif;font-size:13px;color:#fff;">Classificatórias Regionais</span>
+                  <span style="font-family:'Exo 2',sans-serif;font-weight:700;font-size:11px;color:#8892a4;">5 regiões BR</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:10px;border-bottom:1px solid rgba(26,32,48,0.8);">
+                  <span style="font-family:'Roboto',sans-serif;font-size:13px;color:#fff;">Grand Prix Nacional</span>
+                  <span style="font-family:'Exo 2',sans-serif;font-weight:700;font-size:11px;color:#e8b24a;">Melhores do Brasil</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:10px;border-bottom:1px solid rgba(26,32,48,0.8);">
+                  <span style="font-family:'Roboto',sans-serif;font-size:13px;color:#fff;">Major Championship</span>
+                  <span style="font-family:'Exo 2',sans-serif;font-weight:700;font-size:11px;color:#e8b24a;">R$ 50k–100k</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;align-items:center;">
+                  <span style="font-family:'Roboto',sans-serif;font-size:13px;color:#fff;">Grand Final Nacional</span>
+                  <span style="font-family:'Exo 2',sans-serif;font-weight:700;font-size:11px;color:#e8b24a;">R$ 200k+</span>
+                </div>
+              </div>
+            </div>
+
+            <a href="/auth" style="display:inline-flex;align-items:center;gap:8px;background:rgba(232,178,74,0.1);color:#e8b24a;border:1px solid rgba(232,178,74,0.35);font-family:'Exo 2',sans-serif;font-weight:700;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;padding:13px 28px;border-radius:8px;text-decoration:none;transition:all 0.15s;" onmouseover="this.style.background='rgba(232,178,74,0.18)'" onmouseout="this.style.background='rgba(232,178,74,0.1)'">REGISTRAR MINHA ORGANIZAÇÃO</a>
+          </div>
+          <div class="col-lg-6">
+            <div style="background:#0a0a0f;border:1px solid rgba(232,178,74,0.15);border-top:2px solid #e8b24a;border-radius:16px;padding:32px;">
+              <p style="font-family:'Exo 2',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:#555e6d;margin-bottom:20px;">A estrutura que faz carreiras acontecerem</p>
+              <div style="display:flex;flex-direction:column;gap:20px;">
+                <div style="display:flex;align-items:flex-start;gap:16px;">
+                  <div style="width:36px;height:36px;border-radius:8px;background:rgba(232,178,74,0.1);border:1px solid rgba(232,178,74,0.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#e8b24a" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                  </div>
+                  <div>
+                    <p style="font-family:'Exo 2',sans-serif;font-weight:700;font-size:14px;color:#fff;margin:0 0 4px;">Circuito regional e nacional</p>
+                    <p style="font-family:'Roboto',sans-serif;font-size:13px;color:#8892a4;margin:0;">Competições por região que desafiam e unificam o melhor do Brasil</p>
+                  </div>
+                </div>
+                <div style="display:flex;align-items:flex-start;gap:16px;">
+                  <div style="width:36px;height:36px;border-radius:8px;background:rgba(232,178,74,0.1);border:1px solid rgba(232,178,74,0.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#e8b24a" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                  </div>
+                  <div>
+                    <p style="font-family:'Exo 2',sans-serif;font-weight:700;font-size:14px;color:#fff;margin:0 0 4px;">Broadcast e visibilidade</p>
+                    <p style="font-family:'Roboto',sans-serif;font-size:13px;color:#8892a4;margin:0;">Beacecaster + transmissão ao vivo — sua org em destaque para o Brasil inteiro</p>
+                  </div>
+                </div>
+                <div style="display:flex;align-items:flex-start;gap:16px;">
+                  <div style="width:36px;height:36px;border-radius:8px;background:rgba(232,178,74,0.1);border:1px solid rgba(232,178,74,0.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#e8b24a" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                  </div>
+                  <div>
+                    <p style="font-family:'Exo 2',sans-serif;font-weight:700;font-size:14px;color:#fff;margin:0 0 4px;">Anti-cheat real e stats validadas</p>
+                    <p style="font-family:'Roboto',sans-serif;font-size:13px;color:#8892a4;margin:0;">Zero Eye OCR em tempo real — resultados que o mercado confia</p>
+                  </div>
+                </div>
+                <div style="display:flex;align-items:flex-start;gap:16px;">
+                  <div style="width:36px;height:36px;border-radius:8px;background:rgba(232,178,74,0.1);border:1px solid rgba(232,178,74,0.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#e8b24a" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                  </div>
+                  <div>
+                    <p style="font-family:'Exo 2',sans-serif;font-weight:700;font-size:14px;color:#fff;margin:0 0 4px;">Ranking amador como vitrine de talentos</p>
+                    <p style="font-family:'Roboto',sans-serif;font-size:13px;color:#8892a4;margin:0;">Os melhores jogadores amadores já estão aqui, rankeados. Você descobre quem vale a pena antes de qualquer conversa.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+  <!-- ============ /CATEGORIAS ============ -->
+
+  <hr class="tzb-divider">
+
+  <!-- ============ SOBRE / QUEM SOMOS ============ -->
+  <section class="about-section" id="sobre">
+    <div class="container">
+      <div class="section-wrapper padding-top padding-bottom">
+        <div class="row">
+          <div class="col-lg-12">
+          <div class="col-lg-8 col-md-10">
+            <div class="about-wrapper" style="position:relative;z-index:2;">
+              <div class="section-header">
+                <p style="color:#cc0000 !important;">A razão de existirmos</p>
+                <h2>A cena BR merecia uma estrutura de verdade</h2>
+              </div>
+              <div class="about-content">
+                <p style="font-family:'Roboto',sans-serif;font-size:15px;color:#8892a4;line-height:1.8;margin-bottom:24px;">
+                  O Warzone competitivo brasileiro sempre foi real — mas nunca teve estrutura. Inscrições por DM, resultados em planilha, ranking inexistente. A The Zero Base chegou para mudar isso de vez. Aqui, o cenário tem padrão: o amador sabe onde começa e onde pode chegar, o profissional tem plataforma para competir com credibilidade, e o mercado tem uma referência oficial. Isso é a Base.
+                </p>
+                <ul class="about-list">
+                  <li class="about-item d-flex flex-wrap" style="align-items:flex-start;gap:16px;margin-bottom:24px;">
+                    <div class="about-item-thumb" style="width:48px;height:48px;background:rgba(170,0,0,0.08);border:1px solid rgba(170,0,0,0.25);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:10px;">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1263.01 1443.68" style="width:100%;height:100%;"><path fill="#AA0000" d="M552.08 1443.68l0.68 -142.2c-444.31,-80.52 -502.61,-489.38 -255.86,-835.86l-104.47 -76.79c-132.74,119.99 -254.44,414.77 -157.43,664.13 72.31,185.89 277.47,358.22 517.09,390.71zm-216.37 -1174.62l258.13 270.41 119.34 -96.68 -73.49 -85.95c490.45,-3.46 723.2,718.98 68.7,935.03l-3.88 145.57c304.55,-15.06 567.68,-327.76 558.24,-640.93 -11.09,-367.53 -266.2,-573.86 -620.82,-609.61l78.24 -86.32 -117.3 -100.59 -267.16 269.06z"/></svg>
+                    </div>
+                    <div class="about-item-content" style="flex:1;">
+                      <h5>Perfil de Jogador com Stats Reais</h5>
+                      <p>KD, winrate, kills por partida e histórico completo de campeonatos — tudo no seu perfil público, como um card de atleta.</p>
+                    </div>
+                  </li>
+                  <li class="about-item d-flex flex-wrap" style="align-items:flex-start;gap:16px;margin-bottom:24px;">
+                    <div class="about-item-thumb" style="width:48px;height:48px;background:rgba(170,0,0,0.08);border:1px solid rgba(170,0,0,0.25);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:10px;">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1263.01 1443.68" style="width:100%;height:100%;"><path fill="#AA0000" d="M552.08 1443.68l0.68 -142.2c-444.31,-80.52 -502.61,-489.38 -255.86,-835.86l-104.47 -76.79c-132.74,119.99 -254.44,414.77 -157.43,664.13 72.31,185.89 277.47,358.22 517.09,390.71zm-216.37 -1174.62l258.13 270.41 119.34 -96.68 -73.49 -85.95c490.45,-3.46 723.2,718.98 68.7,935.03l-3.88 145.57c304.55,-15.06 567.68,-327.76 558.24,-640.93 -11.09,-367.53 -266.2,-573.86 -620.82,-609.61l78.24 -86.32 -117.3 -100.59 -267.16 269.06z"/></svg>
+                    </div>
+                    <div class="about-item-content" style="flex:1;">
+                      <h5>ZERO Points — Pontuação Que Faz Sentido</h5>
+                      <p>Nossa fórmula combina posição, kills, presença e fair play. Quem é consistente sobe — sem depender de sorte ou de um único dia bom.</p>
+                    </div>
+                  </li>
+                  <li class="about-item d-flex flex-wrap" style="align-items:flex-start;gap:16px;margin-bottom:24px;">
+                    <div class="about-item-thumb" style="width:48px;height:48px;background:rgba(170,0,0,0.08);border:1px solid rgba(170,0,0,0.25);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:10px;">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1263.01 1443.68" style="width:100%;height:100%;"><path fill="#AA0000" d="M552.08 1443.68l0.68 -142.2c-444.31,-80.52 -502.61,-489.38 -255.86,-835.86l-104.47 -76.79c-132.74,119.99 -254.44,414.77 -157.43,664.13 72.31,185.89 277.47,358.22 517.09,390.71zm-216.37 -1174.62l258.13 270.41 119.34 -96.68 -73.49 -85.95c490.45,-3.46 723.2,718.98 68.7,935.03l-3.88 145.57c304.55,-15.06 567.68,-327.76 558.24,-640.93 -11.09,-367.53 -266.2,-573.86 -620.82,-609.61l78.24 -86.32 -117.3 -100.59 -267.16 269.06z"/></svg>
+                    </div>
+                    <div class="about-item-content" style="flex:1;">
+                      <h5>Vitrine de Orgs — Do Amador ao Profissional</h5>
+                      <p>Organizações criam perfis, postam vagas e fazem Tryouts Públicos. O caminho do amador para a org passa pela The Zero Base.</p>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- ============ /SOBRE ============ -->
+
+  <hr class="tzb-divider">
+
+  <!-- ============ COMO FUNCIONA — 3 PASSOS ============ -->
+  <section class="section-como-funciona" style="background:#000000;padding:80px 0;position:relative;overflow:hidden;">
+
+    <!-- Operador 06 — esquerda espelhado com fade via mask-image -->
+    <div style="position:absolute;left:0;top:0;bottom:0;width:42%;pointer-events:none;z-index:0;
+      mask-image: linear-gradient(to right, black 0%, black 40%, transparent 72%, transparent 100%), linear-gradient(to bottom, transparent 0%, black 12%, black 88%, transparent 100%);
+      mask-composite: intersect;
+      -webkit-mask-image: linear-gradient(to right, black 0%, black 40%, transparent 72%, transparent 100%), linear-gradient(to bottom, transparent 0%, black 12%, black 88%, transparent 100%);
+      -webkit-mask-composite: source-in;">
+      <img loading="lazy" src="assets/images/operator-06.webp" alt="" style="height:100%;width:100%;object-fit:cover;object-position:center top;opacity:0.40;transform:scaleX(-1);display:block;">
+    </div>
+
+    <div class="container" style="position:relative;z-index:1;">
+      <div class="section-header text-center" style="margin-bottom:56px;">
+        <p style="color:#cc0000 !important;">Simples assim</p>
+        <h2>Entre na Base em 3 Passos</h2>
+      </div>
+      <div class="row g-4 justify-content-center align-items-stretch">
+
+        <div class="col-lg-4 col-md-6">
+          <div class="step-card step-anim-1" style="text-align:center;padding:40px 28px;background:#0a0a0f;border:1px solid #1e2530;border-radius:12px;height:100%;">
+            <div style="position:absolute;top:14px;right:18px;font-family:'Exo 2',sans-serif;font-size:72px;font-weight:800;color:rgba(170,0,0,0.05);line-height:1;pointer-events:none;user-select:none;">01</div>
+            <div class="step-icon" style="width:68px;height:68px;background:rgba(170,0,0,0.08);border:1px solid rgba(170,0,0,0.25);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;flex-shrink:0;padding:14px;">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1263.01 1443.68" style="width:100%;height:100%;"><path fill="#AA0000" d="M552.08 1443.68l0.68 -142.2c-444.31,-80.52 -502.61,-489.38 -255.86,-835.86l-104.47 -76.79c-132.74,119.99 -254.44,414.77 -157.43,664.13 72.31,185.89 277.47,358.22 517.09,390.71zm-216.37 -1174.62l258.13 270.41 119.34 -96.68 -73.49 -85.95c490.45,-3.46 723.2,718.98 68.7,935.03l-3.88 145.57c304.55,-15.06 567.68,-327.76 558.24,-640.93 -11.09,-367.53 -266.2,-573.86 -620.82,-609.61l78.24 -86.32 -117.3 -100.59 -267.16 269.06z"/></svg>
+            </div>
+            <h4 style="font-family:'Exo 2',sans-serif;font-size:20px;font-weight:700;text-transform:uppercase;color:#f0f0f0;margin-bottom:10px;letter-spacing:0.05em;">Crie seu Perfil</h4>
+            <p style="font-family:'Roboto',sans-serif;font-size:14px;color:#6b7280;line-height:1.65;margin:0;">Entre com Google ou Discord, preencha seu nick do Warzone e configure seu perfil. Grátis, menos de 2 minutos.</p>
+          </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6">
+          <div class="step-card step-card-featured step-anim-2" style="text-align:center;padding:40px 28px;background:#0a0a0f;border:1px solid rgba(170,0,0,0.35);border-radius:12px;height:100%;">
+            <div class="step-top-line"></div>
+            <div style="position:absolute;top:14px;right:18px;font-family:'Exo 2',sans-serif;font-size:72px;font-weight:800;color:rgba(170,0,0,0.07);line-height:1;pointer-events:none;user-select:none;">02</div>
+            <div class="step-icon" style="width:68px;height:68px;background:rgba(170,0,0,0.12);border:1px solid rgba(170,0,0,0.4);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;flex-shrink:0;padding:14px;">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1263.01 1443.68" style="width:100%;height:100%;"><path fill="#CC0000" d="M552.08 1443.68l0.68 -142.2c-444.31,-80.52 -502.61,-489.38 -255.86,-835.86l-104.47 -76.79c-132.74,119.99 -254.44,414.77 -157.43,664.13 72.31,185.89 277.47,358.22 517.09,390.71zm-216.37 -1174.62l258.13 270.41 119.34 -96.68 -73.49 -85.95c490.45,-3.46 723.2,718.98 68.7,935.03l-3.88 145.57c304.55,-15.06 567.68,-327.76 558.24,-640.93 -11.09,-367.53 -266.2,-573.86 -620.82,-609.61l78.24 -86.32 -117.3 -100.59 -267.16 269.06z"/></svg>
+            </div>
+            <h4 style="font-family:'Exo 2',sans-serif;font-size:20px;font-weight:700;text-transform:uppercase;color:#ffffff;margin-bottom:10px;letter-spacing:0.05em;">Cadastre seu Time</h4>
+            <p style="font-family:'Roboto',sans-serif;font-size:14px;color:#6b7280;line-height:1.65;margin:0;">Crie ou junte-se a um time. Defina o tier e esteja pronto para entrar nos scrims e campeonatos.</p>
+          </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6">
+          <div class="step-card step-anim-3" style="text-align:center;padding:40px 28px;background:#0a0a0f;border:1px solid #1e2530;border-radius:12px;height:100%;">
+            <div style="position:absolute;top:14px;right:18px;font-family:'Exo 2',sans-serif;font-size:72px;font-weight:800;color:rgba(170,0,0,0.05);line-height:1;pointer-events:none;user-select:none;">03</div>
+            <div class="step-icon" style="width:68px;height:68px;background:rgba(170,0,0,0.08);border:1px solid rgba(170,0,0,0.25);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;flex-shrink:0;padding:14px;">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1263.01 1443.68" style="width:100%;height:100%;"><path fill="#AA0000" d="M552.08 1443.68l0.68 -142.2c-444.31,-80.52 -502.61,-489.38 -255.86,-835.86l-104.47 -76.79c-132.74,119.99 -254.44,414.77 -157.43,664.13 72.31,185.89 277.47,358.22 517.09,390.71zm-216.37 -1174.62l258.13 270.41 119.34 -96.68 -73.49 -85.95c490.45,-3.46 723.2,718.98 68.7,935.03l-3.88 145.57c304.55,-15.06 567.68,-327.76 558.24,-640.93 -11.09,-367.53 -266.2,-573.86 -620.82,-609.61l78.24 -86.32 -117.3 -100.59 -267.16 269.06z"/></svg>
+            </div>
+            <h4 style="font-family:'Exo 2',sans-serif;font-size:20px;font-weight:700;text-transform:uppercase;color:#f0f0f0;margin-bottom:10px;letter-spacing:0.05em;">Compete e Sobe</h4>
+            <p style="font-family:'Roboto',sans-serif;font-size:14px;color:#6b7280;line-height:1.65;margin:0;">Entre em scrims, jogue campeonatos, acumule ZERO Points e suba no ranking nacional.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+  <!-- ============ /COMO FUNCIONA ============ -->
+
+  <hr class="tzb-divider">
+
+  <!-- ============ CAMPEONATOS / EVENTOS ============ -->
+  <section class="match-section padding-top padding-bottom" id="campeonatos" style="background-image:url('assets/images/bg-lava.webp')">
+    <div class="container">
+      <div class="section-header">
+        <p>Scrims, campeonatos e salas abertas agora</p>
+        <h2>Próximos Eventos</h2>
+      </div>
+
+      <!-- Tabs -->
+      <div style="display:flex;width:fit-content;margin:0 auto 40px;border:1px solid rgba(255,255,255,0.08);border-radius:10px;overflow:hidden;">
+        <button id="ev-tab-scrims" onclick="evTab('scrims')" style="padding:11px 32px;font-family:'Exo 2',sans-serif;font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;border:none;background:#aa0000;color:#fff;cursor:pointer;transition:all .15s;">Scrims</button>
+        <button id="ev-tab-camps" onclick="evTab('camps')" style="padding:11px 32px;font-family:'Exo 2',sans-serif;font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;border:none;border-left:1px solid rgba(255,255,255,0.08);background:transparent;color:#8892a4;cursor:pointer;transition:all .15s;">Campeonatos</button>
+        <button id="ev-tab-salas" onclick="evTab('salas')" style="padding:11px 32px;font-family:'Exo 2',sans-serif;font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;border:none;border-left:1px solid rgba(255,255,255,0.08);background:transparent;color:#8892a4;cursor:pointer;transition:all .15s;">Personalizadas</button>
+      </div>
+
+      <div class="section-wrapper">
+        <!-- Grid dinâmico -->
+        <div id="ev-grid" class="row g-4"></div>
+
+        <!-- Ver mais -->
+        <div class="button-wrapper text-center mt-5">
+          <a id="ev-ver-todos" href="/scrims.html" class="default-button"><span id="ev-ver-label">Ver todos os scrims <i class="icofont-circled-right"></i></span></a>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- ============ /CAMPEONATOS / EVENTOS ============ -->
+
+
+  <hr class="tzb-divider">
+
+  <!-- ============ TIMES SLIDER ============ -->
+  <section class="player-section padding-top padding-bottom">
+    <div class="container-fluid">
+      <div class="section-header text-center">
+        <p>A comunidade está se formando agora</p>
+        <h2>Times na Base</h2>
+      </div>
+      <div class="section-wrapper">
+        <div class="player-slider">
+          <div class="swiper-wrapper">
+
+            <!-- Begamers -->
+            <div class="swiper-slide">
+              <div class="player-item-2 text-center">
+                <div class="player-inner-2">
+                  <div class="team-card-top">
+                    <div class="player-thumb-2">
+                      <a href="#"><img loading="lazy" src="assets/images/team/logo-begamers.png" alt="Begamers"></a>
+                    </div>
+                    <div class="player-content-2">
+                      <a href="#"><h2>Begamers</h2></a>
+                    </div>
+                  </div>
+                  <a href="#" class="team-card-btn">Ver Time</a>
+                </div>
+              </div>
+            </div>
+
+            <!-- 1ShotKill -->
+            <div class="swiper-slide">
+              <div class="player-item-2 text-center">
+                <div class="player-inner-2">
+                  <div class="team-card-top">
+                    <div class="player-thumb-2">
+                      <a href="#"><img loading="lazy" src="assets/images/team/logo-1shotKill.png" alt="1ShotKill"></a>
+                    </div>
+                    <div class="player-content-2">
+                      <a href="#"><h2>1ShotKill</h2></a>
+                    </div>
+                  </div>
+                  <a href="#" class="team-card-btn">Ver Time</a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Elite e-Sports -->
+            <div class="swiper-slide">
+              <div class="player-item-2 text-center">
+                <div class="player-inner-2">
+                  <div class="team-card-top">
+                    <div class="player-thumb-2">
+                      <a href="#"><img loading="lazy" src="assets/images/team/logo-elite.png" alt="Elite e-Sports"></a>
+                    </div>
+                    <div class="player-content-2">
+                      <a href="#"><h2>Elite e-Sports</h2></a>
+                    </div>
+                  </div>
+                  <a href="#" class="team-card-btn">Ver Time</a>
+                </div>
+              </div>
+            </div>
+
+            <!-- First Squad -->
+            <div class="swiper-slide">
+              <div class="player-item-2 text-center">
+                <div class="player-inner-2">
+                  <div class="team-card-top">
+                    <div class="player-thumb-2">
+                      <a href="#"><img loading="lazy" src="assets/images/team/logo-firstsquad.png" alt="First Squad Team"></a>
+                    </div>
+                    <div class="player-content-2">
+                      <a href="#"><h2>First Squad</h2></a>
+                    </div>
+                  </div>
+                  <a href="#" class="team-card-btn">Ver Time</a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Fusion e-Sports -->
+            <div class="swiper-slide">
+              <div class="player-item-2 text-center">
+                <div class="player-inner-2">
+                  <div class="team-card-top">
+                    <div class="player-thumb-2">
+                      <a href="#"><img loading="lazy" src="assets/images/team/logo-fusion.png" alt="Fusion e-Sports"></a>
+                    </div>
+                    <div class="player-content-2">
+                      <a href="#"><h2>Fusion e-Sports</h2></a>
+                    </div>
+                  </div>
+                  <a href="#" class="team-card-btn">Ver Time</a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Los Tóxicos -->
+            <div class="swiper-slide">
+              <div class="player-item-2 text-center">
+                <div class="player-inner-2">
+                  <div class="team-card-top">
+                    <div class="player-thumb-2">
+                      <a href="#"><img loading="lazy" src="assets/images/team/logo-lostoxicos.png" alt="Los Tóxicos"></a>
+                    </div>
+                    <div class="player-content-2">
+                      <a href="#"><h2>Los Tóxicos</h2></a>
+                    </div>
+                  </div>
+                  <a href="#" class="team-card-btn">Ver Time</a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Rising e-Sports -->
+            <div class="swiper-slide">
+              <div class="player-item-2 text-center">
+                <div class="player-inner-2">
+                  <div class="team-card-top">
+                    <div class="player-thumb-2">
+                      <a href="#"><img loading="lazy" src="assets/images/team/logo-rising.png" alt="Rising e-Sports"></a>
+                    </div>
+                    <div class="player-content-2">
+                      <a href="#"><h2>Rising e-Sports</h2></a>
+                    </div>
+                  </div>
+                  <a href="#" class="team-card-btn">Ver Time</a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Stark -->
+            <div class="swiper-slide">
+              <div class="player-item-2 text-center">
+                <div class="player-inner-2">
+                  <div class="team-card-top">
+                    <div class="player-thumb-2">
+                      <a href="#"><img loading="lazy" src="assets/images/team/logo-stark.png" alt="Stark"></a>
+                    </div>
+                    <div class="player-content-2">
+                      <a href="#"><h2>Stark</h2></a>
+                    </div>
+                  </div>
+                  <a href="#" class="team-card-btn">Ver Time</a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Truedata e-Sports -->
+            <div class="swiper-slide">
+              <div class="player-item-2 text-center">
+                <div class="player-inner-2">
+                  <div class="team-card-top">
+                    <div class="player-thumb-2">
+                      <a href="#"><img loading="lazy" src="assets/images/team/logo-truedata.png" alt="Truedata e-Sports"></a>
+                    </div>
+                    <div class="player-content-2">
+                      <a href="#"><h2>Truedata</h2></a>
+                    </div>
+                  </div>
+                  <a href="#" class="team-card-btn">Ver Time</a>
+                </div>
+              </div>
+            </div>
+
+            <!-- UnTG e-Sports -->
+            <div class="swiper-slide">
+              <div class="player-item-2 text-center">
+                <div class="player-inner-2">
+                  <div class="team-card-top">
+                    <div class="player-thumb-2">
+                      <a href="#"><img loading="lazy" src="assets/images/team/logo-untg.png" alt="UnTG e-Sports"></a>
+                    </div>
+                    <div class="player-content-2">
+                      <a href="#"><h2>UnTG e-Sports</h2></a>
+                    </div>
+                  </div>
+                  <a href="#" class="team-card-btn">Ver Time</a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Vanguarda -->
+            <div class="swiper-slide">
+              <div class="player-item-2 text-center">
+                <div class="player-inner-2">
+                  <div class="team-card-top">
+                    <div class="player-thumb-2">
+                      <a href="#"><img loading="lazy" src="assets/images/team/logo-vanguarda.png" alt="Vanguarda"></a>
+                    </div>
+                    <div class="player-content-2">
+                      <a href="#"><h2>Vanguarda</h2></a>
+                    </div>
+                  </div>
+                  <a href="#" class="team-card-btn">Ver Time</a>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- ============ /TIMES SLIDER ============ -->
+
+  <!-- ============ CTA ============ -->
+  <section class="cta-section padding-bottom" style="background:#000;">
+    <div class="container-fluid px-0">
+      <div style="position:relative;overflow:hidden;border-radius:0;min-height:420px;display:flex;align-items:center;justify-content:center;">
+        <!-- Imagem 04 centralizada como fundo -->
+        <div class="cta-bg-img" style="position:absolute;inset:0;background-image:url('assets/images/bg-cta.webp');background-size:cover;background-position:center center;z-index:0;"></div>
+        <!-- Overlay escuro uniforme — sem gradiente vermelho -->
+        <div style="position:absolute;inset:0;background:rgba(0,0,0,0.72);z-index:1;"></div>
+        <!-- Conteúdo centralizado -->
+        <div class="container" style="position:relative;z-index:2;padding:60px 20px;text-align:center;">
+          <p style="font-family:'Exo 2',sans-serif;font-size:12px;font-weight:700;letter-spacing:0.22em;text-transform:uppercase;color:#aa0000;margin-bottom:16px;">O cenário tem um padrão agora</p>
+          <h2 style="font-family:'Exo 2',sans-serif;font-size:clamp(2.2rem,5vw,3.8rem);font-weight:800;text-transform:uppercase;color:#ffffff;line-height:1.05;margin-bottom:20px;">
+            DO AMADOR AO<br>PROFISSIONAL — <span style="color:#aa0000;">AQUI</span>
+          </h2>
+          <p style="font-family:'Roboto',sans-serif;font-size:15px;color:#a0a0a0;line-height:1.8;max-width:560px;margin:0 auto 36px;">
+            The Zero Base organiza o que antes era caos. Cadastre-se, monte seu trio e faça parte do circuito oficial de Warzone do Brasil. Os primeiros times que entrarem escrevem a história.
+          </p>
+          <!-- Botões centralizados -->
+          <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:40px;">
+            <a href="#" class="default-button" style="padding:14px 40px;font-size:15px;">
+              <span>Entrar na Base <i class="icofont-circled-right"></i></span>
+            </a>
+            <a href="/campeonatos" class="default-button reverse-effect" style="padding:14px 40px;font-size:15px;">
+              <span>Ver Campeonatos</span>
+            </a>
+          </div>
+          <!-- Stats centralizados abaixo dos botões -->
+          <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
+            <div style="background:rgba(8,8,12,0.7);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.09);border-radius:14px;padding:20px 40px;text-align:center;">
+              <span style="font-family:'Exo 2',sans-serif;font-size:2.4rem;font-weight:800;color:#aa0000;display:block;line-height:1;">R$0</span>
+              <span style="font-family:'Roboto',sans-serif;font-size:11px;text-transform:uppercase;letter-spacing:0.12em;color:#606060;margin-top:6px;display:block;">Cadastro grátis</span>
+            </div>
+            <div style="background:rgba(8,8,12,0.7);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.09);border-radius:14px;padding:20px 40px;text-align:center;">
+              <span style="font-family:'Exo 2',sans-serif;font-size:2.4rem;font-weight:800;color:#ffffff;display:block;line-height:1;">T1</span>
+              <span style="font-family:'Roboto',sans-serif;font-size:11px;text-transform:uppercase;letter-spacing:0.12em;color:#606060;margin-top:6px;display:block;">Vagas abertas</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- ============ /CTA ============ -->
+
+
+  <!-- ============ PARCEIROS ============ -->
+  <div class="sponsor-section padding-bottom" id="parceiros" style="position:relative;overflow:hidden;padding-top:24px;">
+
+    <!-- Operador 05 — esquerda com fade -->
+    <div style="position:absolute;left:0;top:0;bottom:0;width:38%;pointer-events:none;z-index:0;">
+      <img loading="lazy" src="assets/images/operator-05.webp" alt="" style="height:100%;width:100%;object-fit:cover;object-position:center top;opacity:0.55;">
+      <!-- fade lateral direita -->
+      <div style="position:absolute;inset:0;background:linear-gradient(to right, rgba(0,0,0,0.15) 0%, transparent 45%, rgba(0,0,0,0.85) 75%, #000 100%);"></div>
+      <!-- fade topo e base -->
+      <div style="position:absolute;inset:0;background:linear-gradient(to bottom, #000 0%, transparent 18%, transparent 78%, #000 100%);"></div>
+    </div>
+
+    <div class="container" style="position:relative;z-index:1;">
+      <!-- Logo TZB animada centralizada -->
+      <div class="text-center" style="margin-bottom:28px;">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1263.01 1443.68"
+          style="width:64px;height:72px;animation:logoPulse 3s ease-in-out infinite;display:inline-block;">
+          <path fill="#AA0000" d="M552.08 1443.68l0.68 -142.2c-444.31,-80.52 -502.61,-489.38 -255.86,-835.86l-104.47 -76.79c-132.74,119.99 -254.44,414.77 -157.43,664.13 72.31,185.89 277.47,358.22 517.09,390.71zm-216.37 -1174.62l258.13 270.41 119.34 -96.68 -73.49 -85.95c490.45,-3.46 723.2,718.98 68.7,935.03l-3.88 145.57c304.55,-15.06 567.68,-327.76 558.24,-640.93 -11.09,-367.53 -266.2,-573.86 -620.82,-609.61l78.24 -86.32 -117.3 -100.59 -267.16 269.06z"/>
+        </svg>
+      </div>
+      <div class="section-header text-center" style="margin-bottom:16px;">
+        <p>Quem acredita no projeto</p>
+        <h2>Parceiros que Apoiam a The Zero Base</h2>
+      </div>
+      <!-- Sub-copy persuasiva -->
+      <p class="text-center" style="font-family:'Roboto',sans-serif;font-size:15px;color:#6b7280;max-width:600px;margin:0 auto 48px;line-height:1.8;">
+        Estas marcas entenderam primeiro. Estar aqui é estar na fundação da maior plataforma competitiva do Brasil antes de todo mundo.
+      </p>
+      <div class="section-wrapper">
+        <div class="row g-4 justify-content-center row-cols-xl-5 row-cols-md-3 row-cols-2">
+          <div class="col">
+            <div class="sponsor-item"><div class="sponsor-inner">
+              <div class="sponsor-thumb text-center">
+                <img loading="lazy" src="assets/images/sponsor/beace.png" alt="Beace">
+              </div>
+            </div></div>
+          </div>
+          <div class="col">
+            <div class="sponsor-item"><div class="sponsor-inner">
+              <div class="sponsor-thumb text-center">
+                <img loading="lazy" src="assets/images/sponsor/arcadelab.png" alt="Arcade Lab">
+              </div>
+            </div></div>
+          </div>
+          <div class="col">
+            <div class="sponsor-item"><div class="sponsor-inner">
+              <div class="sponsor-thumb text-center">
+                <img loading="lazy" src="assets/images/sponsor/wg.png" alt="WG">
+              </div>
+            </div></div>
+          </div>
+          <div class="col">
+            <div class="sponsor-item"><div class="sponsor-inner">
+              <div class="sponsor-thumb text-center">
+                <img loading="lazy" src="assets/images/sponsor/buff.png" alt="Buff">
+              </div>
+            </div></div>
+          </div>
+          <div class="col">
+            <div class="sponsor-item"><div class="sponsor-inner">
+              <div class="sponsor-thumb text-center">
+                <img loading="lazy" src="assets/images/sponsor/evzen.png" alt="Evzen">
+              </div>
+            </div></div>
+          </div>
+        </div>
+
+        <!-- CTA de parceria — copy persuasiva -->
+        <div class="text-center mt-5" style="border-top:1px solid rgba(255,255,255,0.05);padding-top:48px;">
+          <p style="font-family:'Exo 2',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:#cc0000;margin-bottom:12px;">Vagas de parceria abertas</p>
+          <h3 style="font-family:'Exo 2',sans-serif;font-size:clamp(1.4rem,3vw,2rem);font-weight:800;text-transform:uppercase;color:#ffffff;margin-bottom:12px;">Sua marca na base desde o início?</h3>
+          <p style="font-family:'Roboto',sans-serif;font-size:14px;color:#6b7280;max-width:520px;margin:0 auto 28px;line-height:1.7;">
+            Posicionamento premium, audiência altamente qualificada e associação direta à maior plataforma competitiva BR. Poucas vagas disponíveis — quem chegar primeiro, fica na história.
+          </p>
+          <a href="#" class="default-button" style="padding:14px 40px;font-size:15px;">
+            <span>Quero ser Parceiro Fundador <i class="icofont-circled-right"></i></span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- ============ /PARCEIROS ============ -->
+
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="footer-section">
+    <div class="footer-middle padding-top padding-bottom">
+      <div class="container">
+        <div class="row padding-lg-top">
+          <div class="col-lg-4 col-md-6 col-12">
+            <div class="footer-middle-item-wrapper">
+              <div class="footer-middle-item mb-lg-0">
+                <div class="fm-item-title mb-4">
+                  <span style="display:flex;align-items:center;gap:10px;font-family:'Exo 2',sans-serif;font-size:22px;font-weight:800;letter-spacing:0.05em;text-transform:uppercase;">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1263.01 1443.68" style="width:26px;height:30px;flex-shrink:0;"><path fill="#AA0000" d="M552.08 1443.68l0.68 -142.2c-444.31,-80.52 -502.61,-489.38 -255.86,-835.86l-104.47 -76.79c-132.74,119.99 -254.44,414.77 -157.43,664.13 72.31,185.89 277.47,358.22 517.09,390.71zm-216.37 -1174.62l258.13 270.41 119.34 -96.68 -73.49 -85.95c490.45,-3.46 723.2,718.98 68.7,935.03l-3.88 145.57c304.55,-15.06 567.68,-327.76 558.24,-640.93 -11.09,-367.53 -266.2,-573.86 -620.82,-609.61l78.24 -86.32 -117.3 -100.59 -267.16 269.06z"/></svg>
+                    <span style="color:#ffffff;">THE</span> <span style="color:#aa0000;">ZERO</span> <span style="color:#ffffff;">BASE</span>
+                  </span>
+                </div>
+                <div class="fm-item-content">
+                  <p class="mb-4">A primeira plataforma 100% BR de Warzone competitivo. Feita para quem leva o jogo a sério — do casual que quer evoluir ao jogador que quer chegar numa org.</p>
+                  <!-- Redes sociais -->
+                  <ul class="match-social-list d-flex flex-wrap align-items-center" style="gap:10px;margin-bottom:20px;">
+                    <li><a href="#" class="tzb-social-btn" onmouseover="this.style.borderColor='rgba(88,101,242,0.5)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)'"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="#8892a4" d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057c.001.022.015.04.037.05a19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg></a></li>
+                    <li><a href="#" class="tzb-social-btn" onmouseover="this.style.borderColor='rgba(255,255,255,0.3)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)'"><svg width="14" height="14" viewBox="0 0 24 24"><path fill="#8892a4" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.713 6.231 5.45-6.231Zm-1.161 17.52h1.833L7.084 4.126H5.117Z"/></svg></a></li>
+                    <li><a href="#" class="tzb-social-btn" onmouseover="this.style.borderColor='rgba(225,48,108,0.5)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)'"><i class="icofont-instagram" style="font-size:17px;color:#8892a4;"></i></a></li>
+                    <li><a href="#" class="tzb-social-btn" onmouseover="this.style.borderColor='rgba(255,0,0,0.5)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)'"><i class="icofont-youtube" style="font-size:17px;color:#8892a4;"></i></a></li>
+                    <li><a href="#" class="tzb-social-btn" onmouseover="this.style.borderColor='rgba(145,70,255,0.5)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)'"><i class="icofont-twitch" style="font-size:17px;color:#8892a4;"></i></a></li>
+                  </ul>
+                  <!-- Contato -->
+                  <div style="display:flex;flex-direction:column;gap:8px;">
+                    <a href="mailto:contato@thezerobase.com.br" style="display:flex;align-items:center;gap:8px;color:#6b7280;font-family:'Roboto',sans-serif;font-size:13px;text-decoration:none;transition:color 200ms;" onmouseover="this.style.color='#aa0000'" onmouseout="this.style.color='#6b7280'">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                      contato@thezerobase.com.br
+                    </a>
+                    <a href="#" style="display:flex;align-items:center;gap:8px;color:#6b7280;font-family:'Roboto',sans-serif;font-size:13px;text-decoration:none;transition:color 200ms;" onmouseover="this.style.color='#5865f2'" onmouseout="this.style.color='#6b7280'">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057c.001.022.015.04.037.05a19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994.021-.041.001-.09-.041-.106a13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>
+                      discord.gg/thezerobase
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-4 col-md-6 col-12">
+            <div class="footer-middle-item-wrapper">
+              <div class="footer-middle-item mb-lg-0">
+                <div class="fm-item-title"><h4>Plataforma</h4></div>
+                <div class="fm-item-content">
+                  <ul style="list-style:none;padding:0;margin:0;">
+                    <li style="margin-bottom:8px;"><a href="#" style="font-family:'Inter',sans-serif;font-size:14px;color:#8892a4;text-decoration:none;transition:all 200ms;">Scrims</a></li>
+                    <li style="margin-bottom:8px;"><a href="#" style="font-family:'Inter',sans-serif;font-size:14px;color:#8892a4;text-decoration:none;transition:all 200ms;">Ranking Nacional</a></li>
+                    <li style="margin-bottom:8px;"><a href="#" style="font-family:'Inter',sans-serif;font-size:14px;color:#8892a4;text-decoration:none;transition:all 200ms;">Agentes Livres</a></li>
+                    <li style="margin-bottom:8px;"><a href="#" style="font-family:'Inter',sans-serif;font-size:14px;color:#8892a4;text-decoration:none;transition:all 200ms;">Campeonatos</a></li>
+                    <li style="margin-bottom:8px;"><a href="#" style="font-family:'Inter',sans-serif;font-size:14px;color:#8892a4;text-decoration:none;transition:all 200ms;">Overlay Stream</a></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-4 col-md-6 col-12">
+            <div class="footer-middle-item-wrapper">
+              <div class="footer-middle-item mb-lg-0">
+                <div class="fm-item-title"><h4>Comunidade</h4></div>
+                <div class="fm-item-content">
+                  <ul style="list-style:none;padding:0;margin:0;">
+                    <li style="margin-bottom:8px;"><a href="#" style="font-family:'Inter',sans-serif;font-size:14px;color:#8892a4;text-decoration:none;">Regras da Plataforma</a></li>
+                    <li style="margin-bottom:8px;"><a href="#" style="font-family:'Inter',sans-serif;font-size:14px;color:#8892a4;text-decoration:none;">FAQ / Ajuda</a></li>
+                    <li style="margin-bottom:8px;"><a href="#" style="font-family:'Inter',sans-serif;font-size:14px;color:#8892a4;text-decoration:none;">Vitrine de Orgs</a></li>
+                    <li style="margin-bottom:8px;"><a href="#" style="font-family:'Inter',sans-serif;font-size:14px;color:#8892a4;text-decoration:none;">Seja um Parceiro</a></li>
+                    <li style="margin-bottom:8px;"><a href="#" style="font-family:'Roboto',sans-serif;font-size:14px;color:#cc0000;text-decoration:none;font-weight:700;">Entrar na Base — É Grátis →</a></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom" style="padding:16px 0;">
+      <div class="container">
+        <div class="row">
+          <div class="col-12 text-center">
+            <p style="margin:0;">
+              THE ZERO BASE © 2026 — Grupo Begamers · Plataforma Brasileira de Esports ·
+              <a href="#">Termos de Uso</a> · <a href="#">Política de Privacidade</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+  <!-- ============ /FOOTER ============ -->
+
+
+  <!-- Template JS — ordem exata do template original -->
+  <script src="assets/js/vendor/jquery-3.6.0.min.js"></script>
+  <script src="assets/js/vendor/modernizr-3.11.2.min.js"></script>
+  <script src="assets/js/circularProgressBar.min.js"></script>
+  <script src="assets/js/isotope.pkgd.min.js"></script>
+  <script src="assets/js/swiper.min.js"></script>
+  <script src="assets/js/lightcase.js"></script>
+  <script src="assets/js/waypoints.min.js"></script>
+  <script src="assets/js/wow.min.js"></script>
+  <script src="assets/js/vendor/bootstrap.bundle.min.js"></script>
+  <script src="assets/js/plugins.js"></script>
+  <script src="assets/js/main.js"></script>
+  <script>
+    $(document).ready(function() {
+      // WOW com mobile desativado e offset maior — reduz cálculos no scroll
+      if (typeof WOW !== 'undefined') {
+        new WOW({
+          mobile: false,
+          offset: 80,
+          live: false
+        }).init();
+      }
+    });
+  </script>
+
+  <!-- Hamburger menu toggle -->
+  <script>
+    (function() {
+      var btn = document.querySelector('.header-bar');
+      var menu = document.getElementById('mobile-menu');
+      if (btn && menu) {
+        btn.addEventListener('click', function() {
+          var open = menu.style.display === 'block';
+          menu.style.display = open ? 'none' : 'block';
+          btn.classList.toggle('active', !open);
+        });
+        menu.querySelectorAll('a').forEach(function(a) {
+          a.addEventListener('click', function() {
+            menu.style.display = 'none';
+            btn.classList.remove('active');
+          });
+        });
+      }
+    })();
+  </script>
+
+  <!-- Times do Supabase injetados no slider -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script>
+  (async function() {
+    try {
+      var supa = supabase.createClient(
+        'https://hcpbpnwpdkvlonqoqchs.supabase.co',
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhjcGJwbndwZGt2bG9ucW9xY2hzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0NTU0NzgsImV4cCI6MjA5MjAzMTQ3OH0.0QtczT9z_ctuHM-V3U44oCAJOdg3qUYcq-wDITnsch4'
+      );
+
+      // Busca times com pub_active=true + logo do perfil (avatar_url)
+      var _t = await supa
+        .from('tzb_teams')
+        .select('id, display_name, category, tzb_profiles(avatar_url)')
+        .eq('pub_active', true)
+        .order('created_at');
+
+      if (!_t.data || _t.data.length === 0) return;
+
+      var wrapper = document.querySelector('.player-section .swiper-wrapper');
+      if (!wrapper) return;
+
+      // Substitui slides hardcoded pelos dados reais
+      var html = '';
+      _t.data.forEach(function(team) {
+        var name    = team.display_name || 'Time';
+        var teamId  = team.id;
+        var logoUrl = team.tzb_profiles ? team.tzb_profiles.avatar_url : null;
+        var logoHtml = logoUrl
+          ? '<img loading="lazy" src="' + logoUrl + '" alt="' + name + '" style="width:80px;height:80px;object-fit:contain;border-radius:8px;">'
+          : '<div style="width:80px;height:80px;border-radius:50%;background:#1a2030;display:flex;align-items:center;justify-content:center;font-family:\'Exo 2\',sans-serif;font-weight:800;font-size:28px;color:#cc0000;margin:0 auto;">' + name.charAt(0).toUpperCase() + '</div>';
+
+        html +=
+          '<div class="swiper-slide">' +
+            '<div class="player-item-2 text-center">' +
+              '<div class="player-inner-2">' +
+                '<div class="team-card-top">' +
+                  '<div class="player-thumb-2"><a href="/time.html?id=' + teamId + '">' + logoHtml + '</a></div>' +
+                  '<div class="player-content-2"><a href="/time.html?id=' + teamId + '"><h2>' + name + '</h2></a></div>' +
+                '</div>' +
+                '<a href="/time.html?id=' + teamId + '" class="team-card-btn">Ver Time</a>' +
+              '</div>' +
+            '</div>' +
+          '</div>';
+      });
+
+      wrapper.innerHTML = html;
+
+      // Re-inicializa Swiper com os novos slides
+      if (window.playerSwiper && typeof window.playerSwiper.update === 'function') {
+        window.playerSwiper.update();
+      }
+    } catch(e) {}
+  })();
+  </script>
+
+  <script>
+    function showCat(cat) {
+      document.getElementById('cat-amador').style.display = cat === 'amador' ? '' : 'none';
+      document.getElementById('cat-pro').style.display = cat === 'pro' ? '' : 'none';
+      document.getElementById('tab-amador').style.background = cat === 'amador' ? '#aa0000' : 'transparent';
+      document.getElementById('tab-amador').style.color = cat === 'amador' ? '#fff' : '#8892a4';
+      document.getElementById('tab-pro').style.background = cat === 'pro' ? '#e8b24a' : 'transparent';
+      document.getElementById('tab-pro').style.color = cat === 'pro' ? '#000' : '#8892a4';
+    }
+  </script>
+
+  <!-- ======= SCRIPT: SEÇÃO EVENTOS HOME ======= -->
+  <script>
+  (function() {
+    var SUPA_URL = 'https://hcpbpnwpdkvlonqoqchs.supabase.co';
+    var SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhjcGJwbndwZGt2bG9ucW9xY2hzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0NTU0NzgsImV4cCI6MjA5MjAzMTQ3OH0.0QtczT9z_ctuHM-V3U44oCAJOdg3qUYcq-wDITnsch4';
+    var evSupa = supabase.createClient(SUPA_URL, SUPA_KEY);
+    var evActiveTab = 'scrims';
+    var evData = { scrims: null, camps: null, salas: null };
+
+    var VER_LINKS  = { scrims: '/scrims.html', camps: '/campeonatos.html', salas: '/personalizadas.html' };
+    var VER_LABELS = { scrims: 'Ver todos os scrims', camps: 'Ver todos os campeonatos', salas: 'Ver todas as salas' };
+    // gradient class por tier
+    var GRAD = { amador: 'gradient-bg-blue', pro: 'gradient-bg-yellow', profissional: 'gradient-bg-yellow', ouro: 'gradient-bg-yellow', prata: 'gradient-bg-orange', bronze: 'gradient-bg-blue' };
+
+    function evFmtDate(d) {
+      if (!d) return '';
+      var dt = new Date(d);
+      return dt.toLocaleDateString('pt-BR', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' });
+    }
+
+    function evTierBadge(tier) {
+      if (!tier) return '';
+      var map = { amador:['#3399ff','AMADOR'], pro:['#e8b24a','PROFISSIONAL'], profissional:['#e8b24a','PROFISSIONAL'], ouro:['#e8b24a','OURO'], prata:['#c0c8d4','PRATA'], bronze:['#cd7f32','BRONZE'] };
+      var c = map[tier.toLowerCase()] || ['#8892a4', tier.toUpperCase()];
+      return '<span style="font-size:10px;font-weight:700;letter-spacing:.07em;padding:2px 8px;border-radius:4px;background:'+c[0]+'22;color:'+c[0]+';border:1px solid '+c[0]+'55;">'+c[1]+'</span>';
+    }
+
+    function evLiveBadge() {
+      return '<span style="display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;letter-spacing:.06em;padding:2px 8px;border-radius:4px;background:#aa000033;color:#ff4444;border:1px solid #aa000066;">' +
+        '<span style="width:6px;height:6px;border-radius:50%;background:#ff4444;animation:evPulse 1s infinite;display:inline-block;"></span>AO VIVO</span>';
+    }
+
+    function evRenderCard(ev, type) {
+      var isLive = ev.stream_url && (ev.status === 'ao_vivo' || ev.status === 'ativo' || ev.status === 'em_andamento');
+      var tier = (ev.tier || ev.category || '').toLowerCase();
+      var gradClass = GRAD[tier] || 'gradient-bg-yellow';
+      var inscUrl = VER_LINKS[type];
+      var slots = ev.max_teams || ev.max_players || '';
+      var dateStr = evFmtDate(ev.start_date || ev.date_start || ev.created_at);
+
+      // Flyer ou placeholder
+      var flyerHtml = ev.flyer_url
+        ? '<img loading="lazy" src="'+ev.flyer_url+'" alt="flyer" style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block;">'
+        : '<div style="width:100%;aspect-ratio:16/9;background:linear-gradient(135deg,#0d1117 0%,#111820 100%);display:flex;align-items:center;justify-content:center;">' +
+            '<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#1a2030" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>' +
+          '</div>';
+
+      // Header: tier badge + ao vivo / vagas
+      var headerLeft = evTierBadge(tier || 'amador');
+      var headerRight = isLive ? evLiveBadge() : (slots ? '<span class="match-date" style="font-size:11px;">'+slots+' vagas</span>' : '');
+
+      // Botões
+      var btns = '<div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:12px;">' +
+        '<a href="'+inscUrl+'" class="default-button" style="padding:8px 20px;font-size:12px;"><span>Inscrever-se <i class="icofont-circled-right"></i></span></a>';
+      if (ev.stream_url) {
+        btns += '<a href="'+ev.stream_url+'" target="_blank" rel="noopener" class="default-button" style="padding:8px 16px;font-size:12px;background:transparent;border:1px solid rgba(170,0,0,0.5);"><span>▶ Assistir</span></a>';
+      }
+      btns += '</div>';
+
+      return '<div class="col-xl-4 col-md-6">' +
+        '<div class="match-item-2 item-layer">' +
+          '<div class="match-inner" style="overflow:hidden;">' +
+            flyerHtml +
+            '<div class="match-header d-flex flex-wrap justify-content-between align-items-center">' +
+              '<p class="match-team-info" style="display:flex;gap:6px;align-items:center;">'+headerLeft+'</p>' +
+              '<p class="match-prize" style="margin:0;">'+headerRight+'</p>' +
+            '</div>' +
+            '<div class="match-content '+gradClass+'" style="padding:16px;">' +
+              '<div class="match-game-info text-center">' +
+                '<h4 style="font-size:1rem;line-height:1.3;"><a href="'+inscUrl+'" style="color:inherit;text-decoration:none;">'+ev.name+'</a></h4>' +
+                (dateStr ? '<p class="d-flex flex-wrap justify-content-center"><span class="match-date">'+dateStr+'</span></p>' : '') +
+                btns +
+              '</div>' +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+    }
+
+    function evRenderEmpty(type) {
+      var labels = { scrims:'scrims', camps:'campeonatos', salas:'salas personalizadas' };
+      return '<div class="col-12 text-center" style="padding:60px 20px;color:#8892a4;font-size:14px;">Nenhum '+labels[type]+' aberto no momento.</div>';
+    }
+
+    function evRender(type) {
+      var grid = document.getElementById('ev-grid');
+      var items = evData[type] || [];
+      grid.innerHTML = items.length ? items.map(function(ev){ return evRenderCard(ev, type); }).join('') : evRenderEmpty(type);
+    }
+
+    window.evTab = function(tab) {
+      evActiveTab = tab;
+      ['scrims','camps','salas'].forEach(function(t) {
+        var btn = document.getElementById('ev-tab-'+t);
+        if (!btn) return;
+        btn.style.background = t === tab ? '#aa0000' : 'transparent';
+        btn.style.color = t === tab ? '#fff' : '#8892a4';
+      });
+      var link = document.getElementById('ev-ver-todos');
+      var lbl  = document.getElementById('ev-ver-label');
+      if (link) link.href = VER_LINKS[tab];
+      if (lbl)  lbl.innerHTML = VER_LABELS[tab]+' <i class="icofont-circled-right"></i>';
+      if (evData[tab] === null) { evFetch(tab); } else { evRender(tab); }
+    };
+
+    async function evFetch(type) {
+      var grid = document.getElementById('ev-grid');
+      grid.innerHTML = '<div class="col-12 text-center" style="padding:60px 20px;color:#8892a4;font-size:13px;">Carregando...</div>';
+      try {
+        var q;
+        if (type === 'scrims') {
+          q = await evSupa.from('tzb_scrims').select('*').in('status',['aberto','em_breve','embreve','agendado']).order('start_date',{ascending:true}).limit(6);
+        } else if (type === 'camps') {
+          q = await evSupa.from('tzb_campeonatos').select('*').in('status',['aberto','em_breve','embreve','agendado','inscricoes_abertas']).order('start_date',{ascending:true}).limit(6);
+        } else {
+          q = await evSupa.from('tzb_salas').select('*').eq('status','aberto').order('created_at',{ascending:false}).limit(6);
+        }
+        evData[type] = q.data || [];
+        evRender(type);
+      } catch(e) {
+        grid.innerHTML = '<div class="col-12 text-center" style="padding:60px 20px;color:#8892a4;">Erro ao carregar eventos.</div>';
+      }
+    }
+
+    // Pulse animation para badge AO VIVO
+    var evStyle = document.createElement('style');
+    evStyle.textContent = '@keyframes evPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.4)}}';
+    document.head.appendChild(evStyle);
+
+    document.addEventListener('DOMContentLoaded', function() { evFetch('scrims'); });
+  })();
+  </script>
+
+</body>
+</html>
