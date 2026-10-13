@@ -10,8 +10,11 @@ build/
 *.log
 .vercel/
 Assets/
+# assets/ minúsculo (public/assets) deve ir pro git — NÃO ignorar
 *.zip
 *.PSD
 *.psd
 *.mov
 *.mp4
+
+.vercel
